@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: verdaccio-config
+data:
+  config.yaml: |
+    storage: /verdaccio/storage/data
+    plugins: /verdaccio/plugins
+    web:
+      title: Verdaccio
+    auth:
+      htpasswd:
+        file: /verdaccio/storage/htpasswd
+    uplinks:
+      npmjs:
+        url: https://registry.npmjs.org/
+        strict_ssl: false
+        ca: null
+    packages:
+      '@*/*':
+        access: $all
+        publish: $authenticated
+        unpublish: $authenticated
+        proxy: npmjs
+      '**':
+        access: $all
+        publish: $authenticated
+        unpublish: $authenticated
+        proxy: npmjs
+    middlewares:
+      audit:
+        enabled: true
+    logs:
+      - { type: stdout, format: pretty, level: http }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: verdaccio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: verdaccio
+  template:
+    metadata:
+      labels:
+        app: verdaccio
+    spec:
+      containers:
+      - name: verdaccio
+        image: verdaccio/verdaccio
+        ports:
+        - containerPort: 4873
+        securityContext:
+          runAsUser: 0
+        env:
+        - name: VERDACCIO_PORT
+          value: "4873"
+        volumeMounts:
+        - name: verdaccio-configuration
+          mountPath: /verdaccio/conf
+      volumes:
+      - name: verdaccio-configuration
+        configMap:
+          name: verdaccio-config
+          items:
+          - key: config.yaml
+            path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: verdaccio
+  name: verdaccio
+spec:
+  ports:
+  - protocol: TCP
+    port: 4873
+    targetPort: 4873
+  selector:
+    app: verdaccio
+  type: NodePort
