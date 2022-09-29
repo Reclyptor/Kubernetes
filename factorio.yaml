@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: factorio-config
+  labels:
+    app: factorio
+data:
+  map-gen-settings.json: |
+    {
+      "_comment": "Sizes can be specified as none, very-low, low, normal, high, very-high",
+    
+      "terrain_segmentation": "normal",
+      "water": "normal",
+      "width": 0,
+      "height": 0,
+      "starting_area": "normal",
+      "peaceful_mode": false,
+      "autoplace_controls":
+      {
+        "coal": {"frequency": "normal", "size": "normal", "richness": "normal"},
+        "copper-ore": {"frequency": "normal", "size": "normal", "richness": "normal"},
+        "crude-oil": {"frequency": "normal", "size": "normal", "richness": "normal"},
+        "enemy-base": {"frequency": "normal", "size": "normal", "richness": "normal"},
+        "iron-ore": {"frequency": "normal", "size": "normal", "richness": "normal"},
+        "stone": {"frequency": "normal", "size": "normal", "richness": "normal"}
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: factorio
+  labels:
+    app: factorio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: factorio
+  template:
+    metadata:
+      labels:
+        app: factorio
+    spec:
+      containers:
+      - name: factorio
+        image: reclyptor/factorio:latest
+        env:
+        - name: MAX_PLAYERS
+          value: "0"
+        - name: GAME_PASSWORD
+          value: "factorio"
+        - name: LAN_VISIBILITY
+          value: "true"
+        - name: RCON_PASSWORD
+          value: ""
+        - name: DESCRIPTION
+          value: "Factorio server"
+        - name: AUTO_PAUSE
+          value: "true"
+        - name: USER_TOKEN
+          value: ""
+        - name: VERIFY_IDENTITY
+          value: "false"
+        - name: SAVEGAME
+          value: ""
+        - name: NAME
+          value: "Factorio"
+        - name: PUBLIC_VISIBILITY
+          value: "false"
+        volumeMounts:
+        - name: factorio-volume
+          mountPath: /opt/factorio/map-gen-settings.json
+          subPath: map-gen-settings.json
+        - name: factorio-nfs-saves
+          mountPath: /opt/factorio/saves
+        - name: factorio-nfs-mods
+          mountPath: /opt/factorio/mods
+      volumes:
+      - name: factorio-volume
+        configMap:
+          name: factorio-config
+      - name: factorio-nfs-saves
+        nfs:
+          server: 192.168.1.229
+          path: /volume1/NFS/factorio/saves
+      - name: factorio-nfs-mods
+        nfs:
+          server: 192.168.1.229
+          path: /volume1/NFS/factorio/mods
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: factorio
+  labels:
+    app: factorio
+spec:
+  type: NodePort
+  selector:
+    app: factorio
+  ports:
+    - name: server-port
+      protocol: UDP
+      port: 34197
+      targetPort: 34197
+    - name: rcon-port
+      protocol: TCP
+      port: 27015
+      targetPort: 27015

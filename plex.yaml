@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex
+  labels:
+    app: plex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      containers:
+      - name: plex
+        image: plexinc/pms-docker:latest
+        ports:
+        - containerPort: 32400
+        env:
+        - name: PLEX_CLAIM
+          value: "<YOUR_PLEX_CLAIM_TOKEN>"
+        - name: TZ
+          value: "America/Chicago"
+        volumeMounts:
+        - mountPath: /config
+          name: config
+        - mountPath: /transcode
+          name: transcode
+        - mountPath: /data
+          name: data
+        resources:
+          limits:
+            nvidia.com/gpu: 0
+        args:
+          - "--network=host"
+      volumes:
+      - name: config
+        hostPath:
+          path: /home/plex
+      - name: transcode
+        emptyDir: {}
+      - name: data
+        hostPath:
+          path: /mnt/md0/videos
+      nodeSelector:
+        nvidia.com/gpu.present: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex
+spec:
+  type: NodePort
+  ports:
+  - port: 32400
+    targetPort: 32400
+    nodePort: 30000
+  selector:
+    app: plex
