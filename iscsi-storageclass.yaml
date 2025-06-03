@@ -1,0 +1,34 @@
+apiVersion: storage.k8s.io/v1
+kind: CSIDriver
+metadata:
+  name: iscsi.csi.k8s.io
+spec:
+  attachRequired: true
+  podInfoOnMount: true
+  volumeLifecycleModes:
+    - Persistent
+    - Ephemeral
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: iscsi-truenas-k8s
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: iscsi.csi.k8s.io
+parameters:
+  targetPortal: 192.168.1.2:3260
+  portals: "192.168.1.2:3260"
+  iqn: iqn.2005-10.org.freenas.ctl.k8s
+  lun: "0"
+  fsType: ext4
+  csi.storage.k8s.io/provisioner-secret-name: truenas-iscsi-secret
+  csi.storage.k8s.io/provisioner-secret-namespace: kube-system
+  csi.storage.k8s.io/node-stage-secret-name: truenas-iscsi-secret
+  csi.storage.k8s.io/node-stage-secret-namespace: kube-system
+  csi.storage.k8s.io/controller-publish-secret-name: truenas-iscsi-secret
+  csi.storage.k8s.io/controller-publish-secret-namespace: kube-system
+  csi.storage.k8s.io/fstype: ext4
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
