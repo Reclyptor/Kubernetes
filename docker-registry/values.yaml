@@ -1,0 +1,14 @@
+replicaCount: 1
+image:
+  repository: registry
+  tag: "2"
+  pullPolicy: Always
+service:
+  type: LoadBalancer
+  port: 5000
+persistence:
+  enabled: true
+  storageClass: iscsi-truenas-k8s
+  accessMode: ReadWriteOnce
+  size: 10Gi
+resources: {}
