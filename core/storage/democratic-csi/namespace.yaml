@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: democratic-csi
+  labels:
+    # PSA: enforce privileged (required by democratic-csi)
+    pod-security.kubernetes.io/enforce: "privileged"
+    pod-security.kubernetes.io/enforce-version: "v1.33"
+    # Optional but recommended: align warn/audit to privileged to avoid noisy warnings
+    pod-security.kubernetes.io/warn: "privileged"
+    pod-security.kubernetes.io/warn-version: "v1.33"
+    pod-security.kubernetes.io/audit: "privileged"
+    pod-security.kubernetes.io/audit-version: "v1.33"
