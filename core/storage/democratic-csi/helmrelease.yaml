@@ -1,0 +1,77 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: truenas-iscsi
+  namespace: democratic-csi
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: democratic-csi
+      version: 0.15.0
+      sourceRef:
+        kind: HelmRepository
+        name: democratic-csi
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: truenas-api-secret
+      valuesKey: apiKey
+      targetPath: driver.config.httpConnection.apiKey
+    - kind: Secret
+      name: truenas-ssh-secret
+      valuesKey: id_rsa
+      targetPath: driver.config.sshConnection.privateKey
+  values:
+    csiDriver:
+      name: "org.democratic-csi.iscsi"
+    node:
+      hostPID: true
+    storageClasses:
+      - name: truenas-iscsi
+        defaultClass: false
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: ext4
+        secrets: {}
+    driver:
+      config:
+        driver: freenas-iscsi
+        httpConnection:
+          protocol: https
+          host: "192.168.1.2"
+          port: 443
+          allowInsecure: true
+        sshConnection:
+          host: "192.168.1.2"
+          port: 22
+          username: "truenas_admin"
+        zfs:
+          datasetParentName: "quantum/kubernetes/volumes"
+          detachedSnapshotsDatasetParentName: "quantum/kubernetes/snapshots"
+          zvolBlocksize: "4K"
+          zvolCompression: "lz4"
+          cli:
+            sudoEnabled: true
+            paths:
+              zfs: /usr/sbin/zfs
+              zpool: /usr/sbin/zpool
+              sudo: /usr/bin/sudo
+              chroot: /usr/sbin/chroot
+        iscsi:
+          targetPortal: "192.168.1.2:3260"
+          iqnBase: "iqn.2005-10.org.freenas.ctl"
+          namePrefix: "k8s-"
+          targetGroups:
+            - targetGroupPortalGroup: 1    # from Shares » Block (iSCSI) » Portals
+              targetGroupInitiatorGroup: 2 # from Shares » Block (iSCSI) » Initiators
+              targetGroupAuthType: None    # or CHAP / CHAP Mutual if you use auth
+              # targetGroupAuthGroup: <AUTH_GROUP_ID> # only if using CHAP
