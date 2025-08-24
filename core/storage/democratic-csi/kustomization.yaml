@@ -6,3 +6,4 @@ resources:
   - truenas-ssh-secret.yaml
   - helmrepository.yaml
   - helmrelease.yaml
+  - truenas-storageclass.yaml
