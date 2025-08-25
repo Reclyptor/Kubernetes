@@ -59,6 +59,13 @@ spec:
           detachedSnapshotsDatasetParentName: "quantum/kubernetes/snapshots"
           zvolBlocksize: "4K"
           zvolCompression: "lz4"
+        cli:
+          sudoEnabled: true
+          paths:
+            zfs: /usr/sbin/zfs
+            zpool: /usr/sbin/zpool
+            sudo: /usr/bin/sudo
+            chroot: /usr/sbin/chroot
         iscsi:
           targetPortal: "192.168.1.2:3260"
           iqnBase: "iqn.2005-10.org.freenas.ctl"
