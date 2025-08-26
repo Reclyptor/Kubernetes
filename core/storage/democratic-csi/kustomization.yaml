@@ -4,6 +4,6 @@ resources:
   - namespace.yaml
   - truenas-api-secret.yaml
   - truenas-ssh-secret.yaml
+  - truenas-chap-secret.yaml
   - helmrepository.yaml
   - helmrelease.yaml
-  - truenas-storageclass.yaml

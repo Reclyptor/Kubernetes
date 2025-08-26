@@ -41,7 +41,10 @@ spec:
         allowVolumeExpansion: true
         parameters:
           fsType: ext4
-        secrets: {}
+          csi.storage.k8s.io/node-stage-secret-name: truenas-chap-secret
+          csi.storage.k8s.io/node-stage-secret-namespace: democratic-csi
+          csi.storage.k8s.io/node-publish-secret-name: truenas-chap-secret
+          csi.storage.k8s.io/node-publish-secret-namespace: democratic-csi
     driver:
       config:
         driver: freenas-iscsi
@@ -73,5 +76,5 @@ spec:
           targetGroups:
             - targetGroupPortalGroup: 1    # from Shares » Block (iSCSI) » Portals
               targetGroupInitiatorGroup: 2 # from Shares » Block (iSCSI) » Initiators
-              targetGroupAuthType: None    # or CHAP / CHAP Mutual if you use auth
-              # targetGroupAuthGroup: <AUTH_GROUP_ID> # only if using CHAP
+              targetGroupAuthType: CHAP    # or CHAP / CHAP Mutual if you use auth
+              targetGroupAuthGroup: 1      # only if using CHAP
