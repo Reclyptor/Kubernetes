@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: mongodb
+spec:
+  serviceName: mongodb
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      # Keyfile must be readable only by the user running mongod.
+      # We run as root so the Secret (owned by root) meets that constraint.
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+      - name: mongod
+        image: mongo:7.0
+        imagePullPolicy: IfNotPresent
+        command: ["mongod"]
+        args:
+          - "--replSet=rs0"
+          - "--bind_ip_all"
+          - "--port=27017"
+          - "--auth"
+          - "--clusterAuthMode=keyFile"
+          - "--keyFile=/etc/mongodb-secrets/keyfile"
+          - "--dbpath=/data/db"
+        ports:
+        - containerPort: 27017
+          name: mongo
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+        - name: keyfile
+          mountPath: /etc/mongodb-secrets
+          readOnly: true
+        readinessProbe:
+          tcpSocket:
+            port: 27017 # simple readiness; no credentials needed
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 6
+      volumes:
+      - name: keyfile
+        secret:
+          secretName: mongodb-keyfile-secret
+          items:
+          - key: keyfile
+            path: keyfile
+          defaultMode: 256 # 0400 in decimal; owner-read-only per MongoDB docs
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: truenas-iscsi    # your working iSCSI class
+      resources:
+        requests:
+          storage: 5Gi

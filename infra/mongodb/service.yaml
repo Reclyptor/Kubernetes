@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-0-lb
+  namespace: mongodb
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: mongodb
+    statefulset.kubernetes.io/pod-name: mongodb-0
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-1-lb
+  namespace: mongodb
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: mongodb
+    statefulset.kubernetes.io/pod-name: mongodb-1
+  ports:
+    - name: mongodb
+      port: 27018
+      targetPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-2-lb
+  namespace: mongodb
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: mongodb
+    statefulset.kubernetes.io/pod-name: mongodb-2
+  ports:
+    - name: mongodb
+      port: 27019
+      targetPort: 27017
