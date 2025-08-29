@@ -34,9 +34,20 @@ spec:
     node:
       hostPID: true
     storageClasses:
-      - name: truenas-iscsi
+      - name: truenas-iscsi-ephemeral
         defaultClass: false
         reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: ext4
+          csi.storage.k8s.io/node-stage-secret-name: truenas-chap-secret
+          csi.storage.k8s.io/node-stage-secret-namespace: democratic-csi
+          csi.storage.k8s.io/node-publish-secret-name: truenas-chap-secret
+          csi.storage.k8s.io/node-publish-secret-namespace: democratic-csi
+      - name: truenas-iscsi-persistent
+        defaultClass: false
+        reclaimPolicy: Retain
         volumeBindingMode: Immediate
         allowVolumeExpansion: true
         parameters:
