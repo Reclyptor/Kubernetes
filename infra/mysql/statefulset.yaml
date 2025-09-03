@@ -1,48 +1,51 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongodb
-  namespace: mongodb
+  name: mysql
+  namespace: mysql
 spec:
-  serviceName: mongodb
+  serviceName: mysql
   replicas: 1
   selector:
     matchLabels:
-      app: mongodb
+      app: mysql
   template:
     metadata:
       labels:
-        app: mongodb
+        app: mysql
     spec:
       securityContext:
         runAsUser: 0
-        runAsGroup: 0
+        runAsGroup: 9
       containers:
-        - name: mongodb
-          image: mongo:7.0
+        - name: mysql
+          image: mysql:8.4
           imagePullPolicy: IfNotPresent
-          args:
-            - "--bind_ip_all"
-            - "--port=27017"
-            - "--auth"
-            - "--dbpath=/data/db"
           ports:
-            - containerPort: 27017
-              name: mongodb
+            - containerPort: 3306
+              name: mysql
           volumeMounts:
             - name: data
-              mountPath: /data
-              subPath: db
+              mountPath: /var/lib
+              subPath: mysql
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
           envFrom:
             - secretRef:
-                name: mongodb-root-secret
+                name: mysql-root-secret
           readinessProbe:
             tcpSocket:
-              port: 27017
+              port: 3306
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 6
             timeoutSeconds: 3
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: mysql-init-configmap
+            defaultMode: 0644
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
