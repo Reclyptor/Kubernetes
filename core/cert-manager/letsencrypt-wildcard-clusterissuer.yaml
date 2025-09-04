@@ -1,0 +1,44 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+    name: letsencrypt-wildcard-clusterissuer
+spec:
+    acme:
+        email: ENC[AES256_GCM,data:HI2tl7WgDdlGHqIk8Yvsd+08YHo=,iv:gaZmw+TKJAttDmv0EfjsZD6nI2IXcjBkXTGNEeWP+MQ=,tag:97Ty0p70Po6gVPGX32zjEg==,type:str]
+        server: https://acme-v02.api.letsencrypt.org/directory
+        privateKeySecretRef:
+            name: letsencrypt-wildcard-account-key-secret
+        solvers:
+            - dns01:
+                cloudflare:
+                    apiTokenSecretRef:
+                        name: cloudflare-api-token-secret
+                        key: api-token
+              selector:
+                dnsZones:
+                    - ENC[AES256_GCM,data:YyFoxtduix4pZO+OKA==,iv:imJxxlVa0tn/IYH3c0LXnLWKDlbqeISUKrWKK21CQGQ=,tag:yUgkv2sSLU07zgn26900Og==,type:str]
+sops:
+    age:
+        - recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBdjlvekly
+            Mkw2L2FJNlo0b00xQUhLcU5wd25HYml6UTdvRUlmaVYxTUN6eQo4RkM1UEtjMnJl
+            d1ltQU56aGFOaEdJdS9YeEV3MnNJYnFhaXBVWVhuYmprCi0tLSByZm56RXF3WGR0
+            ejBzb1l0eEcrd2ZUTmtmMGRadGRWbWRVdmpqQno2M1JVCq/3cQ+jlRlxTTBp454z
+            73kwzuzxUguP+cQ7moTOoIPvSBkupOtR1s/4eYe6ZwW9HxwdlhiBr2UjSD1nw0ov
+            xdc=
+            -----END AGE ENCRYPTED FILE-----
+        - recipient: age17l8gylyteashptf89ql95e4wl80u4py5ahfzmz76v4y8ghst0qzqxg3npr
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBWM1lzdDliRGdlNjhMbWZU
+            UnFZdzBYSDh0dFpiQ1Z0dlZHZGhjRWtXYlZnClVYSWovY2FPbmY3TENOa3ZXZTA0
+            c3lFWlpHZGQ0ZUFoWXBqOFkyU3ZqdU0KLS0tIDhMbjRXbjlOVExLNXA5RHBtM3BI
+            UGNMTld5eXN6aXJ6NHBOazFZOFZtaG8KP4QqYIbdDVjetlAdCD/dUTIw2DTy+XPz
+            2VS3OTvyS8YgkB31zHTG4Ac50YFY2AuH/aPudK1AiiazLP7RsfHp1w==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2025-09-04T06:49:29Z"
+    mac: ENC[AES256_GCM,data:M8h/GsemxvedCyjRxj1mMctks1mKk9jUbuVynOGSR5rri3HfEgYqI+64nfsvu+Sd/abednAXSAzdY5Oo1AHm/AvzKJ/PGLciHgzRtVoBAiqGIiPbPnVH1cE6jJVNSd16WUkMgmykcoMRLSS0QdQ+6RQ1qMNJfGwbgxHRhRp0SUM=,iv:V9IcJlH1HBLZzR9pknTcpSCS0FcI3e7wMftxkZ3byyQ=,tag:UGD9SlpXkS8hW6cGeXawfA==,type:str]
+    encrypted_regex: ^(data|stringData|email|dnsZones)$
+    version: 3.10.2
