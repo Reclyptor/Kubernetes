@@ -1,0 +1,92 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: democratic-csi-dxp4800
+  namespace: democratic-csi
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: democratic-csi
+      version: 0.15.0
+      sourceRef:
+        kind: HelmRepository
+        name: democratic-csi
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: api-secret-dxp4800
+      valuesKey: apiKey
+      targetPath: driver.config.httpConnection.apiKey
+    - kind: Secret
+      name: ssh-secret-dxp4800
+      valuesKey: id_rsa
+      targetPath: driver.config.sshConnection.privateKey
+  values:
+    csiDriver:
+      name: "org.democratic-csi.iscsi-dxp4800"
+    node:
+      hostPID: true
+    storageClasses:
+      - name: iscsi-ephemeral-dxp4800
+        defaultClass: false
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: ext4
+          csi.storage.k8s.io/node-stage-secret-name: chap-secret-dxp4800
+          csi.storage.k8s.io/node-stage-secret-namespace: democratic-csi
+          csi.storage.k8s.io/node-publish-secret-name: chap-secret-dxp4800
+          csi.storage.k8s.io/node-publish-secret-namespace: democratic-csi
+      - name: iscsi-persistent-dxp4800
+        defaultClass: false
+        reclaimPolicy: Retain
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: ext4
+          csi.storage.k8s.io/node-stage-secret-name: chap-secret-dxp4800
+          csi.storage.k8s.io/node-stage-secret-namespace: democratic-csi
+          csi.storage.k8s.io/node-publish-secret-name: chap-secret-dxp4800
+          csi.storage.k8s.io/node-publish-secret-namespace: democratic-csi
+    driver:
+      config:
+        driver: freenas-iscsi
+        httpConnection:
+          protocol: https
+          host: "192.168.1.3"
+          port: 443
+          allowInsecure: true
+        sshConnection:
+          host: "192.168.1.3"
+          port: 22
+          username: "truenas_admin"
+        zfs:
+          datasetParentName: "qubit/kubernetes/volumes"
+          detachedSnapshotsDatasetParentName: "qubit/kubernetes/snapshots"
+          zvolBlocksize: "4K"
+          zvolCompression: "lz4"
+          cli:
+            sudoEnabled: true
+            paths:
+              zfs: /usr/sbin/zfs
+              zpool: /usr/sbin/zpool
+              sudo: /usr/bin/sudo
+              chroot: /usr/sbin/chroot
+        iscsi:
+          targetPortal: "192.168.1.3:3260"
+          iqnBase: "iqn.2005-10.org.freenas.ctl"
+          namePrefix: "k8s-dxp4800-"
+          targetGroups:
+            - targetGroupPortalGroup: 1    # from Shares » Block (iSCSI) » Portals
+              targetGroupInitiatorGroup: 2 # from Shares » Block (iSCSI) » Initiators
+              targetGroupAuthType: CHAP    # or CHAP / CHAP Mutual if you use auth
+              targetGroupAuthGroup: 1      # only if using CHAP
+

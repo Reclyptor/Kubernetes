@@ -60,7 +60,7 @@ spec:
         name: data
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: truenas-iscsi-persistent
+        storageClassName: iscsi-persistent-fs6712x
         resources:
           requests:
             storage: 5Gi
