@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex
+  namespace: plex
+spec:
+  type: LoadBalancer
+  selector:
+    app: plex
+  ports:
+    - name: plex
+      port: 32400
+      protocol: TCP
+    - name: dlna-tcp
+      port: 32469
+      protocol: TCP
+    - name: dlna-udp
+      port: 1900
+      protocol: UDP
+    - name: companion
+      port: 3005
+      protocol: TCP
+    - name: gdm-1
+      port: 32410
+      protocol: UDP
+    - name: gdm-2
+      port: 32412
+      protocol: UDP
+    - name: gdm-3
+      port: 32413
+      protocol: UDP
+    - name: gdm-4
+      port: 32414
+      protocol: UDP
