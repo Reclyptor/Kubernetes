@@ -4,5 +4,5 @@ resources:
   - namespace.yaml
   - helmrepository.yaml
   - helmrelease.yaml
-  - cloudflare-api-token-secret.yaml
+  - secrets
   - letsencrypt-wildcard-clusterissuer.yaml

@@ -3,6 +3,6 @@ kind: Kustomization
 namespace: mongodb
 resources:
   - namespace.yaml
-  - mongodb-root-secret.yaml
+  - secrets
   - statefulset.yaml
   - service.yaml

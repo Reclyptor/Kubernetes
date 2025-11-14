@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: mysql
 resources:
   - namespace.yaml
-  - mysql-root-secret.yaml
+  - secrets
   - statefulset.yaml
   - service.yaml
   - mysql-init-configmap.yaml
