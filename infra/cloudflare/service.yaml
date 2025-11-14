@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudflare-metrics
+  namespace: cloudflare
+  labels:
+    app: cloudflare
+spec:
+  type: ClusterIP
+  selector:
+    app: cloudflare
+  ports:
+    - name: metrics
+      port: 2000
+      targetPort: 2000
+      protocol: TCP
+
