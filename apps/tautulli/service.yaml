@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tautulli
+  namespace: tautulli
+  labels:
+    app: tautulli
+spec:
+  type: LoadBalancer
+  selector:
+    app: tautulli
+  ports:
+    - name: http
+      port: 8181
+      targetPort: 8181
+      protocol: TCP
+
