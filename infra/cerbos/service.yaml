@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cerbos
+  namespace: cerbos
+  labels:
+    app: cerbos
+spec:
+  type: LoadBalancer
+  selector:
+    app: cerbos
+  ports:
+    - name: http
+      port: 3592
+      targetPort: 3592
+      protocol: TCP
+    - name: grpc
+      port: 3593
+      targetPort: 3593
+      protocol: TCP

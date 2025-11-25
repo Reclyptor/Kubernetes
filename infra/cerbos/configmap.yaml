@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cerbos-config
+  namespace: cerbos
+data:
+  config.yaml: |
+    # Cerbos configuration - Git-based policy management
+    server:
+      httpListenAddr: ":3592"
+      grpcListenAddr: ":3593"
+      adminAPI:
+        enabled: true
+        adminCredentials:
+          username: "${CERBOS_ADMIN_USERNAME}"
+          passwordHash: "${CERBOS_ADMIN_PASSWORD_HASH}"
+    storage:
+      driver: "git"
+      git:
+        protocol: ssh
+        url: "git@github.com:Reclyptor/Cerbos.git"
+        branch: "master"
+        subDir: ""
+        checkoutDir: "/policies"
+        updatePollInterval: "60s"
+        operationTimeout: "30s"
+        ssh:
+          privateKeyFile: "/root/.ssh/id_rsa"

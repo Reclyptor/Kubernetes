@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cerbos
+  namespace: cerbos
+spec:
+  serviceName: cerbos
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cerbos
+  template:
+    metadata:
+      labels:
+        app: cerbos
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - voideon
+      containers:
+      - name: cerbos
+        image: ghcr.io/cerbos/cerbos:latest
+        args:
+          - server
+          - --config=/etc/cerbos/config.yaml
+        env:
+        - name: SSH_KNOWN_HOSTS
+          value: "/root/.ssh/known_hosts"
+        - name: CERBOS_ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: cerbos-admin-secret
+              key: username
+        - name: CERBOS_ADMIN_PASSWORD_HASH
+          valueFrom:
+            secretKeyRef:
+              name: cerbos-admin-secret
+              key: passwordHash
+        livenessProbe:
+          httpGet:
+            path: /_cerbos/health
+            port: 3592
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_cerbos/health
+            port: 3592
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        ports:
+        - containerPort: 3592
+          name: http
+          protocol: TCP
+        - containerPort: 3593
+          name: grpc
+          protocol: TCP
+        volumeMounts:
+        - name: config
+          mountPath: /etc/cerbos
+          readOnly: true
+        - name: policies
+          mountPath: /policies
+        - name: ssh-key
+          mountPath: /root/.ssh
+          readOnly: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: config
+        configMap:
+          name: cerbos-config
+          items:
+          - key: config.yaml
+            path: config.yaml
+      - name: policies
+        emptyDir: {}
+      - name: ssh-key
+        secret:
+          secretName: cerbos-git-secret
+          defaultMode: 0400
+          items:
+          - key: id_rsa
+            path: id_rsa
+          - key: known_hosts
+            path: known_hosts
