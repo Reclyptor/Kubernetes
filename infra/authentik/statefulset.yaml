@@ -1,0 +1,150 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: authentik-server
+  namespace: authentik
+spec:
+  serviceName: authentik
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik
+      component: server
+  template:
+    metadata:
+      labels:
+        app: authentik
+        component: server
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+        - name: authentik
+          image: ghcr.io/goauthentik/server:2025.10
+          imagePullPolicy: IfNotPresent
+          args: ["server"]
+          ports:
+            - containerPort: 9000
+              name: http
+            - containerPort: 9443
+              name: https
+          volumeMounts:
+            - name: media
+              mountPath: /media
+            - name: templates
+              mountPath: /templates
+          envFrom:
+            - secretRef:
+                name: authentik-secret
+          readinessProbe:
+            httpGet:
+              path: /-/health/ready/
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /-/health/live/
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+            timeoutSeconds: 3
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - voideon
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: media
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 5Gi
+    - metadata:
+        name: templates
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: authentik-worker
+  namespace: authentik
+spec:
+  serviceName: authentik-worker
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: authentik
+        component: worker
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+        - name: authentik-worker
+          image: ghcr.io/goauthentik/server:2025.10
+          imagePullPolicy: IfNotPresent
+          args: ["worker"]
+          volumeMounts:
+            - name: media
+              mountPath: /media
+            - name: templates
+              mountPath: /templates
+          envFrom:
+            - secretRef:
+                name: authentik-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - voideon
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: media
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 5Gi
+    - metadata:
+        name: templates
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 1Gi
+
+
