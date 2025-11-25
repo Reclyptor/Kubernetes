@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-configmap
+  namespace: postgres
+data:
+  10-create-admin.sh: |
+    #! /bin/bash
+    # Runs only on first boot when datadir is empty.
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER}" --dbname "${POSTGRES_DB}" <<-EOSQL
+      CREATE USER ${POSTGRES_ADMIN_USER} WITH PASSWORD '${POSTGRES_ADMIN_PASSWORD}';
+      ALTER USER ${POSTGRES_ADMIN_USER} WITH SUPERUSER;
+    EOSQL
+
