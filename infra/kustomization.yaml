@@ -6,5 +6,6 @@ resources:
   - cloudflare
   - mongodb
   - mysql
+  - nats
   - postgres
   - redis
