@@ -20,11 +20,3 @@ data:
       CREATE USER ${POSTGRES_AUTHENTIK_USER} WITH PASSWORD '${POSTGRES_AUTHENTIK_PASSWORD}';
       CREATE DATABASE authentik OWNER ${POSTGRES_AUTHENTIK_USER};
     EOSQL
-  30-create-kestra.sh: |
-    #! /bin/bash
-    # Runs only on first boot when datadir is empty.
-    set -e
-    psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER}" --dbname "${POSTGRES_DB}" <<-EOSQL
-      CREATE USER ${POSTGRES_KESTRA_USER} WITH PASSWORD '${POSTGRES_KESTRA_PASSWORD}';
-      CREATE DATABASE kestra OWNER ${POSTGRES_KESTRA_USER};
-    EOSQL

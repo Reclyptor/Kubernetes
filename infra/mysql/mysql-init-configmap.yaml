@@ -4,6 +4,10 @@ metadata:
   name: mysql-init-configmap
   namespace: mysql
 data:
+  custom.cnf: |
+    [mysqld]
+    # Allow non-SUPER users to create functions/procedures when binary logging is enabled
+    log_bin_trust_function_creators = 1
   10-create-admin.sh: |
     #! /bin/sh
     # Runs only on first boot when datadir is empty.
@@ -11,5 +15,13 @@ data:
     mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
       CREATE USER IF NOT EXISTS '${MYSQL_ADMIN_USER}'@'%' IDENTIFIED BY '${MYSQL_ADMIN_PASSWORD}';
       GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_ADMIN_USER}'@'%' WITH GRANT OPTION;
+      FLUSH PRIVILEGES;
+    SQL
+  20-create-kestra.sh: |
+    set -e
+    mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
+      CREATE USER IF NOT EXISTS '${MYSQL_KESTRA_USER}'@'%' IDENTIFIED BY '${MYSQL_KESTRA_PASSWORD}';
+      CREATE DATABASE IF NOT EXISTS kestra CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+      GRANT ALL PRIVILEGES ON kestra.* TO '${MYSQL_KESTRA_USER}'@'%';
       FLUSH PRIVILEGES;
     SQL

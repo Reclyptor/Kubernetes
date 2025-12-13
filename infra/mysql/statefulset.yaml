@@ -28,9 +28,15 @@ spec:
             - name: data
               mountPath: /var/lib
               subPath: mysql
-            - name: init-scripts
-              mountPath: /docker-entrypoint-initdb.d
-              readOnly: true
+            - name: mysql-init-configmap
+              mountPath: /docker-entrypoint-initdb.d/10-create-admin.sh
+              subPath: 10-create-admin.sh
+            - name: mysql-init-configmap
+              mountPath: /docker-entrypoint-initdb.d/20-create-kestra.sh
+              subPath: 20-create-kestra.sh
+            - name: mysql-init-configmap
+              mountPath: /etc/mysql/conf.d/custom.cnf
+              subPath: custom.cnf
           envFrom:
             - secretRef:
                 name: mysql-root-secret
@@ -42,7 +48,7 @@ spec:
             failureThreshold: 6
             timeoutSeconds: 3
       volumes:
-        - name: init-scripts
+        - name: mysql-init-configmap
           configMap:
             name: mysql-init-configmap
             defaultMode: 0644
