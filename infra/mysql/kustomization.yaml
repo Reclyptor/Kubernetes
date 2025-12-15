@@ -4,6 +4,6 @@ namespace: mysql
 resources:
   - namespace.yaml
   - secrets
+  - configmap.yaml
   - statefulset.yaml
   - service.yaml
-  - mysql-init-configmap.yaml

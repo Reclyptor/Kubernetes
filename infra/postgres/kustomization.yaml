@@ -4,7 +4,6 @@ namespace: postgres
 resources:
   - namespace.yaml
   - secrets
+  - configmap.yaml
   - statefulset.yaml
   - service.yaml
-  - postgres-init-configmap.yaml
-

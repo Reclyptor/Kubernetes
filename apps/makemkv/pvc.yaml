@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: makemkv-output
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-makemkv-output
+  volumeName: makemkv-output-dxp6800
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: makemkv-config
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 5Gi
+

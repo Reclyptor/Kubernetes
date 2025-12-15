@@ -25,3 +25,4 @@ data:
       GRANT ALL PRIVILEGES ON kestra.* TO '${MYSQL_KESTRA_USER}'@'%';
       FLUSH PRIVILEGES;
     SQL
+
