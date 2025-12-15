@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: plexforge
+  namespace: plexforge
+spec:
+  serviceName: plexforge
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plexforge
+  template:
+    metadata:
+      labels:
+        app: plexforge
+    spec:
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+      - name: plexforge
+        image: ghcr.io/reclyptor/plexforge:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        envFrom:
+        - secretRef:
+            name: plexforge-secret
+        volumeMounts:
+        - name: nas-input
+          mountPath: /mnt/nas/input
+          readOnly: true
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: nas-input
+        persistentVolumeClaim:
+          claimName: plexforge-input
