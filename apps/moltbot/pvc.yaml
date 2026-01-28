@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: moltbot-config
+  namespace: moltbot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: moltbot-workspace
+  namespace: moltbot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 10Gi

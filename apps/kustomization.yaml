@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - gotify
   - makemkv
+  - moltbot
   - plex
   - plexforge
   - qbittorrent
