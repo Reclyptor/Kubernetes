@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: belugabot
+  namespace: belugabot
+  labels:
+    app: belugabot
+spec:
+  type: LoadBalancer
+  selector:
+    app: belugabot
+  ports:
+    - name: http
+      port: 18789
+      targetPort: 18789
+      protocol: TCP

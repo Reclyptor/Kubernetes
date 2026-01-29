@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: moltbot
+  namespace: moltbot
 spec:
   serviceName: moltbot
   replicas: 1
