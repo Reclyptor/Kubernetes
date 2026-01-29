@@ -1,0 +1,55 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: moltbot
+resources:
+  - ../../base
+  - pvc.yaml
+  - secrets
+
+patches:
+  - target:
+      kind: StatefulSet
+      name: moltbot
+    patch: |-
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: belugabot
+        labels:
+          app: belugabot
+      spec:
+        serviceName: belugabot
+        selector:
+          matchLabels:
+            app: belugabot
+        template:
+          metadata:
+            labels:
+              app: belugabot
+          spec:
+            containers:
+            - name: moltbot
+              envFrom:
+              - secretRef:
+                  name: belugabot-secret
+            volumes:
+            - name: config
+              persistentVolumeClaim:
+                claimName: belugabot-config
+            - name: workspace
+              persistentVolumeClaim:
+                claimName: belugabot-workspace
+
+  - target:
+      kind: Service
+      name: moltbot
+    patch: |-
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: belugabot
+        labels:
+          app: belugabot
+      spec:
+        selector:
+          app: belugabot
