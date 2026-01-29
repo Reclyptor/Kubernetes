@@ -11,6 +11,6 @@ spec:
     app: moltbot
   ports:
     - name: http
-      port: 18789
-      targetPort: 18789
+      port: 18791
+      targetPort: 18791
       protocol: TCP

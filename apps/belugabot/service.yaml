@@ -11,6 +11,6 @@ spec:
     app: belugabot
   ports:
     - name: http
-      port: 18789
-      targetPort: 18789
+      port: 18792
+      targetPort: 18792
       protocol: TCP

@@ -34,12 +34,12 @@ spec:
         - dist/index.js
         - gateway
         - --port
-        - "18789"
+        - "18791"
         - --verbose
         - --allow-unconfigured
         ports:
         - name: http
-          containerPort: 18789
+          containerPort: 18791
           protocol: TCP
         envFrom:
         - secretRef:
