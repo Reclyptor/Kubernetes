@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: moltbot
-  namespace: moltbot
+  name: openclaw
+  namespace: openclaw
 spec:
-  serviceName: moltbot
+  serviceName: openclaw
   replicas: 1
   selector:
     matchLabels:
-      app: moltbot
+      app: openclaw
   template:
     metadata:
       labels:
-        app: moltbot
+        app: openclaw
     spec:
       affinity:
         nodeAffinity:
@@ -26,8 +26,8 @@ spec:
       securityContext:
         fsGroup: 1000
       containers:
-      - name: moltbot
-        image: ghcr.io/moltbot/moltbot:main
+      - name: openclaw
+        image: ghcr.io/openclaw/openclaw:main
         imagePullPolicy: Always
         command: ["node"]
         args:
@@ -43,7 +43,7 @@ spec:
           protocol: TCP
         envFrom:
         - secretRef:
-            name: moltbot-secret
+            name: openclaw-secret
         env:
         - name: TZ
           value: "America/Chicago"
@@ -51,7 +51,7 @@ spec:
           value: "production"
         volumeMounts:
         - name: config
-          mountPath: /home/node/.moltbot
+          mountPath: /home/node/.openclaw
         - name: workspace
           mountPath: /home/node/clawd
         resources:
@@ -80,10 +80,10 @@ spec:
       volumes:
       - name: config
         persistentVolumeClaim:
-          claimName: moltbot-config
+          claimName: openclaw-config
       - name: workspace
         persistentVolumeClaim:
-          claimName: moltbot-workspace
+          claimName: openclaw-workspace
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain

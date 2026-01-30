@@ -27,7 +27,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: belugabot
-        image: ghcr.io/moltbot/moltbot:main
+        image: ghcr.io/openclaw/openclaw:main
         imagePullPolicy: Always
         command: ["node"]
         args:
@@ -51,7 +51,7 @@ spec:
           value: "production"
         volumeMounts:
         - name: config
-          mountPath: /home/node/.moltbot
+          mountPath: /home/node/.openclaw
         - name: workspace
           mountPath: /home/node/clawd
         resources:
