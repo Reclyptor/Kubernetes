@@ -17,13 +17,26 @@ spec:
         component: server
     spec:
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: authentik
           image: ghcr.io/goauthentik/server:2025.10
           imagePullPolicy: IfNotPresent
           args: ["server"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
           ports:
             - containerPort: 9000
               name: http
@@ -102,13 +115,26 @@ spec:
         component: worker
     spec:
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: authentik-worker
           image: ghcr.io/goauthentik/server:2025.10
           imagePullPolicy: IfNotPresent
           args: ["worker"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
           volumeMounts:
             - name: media
               mountPath: /media
