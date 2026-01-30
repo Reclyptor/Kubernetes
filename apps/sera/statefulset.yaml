@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sera
+  namespace: sera
+spec:
+  serviceName: sera
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sera
+  template:
+    metadata:
+      labels:
+        app: sera
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - fluxeon
+      containers:
+      - name: sera
+        image: ghcr.io/reclyptor/sera:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3001
+          protocol: TCP
+        envFrom:
+        - secretRef:
+            name: sera-secret
+        env:
+        - name: TZ
+          value: "America/Chicago"
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3001"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3

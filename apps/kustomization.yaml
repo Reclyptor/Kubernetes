@@ -7,4 +7,6 @@ resources:
   - openclaw
   - plex
   - qbittorrent
+  - sera
+  - seraui
   - tautulli

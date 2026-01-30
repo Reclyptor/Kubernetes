@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seraui
+  namespace: seraui
+spec:
+  serviceName: seraui
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seraui
+  template:
+    metadata:
+      labels:
+        app: seraui
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - fluxeon
+      containers:
+      - name: seraui
+        image: ghcr.io/reclyptor/seraui:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        envFrom:
+        - secretRef:
+            name: seraui-secret
+        env:
+        - name: TZ
+          value: "America/Chicago"
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
