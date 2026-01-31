@@ -11,3 +11,4 @@ resources:
   - nats
   - postgres
   - redis
+  - temporal

@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: temporal
+  namespace: temporal
+spec:
+  serviceName: temporal
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal
+  template:
+    metadata:
+      labels:
+        app: temporal
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: temporal
+          image: temporalio/auto-setup:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7233
+              name: frontend
+            - containerPort: 7234
+              name: history
+            - containerPort: 7235
+              name: matching
+            - containerPort: 7239
+              name: metrics
+          env:
+            - name: DB
+              value: "mysql8"
+            - name: DB_PORT
+              value: "3306"
+            - name: MYSQL_SEEDS
+              value: "mysql.mysql.svc.cluster.local"
+            - name: DBNAME
+              value: "temporal"
+            - name: VISIBILITY_DBNAME
+              value: "temporal_visibility"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: temporal-secret
+                  key: MYSQL_USER
+            - name: MYSQL_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: temporal-secret
+                  key: MYSQL_PWD
+          readinessProbe:
+            tcpSocket:
+              port: 7233
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+            timeoutSeconds: 3
+          livenessProbe:
+            tcpSocket:
+              port: 7233
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
+            timeoutSeconds: 3
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - voideon
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: temporal-web
+  namespace: temporal
+spec:
+  serviceName: temporal-web
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-web
+  template:
+    metadata:
+      labels:
+        app: temporal-web
+    spec:
+      containers:
+        - name: temporal-web
+          image: temporalio/ui:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: "temporal.temporal.svc.cluster.local:7233"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+            timeoutSeconds: 3
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - voideon
