@@ -29,14 +29,17 @@ spec:
               mountPath: /var/lib
               subPath: mysql
             - name: mysql-init-configmap
+              mountPath: /etc/mysql/conf.d/custom.cnf
+              subPath: custom.cnf
+            - name: mysql-init-configmap
               mountPath: /docker-entrypoint-initdb.d/10-create-admin.sh
               subPath: 10-create-admin.sh
             - name: mysql-init-configmap
               mountPath: /docker-entrypoint-initdb.d/20-create-kestra.sh
               subPath: 20-create-kestra.sh
             - name: mysql-init-configmap
-              mountPath: /etc/mysql/conf.d/custom.cnf
-              subPath: custom.cnf
+              mountPath: /docker-entrypoint-initdb.d/30-create-temporal.sh
+              subPath: 30-create-temporal.sh
           envFrom:
             - secretRef:
                 name: mysql-root-secret

@@ -25,4 +25,14 @@ data:
       GRANT ALL PRIVILEGES ON kestra.* TO '${MYSQL_KESTRA_USER}'@'%';
       FLUSH PRIVILEGES;
     SQL
+  30-create-temporal.sh: |
+    set -e
+    mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
+      CREATE USER IF NOT EXISTS '${MYSQL_TEMPORAL_USER}'@'%' IDENTIFIED BY '${MYSQL_TEMPORAL_PASSWORD}';
+      CREATE DATABASE IF NOT EXISTS temporal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+      CREATE DATABASE IF NOT EXISTS temporal_visibility CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+      GRANT ALL PRIVILEGES ON temporal.* TO '${MYSQL_TEMPORAL_USER}'@'%';
+      GRANT ALL PRIVILEGES ON temporal_visibility.* TO '${MYSQL_TEMPORAL_USER}'@'%';
+      FLUSH PRIVILEGES;
+    SQL
 
