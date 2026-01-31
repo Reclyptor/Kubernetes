@@ -14,3 +14,20 @@ spec:
       port: 18791
       targetPort: 18791
       protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: belugabot
+  namespace: openclaw
+  labels:
+    app: belugabot
+spec:
+  type: LoadBalancer
+  selector:
+    app: belugabot
+  ports:
+    - name: http
+      port: 18792
+      targetPort: 18792
+      protocol: TCP
