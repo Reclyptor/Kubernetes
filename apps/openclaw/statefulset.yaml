@@ -25,6 +25,15 @@ spec:
                 - fluxeon
       securityContext:
         fsGroup: 1000
+      initContainers:
+      - name: copy-config
+        image: busybox:1.36
+        command: ['sh', '-c', 'cp /config-secret/openclaw.json /config/openclaw.json && chown 1000:1000 /config/openclaw.json']
+        volumeMounts:
+        - name: config-secret
+          mountPath: /config-secret
+        - name: config
+          mountPath: /config
       containers:
       - name: openclaw
         image: ghcr.io/openclaw/openclaw:main
@@ -51,8 +60,7 @@ spec:
           value: "production"
         volumeMounts:
         - name: config
-          mountPath: /home/node/.openclaw/openclaw.json
-          subPath: openclaw.json
+          mountPath: /home/node/.openclaw
         - name: workspace
           mountPath: /home/node/clawd
         resources:
@@ -85,12 +93,14 @@ spec:
           timeoutSeconds: 5
           failureThreshold: 3
       volumes:
-      - name: config
+      - name: config-secret
         secret:
           secretName: openclaw-secret
           items:
           - key: openclaw.json
             path: openclaw.json
+      - name: config
+        emptyDir: {}
       - name: workspace
         persistentVolumeClaim:
           claimName: openclaw-workspace
@@ -125,6 +135,15 @@ spec:
                 - fluxeon
       securityContext:
         fsGroup: 1000
+      initContainers:
+      - name: copy-config
+        image: busybox:1.36
+        command: ['sh', '-c', 'cp /config-secret/openclaw.json /config/openclaw.json && chown 1000:1000 /config/openclaw.json']
+        volumeMounts:
+        - name: config-secret
+          mountPath: /config-secret
+        - name: config
+          mountPath: /config
       containers:
       - name: belugabot
         image: ghcr.io/openclaw/openclaw:main
@@ -151,8 +170,7 @@ spec:
           value: "production"
         volumeMounts:
         - name: config
-          mountPath: /home/node/.openclaw/openclaw.json
-          subPath: openclaw.json
+          mountPath: /home/node/.openclaw
         - name: workspace
           mountPath: /home/node/clawd
         resources:
@@ -185,12 +203,14 @@ spec:
           timeoutSeconds: 5
           failureThreshold: 3
       volumes:
-      - name: config
+      - name: config-secret
         secret:
           secretName: belugabot-secret
           items:
           - key: openclaw.json
             path: openclaw.json
+      - name: config
+        emptyDir: {}
       - name: workspace
         persistentVolumeClaim:
           claimName: belugabot-workspace
