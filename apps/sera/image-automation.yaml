@@ -1,4 +1,4 @@
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageRepository
 metadata:
   name: sera
@@ -6,8 +6,10 @@ metadata:
 spec:
   image: ghcr.io/reclyptor/sera
   interval: 10m0s
+  secretRef:
+    name: ghcr-secret
 ---
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
 metadata:
   name: sera
@@ -15,6 +17,34 @@ metadata:
 spec:
   imageRepositoryRef:
     name: sera
+  filterTags:
+    pattern: '^\d+$'
   policy:
-    semver:
-      range: ">=1.0.0"
+    numerical:
+      order: desc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: sera
+  namespace: sera
+spec:
+  interval: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  git:
+    checkout:
+      ref:
+        branch: master
+    commit:
+      author:
+        email: 5952751+Reclyptor@users.noreply.github.com
+        name: Reclyptor
+      messageTemplate: '{{range .Changed.Changes}}{{print .OldValue}} -> {{println .NewValue}}{{end}}'
+    push:
+      branch: master
+  update:
+    path: ./apps/sera
+    strategy: Setters
