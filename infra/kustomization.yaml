@@ -6,6 +6,7 @@ resources:
   - cloudflare
   - kafka
   - kestra
+  - minio
   - mongodb
   - mysql
   - nats
