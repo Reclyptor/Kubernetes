@@ -6,3 +6,4 @@ resources:
   - secrets
   - statefulset.yaml
   - service.yaml
+  - image-automation.yaml
