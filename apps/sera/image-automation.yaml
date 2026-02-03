@@ -1,0 +1,20 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: sera
+  namespace: sera
+spec:
+  image: ghcr.io/reclyptor/sera
+  interval: 10m0s
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: sera
+  namespace: sera
+spec:
+  imageRepositoryRef:
+    name: sera
+  policy:
+    semver:
+      range: ">=1.0.0"

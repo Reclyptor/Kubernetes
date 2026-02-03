@@ -1,0 +1,20 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: seraui
+  namespace: seraui
+spec:
+  image: ghcr.io/reclyptor/seraui
+  interval: 10m0s
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: seraui
+  namespace: seraui
+spec:
+  imageRepositoryRef:
+    name: seraui
+  policy:
+    semver:
+      range: ">=1.0.0"
