@@ -19,7 +19,7 @@ spec:
         runAsGroup: 0
       containers:
         - name: postgres
-          image: postgres:16
+          image: postgres:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432

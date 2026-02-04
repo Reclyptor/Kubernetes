@@ -19,7 +19,7 @@ spec:
         runAsGroup: 0
       containers:
         - name: mongodb
-          image: mongo:7.0
+          image: mongo:latest
           imagePullPolicy: IfNotPresent
           args:
             - "--bind_ip_all"

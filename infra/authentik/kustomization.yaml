@@ -6,5 +6,3 @@ resources:
   - secrets
   - statefulset.yaml
   - service.yaml
-
-

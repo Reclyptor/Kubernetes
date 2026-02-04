@@ -20,7 +20,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: nats
-          image: nats:2.10-alpine
+          image: nats:alpine
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4222
