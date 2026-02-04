@@ -26,8 +26,7 @@ spec:
               name: postgres
           volumeMounts:
             - name: data
-              mountPath: /var/lib/postgresql/data
-              subPath: postgres
+              mountPath: /var/lib/postgresql
             - name: init-scripts
               mountPath: /docker-entrypoint-initdb.d
               readOnly: true
