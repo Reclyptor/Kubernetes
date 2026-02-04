@@ -9,7 +9,13 @@ data:
     # Runs only on first boot when datadir is empty.
     set -e
     psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER}" --dbname "${POSTGRES_DB}" <<-EOSQL
-      CREATE USER ${POSTGRES_ADMIN_USER} WITH PASSWORD '${POSTGRES_ADMIN_PASSWORD}';
+      DO \$\$
+      BEGIN
+        IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_ADMIN_USER}') THEN
+          CREATE USER ${POSTGRES_ADMIN_USER} WITH PASSWORD '${POSTGRES_ADMIN_PASSWORD}';
+        END IF;
+      END
+      \$\$;
       ALTER USER ${POSTGRES_ADMIN_USER} WITH SUPERUSER;
     EOSQL
   20-create-authentik.sh: |
@@ -17,7 +23,14 @@ data:
     # Runs only on first boot when datadir is empty.
     set -e
     psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER}" --dbname "${POSTGRES_DB}" <<-EOSQL
-      CREATE USER ${POSTGRES_AUTHENTIK_USER} WITH PASSWORD '${POSTGRES_AUTHENTIK_PASSWORD}';
-      CREATE DATABASE authentik OWNER ${POSTGRES_AUTHENTIK_USER};
+      DO \$\$
+      BEGIN
+        IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_AUTHENTIK_USER}') THEN
+          CREATE USER ${POSTGRES_AUTHENTIK_USER} WITH PASSWORD '${POSTGRES_AUTHENTIK_PASSWORD}';
+        END IF;
+      END
+      \$\$;
+      SELECT 'CREATE DATABASE authentik OWNER ${POSTGRES_AUTHENTIK_USER}'
+      WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'authentik')\gexec
     EOSQL
 
