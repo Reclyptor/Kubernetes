@@ -20,7 +20,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: kafka
-          image: apache/kafka:3.9.0
+          image: apache/kafka:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9092

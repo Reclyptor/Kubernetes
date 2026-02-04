@@ -19,7 +19,7 @@ spec:
         runAsGroup: 9
       containers:
         - name: mysql
-          image: mysql:8.4
+          image: mysql:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3306

@@ -20,7 +20,7 @@ spec:
         fsGroup: 999
       containers:
         - name: redis
-          image: redis:7.4-alpine
+          image: redis:latest
           imagePullPolicy: IfNotPresent
           command:
             - redis-server

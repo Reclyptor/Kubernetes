@@ -36,7 +36,7 @@ spec:
           mountPath: /config
       containers:
       - name: openclaw
-        image: ghcr.io/openclaw/openclaw:main
+        image: ghcr.io/openclaw/openclaw:latest
         imagePullPolicy: Always
         command: ["node"]
         args:
@@ -146,7 +146,7 @@ spec:
           mountPath: /config
       containers:
       - name: belugabot
-        image: ghcr.io/openclaw/openclaw:main
+        image: ghcr.io/openclaw/openclaw:latest
         imagePullPolicy: Always
         command: ["node"]
         args:
