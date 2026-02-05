@@ -4,14 +4,12 @@ set -e
 echo ">>> Creating flux-system namespace..."
 kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f -
 
-echo ">>> Applying critical secrets..."
-for secret in secrets/flux-system-secret.yaml secrets/sops-age-secret.yaml secrets/dockerhub-secret.yaml; do
-    if [ -f "$secret" ]; then
-        sops -d "$secret" | kubectl apply -f -
-    else
-        echo "Warning: $secret not found, skipping."
-    fi
+echo ">>> Applying secrets..."
+shopt -s nullglob
+for secret in secrets/*.yaml; do
+    sops -d "$secret" | kubectl apply -f -
 done
+shopt -u nullglob
 
 echo ">>> Applying Flux components and configuration..."
 kubectl apply -f flux-system/
