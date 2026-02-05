@@ -27,7 +27,7 @@ spec:
                 - fluxeon
       containers:
       - name: sera
-        image: ghcr.io/reclyptor/sera:20260203091118 # {"$imagepolicy": "sera:sera"}
+        image: ghcr.io/reclyptor/sera:latest
         imagePullPolicy: Always
         ports:
         - name: http

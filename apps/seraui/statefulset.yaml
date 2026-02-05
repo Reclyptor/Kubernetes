@@ -27,7 +27,7 @@ spec:
                 - fluxeon
       containers:
       - name: seraui
-        image: ghcr.io/reclyptor/seraui:20260203091127 # {"$imagepolicy": "seraui:seraui"}
+        image: ghcr.io/reclyptor/seraui:latest
         imagePullPolicy: Always
         ports:
         - name: http
