@@ -11,17 +11,3 @@ spec:
   resources:
     requests:
       storage: 1Mi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: makemkv-config
-  namespace: makemkv
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: iscsi-persistent-fs6712x
-  resources:
-    requests:
-      storage: 5Gi
-
