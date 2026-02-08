@@ -30,7 +30,7 @@ spec:
       containers:
         - name: makemkv
           image: jlesage/makemkv:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           securityContext:
             privileged: true
           ports:
