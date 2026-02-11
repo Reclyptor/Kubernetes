@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seraex
+  namespace: seraex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seraex
+  template:
+    metadata:
+      labels:
+        app: seraex
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - fluxeon
+      containers:
+      - name: seraex
+        image: ghcr.io/reclyptor/seraex:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: seraex-secret
+        env:
+        - name: TZ
+          value: "America/Chicago"
+        - name: NODE_ENV
+          value: "production"
+        volumeMounts:
+        - name: media-input
+          mountPath: /mnt/media/input
+          readOnly: true
+        - name: media-output
+          mountPath: /mnt/media/output
+        - name: media-staging
+          mountPath: /mnt/media/staging
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+      volumes:
+      - name: media-input
+        persistentVolumeClaim:
+          claimName: seraex-media-input
+      - name: media-output
+        persistentVolumeClaim:
+          claimName: seraex-media-output
+      - name: media-staging
+        persistentVolumeClaim:
+          claimName: seraex-media-staging

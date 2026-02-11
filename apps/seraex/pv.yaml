@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: seraex-media-input-dxp6800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-media-input
+  mountOptions:
+    - ro
+  nfs:
+    server: 192.168.1.2
+    path: /mnt/primary/videos
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: seraex-media-output-dxp6800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-media-output
+  nfs:
+    server: 192.168.1.2
+    path: /mnt/primary/videos/anime
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: seraex-media-staging-dxp6800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-media-staging
+  nfs:
+    server: 192.168.1.2
+    path: /mnt/primary/staging
