@@ -13,8 +13,37 @@ spec:
     - ro
   nfs:
     server: 192.168.1.2
-    path: /mnt/primary/videos
-
+    path: /mnt/primary/videos/_pending/anime
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: seraex-media-processing-dxp6800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-media-processing
+  nfs:
+    server: 192.168.1.2
+    path: /mnt/primary/videos/_processing/anime
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: seraex-media-staging-dxp6800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-media-staging
+  nfs:
+    server: 192.168.1.2
+    path: /mnt/primary/videos/_staging/anime
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -30,19 +59,3 @@ spec:
   nfs:
     server: 192.168.1.2
     path: /mnt/primary/videos/anime
-
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: seraex-media-staging-dxp6800
-spec:
-  capacity:
-    storage: 1Mi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-media-staging
-  nfs:
-    server: 192.168.1.2
-    path: /mnt/primary/staging

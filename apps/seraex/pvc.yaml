@@ -11,22 +11,20 @@ spec:
   resources:
     requests:
       storage: 1Mi
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: seraex-media-output
+  name: seraex-media-processing
   namespace: seraex
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: nfs-media-output
-  volumeName: seraex-media-output-dxp6800
+  storageClassName: nfs-media-processing
+  volumeName: seraex-media-processing-dxp6800
   resources:
     requests:
       storage: 1Mi
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -38,6 +36,20 @@ spec:
     - ReadWriteMany
   storageClassName: nfs-media-staging
   volumeName: seraex-media-staging-dxp6800
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: seraex-media-output
+  namespace: seraex
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-media-output
+  volumeName: seraex-media-output-dxp6800
   resources:
     requests:
       storage: 1Mi

@@ -4,6 +4,6 @@ namespace: seraex
 resources:
   - namespace.yaml
   - secrets
-  - deployment.yaml
+  - statefulset.yaml
   - pv.yaml
   - pvc.yaml

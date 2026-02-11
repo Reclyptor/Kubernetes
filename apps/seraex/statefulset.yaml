@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: seraex
   namespace: seraex
 spec:
+  serviceName: seraex
   replicas: 1
   selector:
     matchLabels:
@@ -40,10 +41,12 @@ spec:
         - name: media-input
           mountPath: /mnt/media/input
           readOnly: true
-        - name: media-output
-          mountPath: /mnt/media/output
+        - name: media-processing
+          mountPath: /mnt/media/processing
         - name: media-staging
           mountPath: /mnt/media/staging
+        - name: media-output
+          mountPath: /mnt/media/output
         resources:
           requests:
             cpu: 200m
@@ -55,9 +58,13 @@ spec:
       - name: media-input
         persistentVolumeClaim:
           claimName: seraex-media-input
-      - name: media-output
+          readOnly: true
+      - name: media-processing
         persistentVolumeClaim:
-          claimName: seraex-media-output
+          claimName: seraex-media-processing
       - name: media-staging
         persistentVolumeClaim:
           claimName: seraex-media-staging
+      - name: media-output
+        persistentVolumeClaim:
+          claimName: seraex-media-output
