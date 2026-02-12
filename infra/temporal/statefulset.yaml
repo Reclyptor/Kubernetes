@@ -31,27 +31,9 @@ spec:
               name: matching
             - containerPort: 7239
               name: metrics
-          env:
-            - name: DB
-              value: "mysql8"
-            - name: DB_PORT
-              value: "3306"
-            - name: MYSQL_SEEDS
-              value: "mysql.mysql.svc.cluster.local"
-            - name: DBNAME
-              value: "temporal"
-            - name: VISIBILITY_DBNAME
-              value: "temporal_visibility"
-            - name: MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: temporal-secret
-                  key: MYSQL_USER
-            - name: MYSQL_PWD
-              valueFrom:
-                secretKeyRef:
-                  name: temporal-secret
-                  key: MYSQL_PWD
+          envFrom:
+            - secretRef:
+                name: temporal-secret
           readinessProbe:
             tcpSocket:
               port: 7233
@@ -107,9 +89,9 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          env:
-            - name: TEMPORAL_ADDRESS
-              value: "temporal.temporal.svc.cluster.local:7233"
+          envFrom:
+            - secretRef:
+                name: temporal-web-secret
           readinessProbe:
             httpGet:
               path: /
