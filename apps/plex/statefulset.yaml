@@ -30,7 +30,7 @@ spec:
       containers:
         - name: plex
           image: plexinc/pms-docker:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always 
           securityContext:
             privileged: true
           ports:
