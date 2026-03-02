@@ -11,8 +11,15 @@ for secret in secrets/*.yaml; do
 done
 shopt -u nullglob
 
-echo ">>> Applying Flux components and configuration..."
-kubectl apply -f flux-system/
+echo ">>> Applying Flux components..."
+kubectl apply -f flux-system/gotk-components.yaml
+
+echo ">>> Waiting for Flux CRDs to be established..."
+kubectl wait --for condition=established --timeout=60s crd/gitrepositories.source.toolkit.fluxcd.io
+kubectl wait --for condition=established --timeout=60s crd/kustomizations.kustomize.toolkit.fluxcd.io
+
+echo ">>> Applying Flux sync configuration..."
+kubectl apply -f flux-system/gotk-sync.yaml
 
 echo ">>> Reconciling Flux..."
 flux reconcile kustomization flux-system -n flux-system --with-source
