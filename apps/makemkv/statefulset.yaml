@@ -22,7 +22,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - fluxeon
+                      - styxeon
       securityContext:
         runAsUser: 0
         runAsGroup: 0
