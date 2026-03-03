@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-api
+  namespace: ollama
+spec:
+  type: LoadBalancer
+  selector:
+    app: ollama
+  ports:
+    - name: http
+      port: 11434
+      protocol: TCP

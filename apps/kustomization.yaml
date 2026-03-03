@@ -4,6 +4,7 @@ resources:
   - gotify
   - invokeai
   - makemkv
+  - ollama
   - openclaw
   - plex
   - qbittorrent
