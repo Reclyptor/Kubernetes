@@ -1,0 +1,248 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minecraft
+  namespace: minecraft
+spec:
+  serviceName: minecraft-server
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - fluxeon
+      containers:
+        - name: minecraft
+          image: itzg/minecraft-server:latest
+          imagePullPolicy: Always
+          ports:
+            - name: game
+              containerPort: 25565
+              protocol: TCP
+            - name: rcon
+              containerPort: 25575
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: minecraft-secret
+          env:
+            # ── Image Settings ──
+            - name: TZ
+              value: "America/Chicago"
+            - name: EULA
+              value: "TRUE"
+            - name: TYPE
+              value: "VANILLA"
+            - name: VERSION
+              value: "LATEST"
+            # - name: MEMORY
+            #   value: ""
+            # - name: JVM_XX_OPTS
+            #   value: ""
+            # - name: JVM_OPTS
+            #   value: ""
+            # - name: CUSTOM_SERVER_PROPERTIES
+            #   value: ""
+            - name: OVERRIDE_SERVER_PROPERTIES
+              value: "true"
+            - name: SKIP_SERVER_PROPERTIES
+              value: "false"
+            - name: DUMP_SERVER_PROPERTIES
+              value: "false"
+            # - name: SERVER_PROPERTIES_ESCAPE_UNICODE
+            #   value: ""
+            # ── Server Properties ──
+            - name: MOTD
+              value: "A Minecraft Server"
+            - name: DIFFICULTY
+              value: "easy"
+            - name: MODE
+              value: "survival"
+            - name: HARDCORE
+              value: "false"
+            - name: FORCE_GAMEMODE
+              value: "false"
+            - name: MAX_PLAYERS
+              value: "20"
+            - name: MAX_WORLD_SIZE
+              value: "29999984"
+            - name: MAX_TICK_TIME
+              value: "60000"
+            - name: SPAWN_PROTECTION
+              value: "16"
+            - name: VIEW_DISTANCE
+              value: "10"
+            - name: SIMULATION_DISTANCE
+              value: "10"
+            - name: PLAYER_IDLE_TIMEOUT
+              value: "0"
+            - name: PAUSE_WHEN_EMPTY_SECONDS
+              value: "60"
+            - name: ALLOW_FLIGHT
+              value: "false"
+            - name: ONLINE_MODE
+              value: "true"
+            - name: ENFORCE_SECURE_PROFILE
+              value: "true"
+            - name: PREVENT_PROXY_CONNECTIONS
+              value: "false"
+            - name: ACCEPTS_TRANSFERS
+              value: "false"
+            - name: HIDE_ONLINE_PLAYERS
+              value: "false"
+            - name: LOG_IPS
+              value: "true"
+            # ── World Generation ──
+            - name: LEVEL
+              value: "world"
+            - name: SEED
+              value: ""
+            - name: LEVEL_TYPE
+              value: "minecraft:normal"
+            - name: GENERATE_STRUCTURES
+              value: "true"
+            - name: GENERATOR_SETTINGS
+              value: "{}"
+            - name: INITIAL_ENABLED_PACKS
+              value: "vanilla"
+            - name: INITIAL_DISABLED_PACKS
+              value: ""
+            # ── Operators & Whitelist ──
+            - name: OPS
+              value: ""
+            # - name: OPS_FILE
+            #   value: ""
+            - name: EXISTING_OPS_FILE
+              value: "SYNC_FILE_MERGE_LIST"
+            - name: WHITELIST
+              value: ""
+            # - name: WHITELIST_FILE
+            #   value: ""
+            - name: EXISTING_WHITELIST_FILE
+              value: "SYNC_FILE_MERGE_LIST"
+            - name: ENABLE_WHITELIST
+              value: "false"
+            - name: ENFORCE_WHITELIST
+              value: "false"
+            - name: OP_PERMISSION_LEVEL
+              value: "4"
+            - name: FUNCTION_PERMISSION_LEVEL
+              value: "2"
+            # ── RCON ──
+            - name: ENABLE_RCON
+              value: "true"
+            - name: RCON_PORT
+              value: "25575"
+            # ── Query ──
+            - name: ENABLE_QUERY
+              value: "false"
+            - name: QUERY_PORT
+              value: "25565"
+            # ── Network & Performance ──
+            - name: SERVER_PORT
+              value: "25565"
+            - name: NETWORK_COMPRESSION_THRESHOLD
+              value: "256"
+            - name: RATE_LIMIT
+              value: "0"
+            - name: SYNC_CHUNK_WRITES
+              value: "true"
+            - name: USE_NATIVE_TRANSPORT
+              value: "true"
+            - name: ENTITY_BROADCAST_RANGE_PERCENTAGE
+              value: "100"
+            - name: MAX_CHAINED_NEIGHBOR_UPDATES
+              value: "1000000"
+            - name: REGION_FILE_COMPRESSION
+              value: "deflate"
+            # ── Console & Broadcasting ──
+            - name: BROADCAST_CONSOLE_TO_OPS
+              value: "true"
+            - name: BROADCAST_RCON_TO_OPS
+              value: "true"
+            - name: ENABLE_STATUS
+              value: "true"
+            - name: STATUS_HEARTBEAT_INTERVAL
+              value: "0"
+            # ── Resource Pack ──
+            - name: RESOURCE_PACK
+              value: ""
+            - name: RESOURCE_PACK_SHA1
+              value: ""
+            - name: RESOURCE_PACK_ID
+              value: ""
+            - name: RESOURCE_PACK_PROMPT
+              value: ""
+            - name: RESOURCE_PACK_ENFORCE
+              value: "false"
+            # ── Server Icon ──
+            # - name: ICON
+            #   value: ""
+            - name: OVERRIDE_ICON
+              value: "false"
+            # ── Mods & Plugins ──
+            # - name: MODS
+            #   value: ""
+            # - name: SPIGET_RESOURCES
+            #   value: ""
+            # - name: MODRINTH_PROJECTS
+            #   value: ""
+            # ── Misc ──
+            - name: SERVER_NAME
+              value: ""
+            - name: BUG_REPORT_LINK
+              value: ""
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+          livenessProbe:
+            exec:
+              command:
+                - mc-health
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - mc-health
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 5
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 20Gi

@@ -5,6 +5,7 @@ resources:
   - gotify
   - invokeai
   - makemkv
+  - minecraft
   - ollama
   - openclaw
   - plex
