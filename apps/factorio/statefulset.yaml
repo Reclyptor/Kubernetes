@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: factorio
+  namespace: factorio
+spec:
+  serviceName: factorio-server
+  replicas: 1
+  selector:
+    matchLabels:
+      app: factorio
+  template:
+    metadata:
+      labels:
+        app: factorio
+    spec:
+      securityContext:
+        runAsUser: 845
+        runAsGroup: 845
+        fsGroup: 845
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - fluxeon
+      initContainers:
+        - name: init-config
+          image: busybox
+          securityContext:
+            runAsUser: 845
+            runAsGroup: 845
+          command:
+            - sh
+            - -c
+            - mkdir -p /factorio/config && cp /config/server-settings.json /factorio/config/server-settings.json && cp /config/server-adminlist.json /factorio/config/server-adminlist.json
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /factorio
+      containers:
+        - name: factorio
+          image: factoriotools/factorio:latest
+          imagePullPolicy: Always
+          ports:
+            - name: game
+              containerPort: 34197
+              protocol: UDP
+            - name: rcon
+              containerPort: 27015
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: factorio-secret
+          env:
+            # ── Server Settings ──
+            - name: TZ
+              value: "America/Chicago"
+            - name: PORT
+              value: "34197"
+            - name: BIND
+              value: ""
+            - name: RCON_PORT
+              value: "27015"
+            # ── Save Management ──
+            - name: LOAD_LATEST_SAVE
+              value: "true"
+            - name: GENERATE_NEW_SAVE
+              value: "false"
+            - name: SAVE_NAME
+              value: "_autosave1"
+            - name: PRESET
+              value: ""
+            # ── Mods ──
+            - name: UPDATE_MODS_ON_START
+              value: ""
+            - name: UPDATE_IGNORE
+              value: ""
+            - name: DLC_SPACE_AGE
+              value: "true"
+            - name: MODS
+              value: "/factorio/mods"
+            # ── Logging ──
+            - name: CONSOLE_LOG_LOCATION
+              value: ""
+          volumeMounts:
+            - name: data
+              mountPath: /factorio
+            - name: config
+              mountPath: /config
+              readOnly: true
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+      volumes:
+        - name: config
+          configMap:
+            name: factorio-config
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 10Gi
