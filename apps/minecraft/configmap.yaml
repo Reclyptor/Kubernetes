@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minecraft-config
+  namespace: minecraft
+data:
+  ops.json: |
+    []
+  whitelist.json: |
+    []
