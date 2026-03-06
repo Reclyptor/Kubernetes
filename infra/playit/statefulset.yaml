@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: playit
+  namespace: playit
+spec:
+  serviceName: playit
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playit
+  template:
+    metadata:
+      labels:
+        app: playit
+    spec:
+      hostNetwork: true
+      containers:
+        - name: playit
+          image: ghcr.io/playit-cloud/playit-agent:0.17
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: playit-secret
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
