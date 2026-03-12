@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: comfyui-web
+  namespace: comfyui
+spec:
+  type: LoadBalancer
+  selector:
+    app: comfyui
+  ports:
+    - name: http
+      port: 8188
+      protocol: TCP
