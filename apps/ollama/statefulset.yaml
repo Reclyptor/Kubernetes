@@ -24,6 +24,10 @@ spec:
                     operator: In
                     values:
                       - bytheon
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: ollama
           image: ollama/ollama:latest
@@ -37,9 +41,11 @@ spec:
               value: "America/Chicago"
             - name: OLLAMA_HOST
               value: "0.0.0.0:11434"
+            - name: OLLAMA_MODELS
+              value: "/data/models"
           volumeMounts:
             - name: data
-              mountPath: /root/.ollama
+              mountPath: /data
           resources:
             requests:
               cpu: "1000m"

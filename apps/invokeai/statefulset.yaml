@@ -16,9 +16,7 @@ spec:
     spec:
       runtimeClassName: nvidia
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
-        fsGroup: 0
+        fsGroup: 1000
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -32,7 +30,6 @@ spec:
         - name: invokeai
           image: ghcr.io/invoke-ai/invokeai:latest
           imagePullPolicy: Always
-          command: ["/opt/venv/bin/invokeai-web"]
           ports:
             - name: http
               containerPort: 9090
