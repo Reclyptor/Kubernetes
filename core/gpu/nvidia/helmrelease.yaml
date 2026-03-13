@@ -1,0 +1,35 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nvidia-device-plugin
+  namespace: kube-system
+spec:
+  releaseName: nvidia-device-plugin
+  chart:
+    spec:
+      chart: nvidia-device-plugin
+      version: 0.17.0
+      sourceRef:
+        kind: HelmRepository
+        name: nvidia
+        namespace: flux-system
+  interval: 10m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    runtimeClassName: nvidia
+    config:
+      map:
+        default: |-
+          version: v1
+          sharing:
+            mps:
+              resources:
+                - name: nvidia.com/gpu
+                  replicas: 4
+    mps:
+      enabled: true
