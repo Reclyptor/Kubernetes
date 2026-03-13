@@ -26,10 +26,10 @@ spec:
       map:
         default: |-
           version: v1
+        mps: |-
+          version: v1
           sharing:
             mps:
               resources:
                 - name: nvidia.com/gpu
-                  replicas: 1
-    mps:
-      enabled: true
+                  replicas: 2
