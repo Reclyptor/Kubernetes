@@ -61,4 +61,68 @@ spec:
       port: 5803
       protocol: TCP
       targetPort: 5800
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: makemkv-drive4
+  namespace: makemkv
+spec:
+  type: LoadBalancer
+  selector:
+    app: makemkv
+    statefulset.kubernetes.io/pod-name: makemkv-4
+  ports:
+    - name: web
+      port: 5804
+      protocol: TCP
+      targetPort: 5800
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: makemkv-drive5
+  namespace: makemkv
+spec:
+  type: LoadBalancer
+  selector:
+    app: makemkv
+    statefulset.kubernetes.io/pod-name: makemkv-5
+  ports:
+    - name: web
+      port: 5805
+      protocol: TCP
+      targetPort: 5800
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: makemkv-drive6
+  namespace: makemkv
+spec:
+  type: LoadBalancer
+  selector:
+    app: makemkv
+    statefulset.kubernetes.io/pod-name: makemkv-6
+  ports:
+    - name: web
+      port: 5806
+      protocol: TCP
+      targetPort: 5800
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: makemkv-drive7
+  namespace: makemkv
+spec:
+  type: LoadBalancer
+  selector:
+    app: makemkv
+    statefulset.kubernetes.io/pod-name: makemkv-7
+  ports:
+    - name: web
+      port: 5807
+      protocol: TCP
+      targetPort: 5800
 
