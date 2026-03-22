@@ -129,13 +129,13 @@ spec:
             - name: OPS_FILE
               value: "/config/ops.json"
             - name: EXISTING_OPS_FILE
-              value: "REPLACE"
+              value: "SYNCHRONIZE"
             - name: WHITELIST
               value: ""
             - name: WHITELIST_FILE
               value: "/config/whitelist.json"
             - name: EXISTING_WHITELIST_FILE
-              value: "REPLACE"
+              value: "SYNCHRONIZE"
             - name: ENABLE_WHITELIST
               value: "false"
             - name: ENFORCE_WHITELIST
