@@ -31,8 +31,7 @@ spec:
               name: mongodb
           volumeMounts:
             - name: data
-              mountPath: /data
-              subPath: db
+              mountPath: /data/db
           envFrom:
             - secretRef:
                 name: mongodb-root-secret
