@@ -12,5 +12,6 @@ resources:
   - nats
   - playit
   - postgres
+  - qdrant
   - redis
   - temporal

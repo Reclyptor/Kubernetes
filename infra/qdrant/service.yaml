@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: qdrant
+spec:
+  selector:
+    app: qdrant
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 6333
+      targetPort: 6333
+      protocol: TCP
+    - name: grpc
+      port: 6334
+      targetPort: 6334
+      protocol: TCP
