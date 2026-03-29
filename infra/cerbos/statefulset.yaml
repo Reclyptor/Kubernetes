@@ -14,6 +14,7 @@ spec:
       labels:
         app: cerbos
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

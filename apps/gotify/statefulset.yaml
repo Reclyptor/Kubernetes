@@ -14,6 +14,7 @@ spec:
       labels:
         app: gotify
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -23,6 +24,10 @@ spec:
                 operator: In
                 values:
                 - fluxeon
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
       - name: gotify
         image: gotify/server:latest
@@ -82,4 +87,3 @@ spec:
         resources:
           requests:
             storage: 5Gi
-

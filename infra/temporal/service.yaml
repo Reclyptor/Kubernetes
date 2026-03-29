@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     app: temporal
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - name: frontend
       port: 7233
@@ -21,7 +21,7 @@ metadata:
 spec:
   selector:
     app: temporal-web
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - name: http
       port: 7234

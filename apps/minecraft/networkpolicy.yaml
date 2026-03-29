@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: minecraft
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 25565
+          protocol: TCP
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - port: 25575
+          protocol: TCP

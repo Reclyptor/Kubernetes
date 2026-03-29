@@ -14,6 +14,7 @@ spec:
       labels:
         app: temporal
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
@@ -82,6 +83,10 @@ spec:
       labels:
         app: temporal-web
     spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
       containers:
         - name: temporal-web
           image: temporalio/ui:latest

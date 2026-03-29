@@ -14,6 +14,7 @@ spec:
       labels:
         app: seraex
     spec:
+      automountServiceAccountToken: false
       imagePullSecrets:
       - name: ghcr-secret
       affinity:
@@ -58,6 +59,26 @@ spec:
           limits:
             cpu: 2000m
             memory: 2Gi
+        livenessProbe:
+          exec:
+            command:
+            - node
+            - -e
+            - "process.exit(0)"
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - node
+            - -e
+            - "process.exit(0)"
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
       volumes:
       - name: media-input
         persistentVolumeClaim:

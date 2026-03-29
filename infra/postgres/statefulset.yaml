@@ -14,9 +14,11 @@ spec:
       labels:
         app: postgres
     spec:
+      automountServiceAccountToken: false
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: postgres
           image: postgres:latest
@@ -33,6 +35,20 @@ spec:
           envFrom:
             - secretRef:
                 name: postgres-root-secret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
           readinessProbe:
             tcpSocket:
               port: 5432

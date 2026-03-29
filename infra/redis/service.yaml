@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     app: redis
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - name: redis
       port: 6379

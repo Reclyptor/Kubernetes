@@ -14,6 +14,7 @@ spec:
       labels:
         app: makemkv
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -67,8 +68,38 @@ spec:
               mountPath: /config
             - name: output
               mountPath: /output
-            - name: dev
-              mountPath: /dev
+            - name: sr0
+              mountPath: /dev/sr0
+            - name: sr1
+              mountPath: /dev/sr1
+            - name: sr2
+              mountPath: /dev/sr2
+            - name: sr3
+              mountPath: /dev/sr3
+            - name: sr4
+              mountPath: /dev/sr4
+            - name: sr5
+              mountPath: /dev/sr5
+            - name: sr6
+              mountPath: /dev/sr6
+            - name: sr7
+              mountPath: /dev/sr7
+            - name: sg0
+              mountPath: /dev/sg0
+            - name: sg1
+              mountPath: /dev/sg1
+            - name: sg2
+              mountPath: /dev/sg2
+            - name: sg3
+              mountPath: /dev/sg3
+            - name: sg4
+              mountPath: /dev/sg4
+            - name: sg5
+              mountPath: /dev/sg5
+            - name: sg6
+              mountPath: /dev/sg6
+            - name: sg7
+              mountPath: /dev/sg7
           resources:
             requests:
               memory: "1Gi"
@@ -96,10 +127,70 @@ spec:
         - name: output
           persistentVolumeClaim:
             claimName: makemkv-output
-        - name: dev
+        - name: sr0
           hostPath:
-            path: /dev
-            type: Directory
+            path: /dev/sr0
+            type: BlockDevice
+        - name: sr1
+          hostPath:
+            path: /dev/sr1
+            type: BlockDevice
+        - name: sr2
+          hostPath:
+            path: /dev/sr2
+            type: BlockDevice
+        - name: sr3
+          hostPath:
+            path: /dev/sr3
+            type: BlockDevice
+        - name: sr4
+          hostPath:
+            path: /dev/sr4
+            type: BlockDevice
+        - name: sr5
+          hostPath:
+            path: /dev/sr5
+            type: BlockDevice
+        - name: sr6
+          hostPath:
+            path: /dev/sr6
+            type: BlockDevice
+        - name: sr7
+          hostPath:
+            path: /dev/sr7
+            type: BlockDevice
+        - name: sg0
+          hostPath:
+            path: /dev/sg0
+            type: CharDevice
+        - name: sg1
+          hostPath:
+            path: /dev/sg1
+            type: CharDevice
+        - name: sg2
+          hostPath:
+            path: /dev/sg2
+            type: CharDevice
+        - name: sg3
+          hostPath:
+            path: /dev/sg3
+            type: CharDevice
+        - name: sg4
+          hostPath:
+            path: /dev/sg4
+            type: CharDevice
+        - name: sg5
+          hostPath:
+            path: /dev/sg5
+            type: CharDevice
+        - name: sg6
+          hostPath:
+            path: /dev/sg6
+            type: CharDevice
+        - name: sg7
+          hostPath:
+            path: /dev/sg7
+            type: CharDevice
   volumeClaimTemplates:
     - metadata:
         name: config

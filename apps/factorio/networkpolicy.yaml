@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: factorio
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 34197
+          protocol: UDP
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - port: 27015
+          protocol: TCP

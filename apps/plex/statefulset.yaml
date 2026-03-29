@@ -14,6 +14,7 @@ spec:
       labels:
         app: plex
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -30,9 +31,7 @@ spec:
       containers:
         - name: plex
           image: plexinc/pms-docker:latest
-          imagePullPolicy: Always 
-          securityContext:
-            privileged: true
+          imagePullPolicy: Always
           ports:
             - name: plex
               protocol: TCP
@@ -77,8 +76,8 @@ spec:
               readOnly: true
             - name: transcode
               mountPath: /transcode
-            - name: dri
-              mountPath: /dev/dri
+            - name: render
+              mountPath: /dev/dri/renderD128
           resources:
             requests:
               memory: "2Gi"
@@ -115,10 +114,10 @@ spec:
           hostPath:
             path: /var/lib/plex-transcode
             type: DirectoryOrCreate
-        - name: dri
+        - name: render
           hostPath:
-            path: /dev/dri
-            type: Directory
+            path: /dev/dri/renderD128
+            type: CharDevice
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain

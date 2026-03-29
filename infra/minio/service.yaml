@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     app: minio
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - name: api
       port: 9500

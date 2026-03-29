@@ -6,7 +6,7 @@ metadata:
   labels:
     app: cerbos
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: cerbos
   ports:

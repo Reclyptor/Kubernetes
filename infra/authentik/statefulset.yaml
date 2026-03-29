@@ -16,6 +16,7 @@ spec:
         app: authentik
         component: server
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
@@ -25,11 +26,6 @@ spec:
           image: ghcr.io/goauthentik/server:latest
           imagePullPolicy: IfNotPresent
           args: ["server"]
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
           resources:
             requests:
               cpu: 250m
@@ -111,6 +107,7 @@ spec:
         app: authentik
         component: worker
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
@@ -120,11 +117,6 @@ spec:
           image: ghcr.io/goauthentik/server:latest
           imagePullPolicy: IfNotPresent
           args: ["worker"]
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
           resources:
             requests:
               cpu: 250m

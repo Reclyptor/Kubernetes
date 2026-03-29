@@ -14,9 +14,11 @@ spec:
       labels:
         app: mysql
     spec:
+      automountServiceAccountToken: false
       securityContext:
-        runAsUser: 0
-        runAsGroup: 9
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: mysql
           image: mysql:latest
@@ -43,6 +45,20 @@ spec:
           envFrom:
             - secretRef:
                 name: mysql-root-secret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
           readinessProbe:
             tcpSocket:
               port: 3306

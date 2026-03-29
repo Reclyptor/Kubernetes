@@ -14,6 +14,7 @@ spec:
       labels:
         app: factorio
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsUser: 845
         runAsGroup: 845

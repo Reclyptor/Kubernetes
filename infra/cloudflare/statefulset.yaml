@@ -14,6 +14,7 @@ spec:
       labels:
         app: cloudflare
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -23,6 +24,9 @@ spec:
                 operator: In
                 values:
                 - fluxeon
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
       containers:
       - name: cloudflared
         image: cloudflare/cloudflared:latest

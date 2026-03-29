@@ -14,6 +14,7 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -107,6 +108,9 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+          volumeMounts:
+            - name: dev-net-tun
+              mountPath: /dev/net/tun
           livenessProbe:
             exec:
               command:
@@ -168,6 +172,10 @@ spec:
             timeoutSeconds: 10
             failureThreshold: 3
 
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - "127.0.0.1"
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -175,6 +183,10 @@ spec:
         - name: downloads
           persistentVolumeClaim:
             claimName: qbittorrent-downloads
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
 
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain

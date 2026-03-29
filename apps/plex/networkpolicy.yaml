@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: plex
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 32400
+          protocol: TCP
+        - port: 32469
+          protocol: TCP
+        - port: 1900
+          protocol: UDP
+        - port: 3005
+          protocol: TCP
+        - port: 32410
+          protocol: UDP
+        - port: 32412
+          protocol: UDP
+        - port: 32413
+          protocol: UDP
+        - port: 32414
+          protocol: UDP

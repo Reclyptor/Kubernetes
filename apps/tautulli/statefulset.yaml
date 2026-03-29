@@ -14,6 +14,7 @@ spec:
       labels:
         app: tautulli
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -78,4 +79,3 @@ spec:
         resources:
           requests:
             storage: 5Gi
-
