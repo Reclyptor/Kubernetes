@@ -22,7 +22,7 @@ spec:
       containers:
         - name: qdrant
           image: qdrant/qdrant:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 6333
               name: http
@@ -34,9 +34,13 @@ spec:
                 secretKeyRef:
                   name: qdrant-secret
                   key: API_KEY
+            - name: QDRANT__STORAGE__STORAGE_PATH
+              value: /data/storage
+            - name: QDRANT__STORAGE__SNAPSHOTS_PATH
+              value: /data/snapshots
           volumeMounts:
             - name: data
-              mountPath: /qdrant
+              mountPath: /data
           readinessProbe:
             httpGet:
               port: 6333
