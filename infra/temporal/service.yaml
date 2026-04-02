@@ -21,7 +21,7 @@ metadata:
 spec:
   selector:
     app: temporal-web
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - name: http
       port: 7234

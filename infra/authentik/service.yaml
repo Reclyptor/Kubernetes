@@ -7,7 +7,7 @@ spec:
   selector:
     app: authentik
     component: server
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - name: http
       port: 9000

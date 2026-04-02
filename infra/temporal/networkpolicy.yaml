@@ -13,5 +13,10 @@ spec:
       ports:
         - port: 7233
           protocol: TCP
+    - from:
+        - namespaceSelector: {}
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
         - port: 8080
           protocol: TCP
