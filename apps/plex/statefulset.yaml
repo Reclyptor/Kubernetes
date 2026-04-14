@@ -111,9 +111,9 @@ spec:
           persistentVolumeClaim:
             claimName: plex-media
         - name: transcode
-          hostPath:
-            path: /var/lib/plex-transcode
-            type: DirectoryOrCreate
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
         - name: render
           hostPath:
             path: /dev/dri/renderD128
