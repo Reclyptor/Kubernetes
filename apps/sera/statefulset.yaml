@@ -48,6 +48,9 @@ spec:
           value: "production"
         - name: PORT
           value: "3001"
+        volumeMounts:
+        - name: media-pending
+          mountPath: /mnt/media/pending
         resources:
           requests:
             cpu: 100m
@@ -71,3 +74,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
+      volumes:
+      - name: media-pending
+        persistentVolumeClaim:
+          claimName: sera-media-pending

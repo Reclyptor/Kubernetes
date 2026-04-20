@@ -4,6 +4,8 @@ namespace: sera
 resources:
   - namespace.yaml
   - secrets
+  - pv.yaml
+  - pvc.yaml
   - statefulset.yaml
   - service.yaml
   - networkpolicy.yaml

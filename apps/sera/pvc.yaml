@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sera-media-pending
+  namespace: sera
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-sera-media-pending
+  volumeName: sera-media-pending-dxp6800
+  resources:
+    requests:
+      storage: 1Mi
