@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: sera-media-pending-dxp6800
+  name: sera-media-dxp6800
 spec:
   capacity:
     storage: 1Mi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-sera-media-pending
+  storageClassName: nfs-sera-media
   nfs:
     server: 192.168.1.2
     path: /mnt/primary/videos/_pending/anime
