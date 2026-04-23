@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lucebox-dflash-api
+  namespace: lucebox
+spec:
+  type: LoadBalancer
+  selector:
+    app: lucebox-dflash
+  ports:
+    - name: http
+      port: 8000
+      protocol: TCP
