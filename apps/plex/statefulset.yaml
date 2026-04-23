@@ -82,9 +82,6 @@ spec:
             requests:
               memory: "2Gi"
               cpu: "1000m"
-            limits:
-              memory: "8Gi"
-              cpu: "4000m"
           livenessProbe:
             httpGet:
               scheme: HTTPS

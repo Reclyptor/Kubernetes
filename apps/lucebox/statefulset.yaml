@@ -49,8 +49,6 @@ spec:
               memory: "8Gi"
               nvidia.com/gpu: "1"
             limits:
-              cpu: "4000m"
-              memory: "32Gi"
               nvidia.com/gpu: "1"
           livenessProbe:
             tcpSocket:
@@ -126,8 +124,6 @@ spec:
               memory: "4Gi"
               nvidia.com/gpu: "1"
             limits:
-              cpu: "4000m"
-              memory: "16Gi"
               nvidia.com/gpu: "1"
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain

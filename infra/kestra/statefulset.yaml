@@ -56,9 +56,6 @@ spec:
             requests:
               memory: "2Gi"
               cpu: "500m"
-            limits:
-              memory: "4Gi"
-              cpu: "2000m"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

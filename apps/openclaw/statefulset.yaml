@@ -70,9 +70,6 @@ spec:
           requests:
             cpu: 250m
             memory: 512Mi
-          limits:
-            cpu: 2000m
-            memory: 4Gi
         livenessProbe:
           exec:
             command:
@@ -183,9 +180,6 @@ spec:
           requests:
             cpu: 250m
             memory: 512Mi
-          limits:
-            cpu: 2000m
-            memory: 4Gi
         livenessProbe:
           exec:
             command:
