@@ -100,10 +100,6 @@ spec:
               mountPath: /dev/sg6
             - name: sg7
               mountPath: /dev/sg7
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "500m"
           livenessProbe:
             httpGet:
               path: /

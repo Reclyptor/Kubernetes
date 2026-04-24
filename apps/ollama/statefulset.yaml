@@ -48,10 +48,6 @@ spec:
             - name: data
               mountPath: /data
           resources:
-            requests:
-              cpu: "1000m"
-              memory: "8Gi"
-              nvidia.com/gpu: "1"
             limits:
               nvidia.com/gpu: "1"
           livenessProbe:

@@ -44,10 +44,6 @@ spec:
             - name: models
               mountPath: /app/dflash/models
           resources:
-            requests:
-              cpu: "1000m"
-              memory: "8Gi"
-              nvidia.com/gpu: "1"
             limits:
               nvidia.com/gpu: "1"
           livenessProbe:
@@ -119,10 +115,6 @@ spec:
             - name: data
               mountPath: /app/data
           resources:
-            requests:
-              cpu: "1000m"
-              memory: "4Gi"
-              nvidia.com/gpu: "1"
             limits:
               nvidia.com/gpu: "1"
   persistentVolumeClaimRetentionPolicy:

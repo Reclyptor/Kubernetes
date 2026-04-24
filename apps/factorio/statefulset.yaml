@@ -94,10 +94,6 @@ spec:
             - name: config
               mountPath: /config
               readOnly: true
-          resources:
-            requests:
-              cpu: "500m"
-              memory: "1Gi"
       volumes:
         - name: config
           configMap:

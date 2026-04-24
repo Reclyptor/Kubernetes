@@ -46,10 +46,6 @@ spec:
           value: "America/Chicago"
         - name: NODE_ENV
           value: "production"
-        resources:
-          requests:
-            cpu: 100m
-            memory: 256Mi
         livenessProbe:
           httpGet:
             path: /health

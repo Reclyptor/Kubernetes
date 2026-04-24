@@ -49,10 +49,6 @@ spec:
             - name: data
               mountPath: /invokeai
           resources:
-            requests:
-              cpu: "1000m"
-              memory: "8Gi"
-              nvidia.com/gpu: "1"
             limits:
               nvidia.com/gpu: "1"
           livenessProbe:
