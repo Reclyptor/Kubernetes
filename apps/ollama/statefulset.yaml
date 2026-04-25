@@ -5,7 +5,7 @@ metadata:
   namespace: ollama
 spec:
   serviceName: ollama-api
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: ollama
@@ -40,6 +40,8 @@ spec:
           env:
             - name: TZ
               value: "America/Chicago"
+            - name: HOME
+              value: "/data"
             - name: OLLAMA_HOST
               value: "0.0.0.0:11434"
             - name: OLLAMA_MODELS
@@ -49,7 +51,7 @@ spec:
               mountPath: /data
           resources:
             limits:
-              nvidia.com/gpu: "1"
+              nvidia.com/gpu: "2"
           livenessProbe:
             httpGet:
               path: /

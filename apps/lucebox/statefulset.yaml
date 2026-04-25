@@ -5,7 +5,7 @@ metadata:
   namespace: lucebox
 spec:
   serviceName: lucebox-dflash-api
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: lucebox-dflash
