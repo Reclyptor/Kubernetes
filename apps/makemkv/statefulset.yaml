@@ -193,7 +193,7 @@ spec:
         storageClassName: iscsi-persistent-fs6712x
         resources:
           requests:
-            storage: 50Mi
+            storage: 1Gi
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
