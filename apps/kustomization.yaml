@@ -16,3 +16,4 @@ resources:
   - seraex
   - seraui
   - tautulli
+  - vllm

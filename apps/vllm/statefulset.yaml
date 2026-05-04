@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: ollama
-  namespace: ollama
+  name: vllm
+  namespace: vllm
 spec:
-  serviceName: ollama-api
-  replicas: 0
+  serviceName: vllm-api
+  replicas: 1
   selector:
     matchLabels:
-      app: ollama
+      app: vllm
   template:
     metadata:
       labels:
-        app: ollama
+        app: vllm
     spec:
       automountServiceAccountToken: false
       runtimeClassName: nvidia
@@ -26,26 +26,46 @@ spec:
                     values:
                       - bytheon
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
         fsGroup: 1000
       containers:
-        - name: ollama
-          image: ollama/ollama:latest
+        - name: vllm
+          image: vllm/vllm-openai:latest
           imagePullPolicy: Always
+          args:
+            - "--model"
+            - "/data/models/Qwen3.6-27B-FP8"
+            - "--tensor-parallel-size"
+            - "2"
+            - "--port"
+            - "8000"
+            - "--max-model-len"
+            - "32768"
+            - "--gpu-memory-utilization"
+            - "0.95"
+            - "--compilation-config"
+            - '{"cudagraph_mode":"FULL"}'
+            - "--kv-cache-dtype"
+            - "fp8"
+            - "--enable-chunked-prefill"
+            - "--max-num-batched-tokens"
+            - "10240"
+            - "--max-num-seqs"
+            - "10"
+            - "--enable-prefix-caching"
+            - "--served-model-name"
+            - "Qwen3.6-27B-FP8"
+            - "--enable-auto-tool-choice"
+            - "--tool-call-parser"
+            - "qwen3_coder"
+            - "--reasoning-parser"
+            - "qwen3"
           ports:
             - name: http
-              containerPort: 11434
+              containerPort: 8000
               protocol: TCP
           env:
             - name: TZ
               value: "America/Chicago"
-            - name: HOME
-              value: "/data"
-            - name: OLLAMA_HOST
-              value: "0.0.0.0:11434"
-            - name: OLLAMA_MODELS
-              value: "/data/models"
           volumeMounts:
             - name: data
               mountPath: /data
@@ -54,20 +74,20 @@ spec:
               nvidia.com/gpu: "2"
           livenessProbe:
             httpGet:
-              path: /
-              port: 11434
-            initialDelaySeconds: 30
+              path: /health
+              port: 8000
+            initialDelaySeconds: 120
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 5
           readinessProbe:
             httpGet:
-              path: /
-              port: 11434
-            initialDelaySeconds: 10
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
             periodSeconds: 15
             timeoutSeconds: 10
-            failureThreshold: 5
+            failureThreshold: 10
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
