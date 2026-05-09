@@ -39,7 +39,7 @@ spec:
             - "--port"
             - "8000"
             - "--max-model-len"
-            - "32768"
+            - "262144"
             - "--gpu-memory-utilization"
             - "0.95"
             - "--compilation-config"
