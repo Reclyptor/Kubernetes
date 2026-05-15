@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ntfy
+  namespace: ntfy
+spec:
+  serviceName: ntfy
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ntfy
+  template:
+    metadata:
+      labels:
+        app: ntfy
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - fluxeon
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+      - name: ntfy-init
+        image: binwiederhier/ntfy:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+        - printf '%s\n%s\n' "$NTFY_ADMIN_PASSWORD" "$NTFY_ADMIN_PASSWORD" | ntfy user add --role=admin "$NTFY_ADMIN_USER" || true
+        env:
+        - name: NTFY_AUTH_FILE
+          value: /var/cache/ntfy/auth.db
+        - name: NTFY_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: ntfy-secret
+              key: NTFY_ADMIN_USER
+        - name: NTFY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ntfy-secret
+              key: NTFY_ADMIN_PASSWORD
+        volumeMounts:
+        - name: data
+          mountPath: /var/cache/ntfy
+      containers:
+      - name: ntfy
+        image: binwiederhier/ntfy:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - serve
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        env:
+        - name: TZ
+          value: "America/Chicago"
+        - name: NTFY_LISTEN_HTTP
+          value: ":80"
+        - name: NTFY_CACHE_FILE
+          value: /var/cache/ntfy/cache.db
+        - name: NTFY_AUTH_FILE
+          value: /var/cache/ntfy/auth.db
+        envFrom:
+        - secretRef:
+            name: ntfy-secret
+        volumeMounts:
+        - name: data
+          mountPath: /var/cache/ntfy
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 10Gi

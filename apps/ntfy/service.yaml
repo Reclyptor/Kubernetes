@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ntfy
+  namespace: ntfy
+  labels:
+    app: ntfy
+spec:
+  type: LoadBalancer
+  selector:
+    app: ntfy
+  ports:
+    - name: http
+      port: 8095
+      targetPort: 80
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ntfy-proxy
+  namespace: ntfy
+  labels:
+    app: ntfy-proxy
+spec:
+  type: LoadBalancer
+  selector:
+    app: ntfy-proxy
+  ports:
+    - name: http
+      port: 8096
+      targetPort: 4180
+      protocol: TCP
