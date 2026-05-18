@@ -6,6 +6,6 @@ resources:
   - secrets
   - pv.yaml
   - pvc.yaml
-  - statefulset.yaml
+  - deployments.yaml
   - service.yaml
   - networkpolicy.yaml

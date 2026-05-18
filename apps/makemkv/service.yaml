@@ -7,7 +7,7 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-0
+    drive-serial: BP52225B18130019
   ports:
     - name: web
       port: 5800
@@ -23,7 +23,7 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-1
+    drive-serial: BP52225B18133253
   ports:
     - name: web
       port: 5801
@@ -39,7 +39,7 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-2
+    drive-serial: BP52425B18130826
   ports:
     - name: web
       port: 5802
@@ -55,7 +55,7 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-3
+    drive-serial: BP52524422173906
   ports:
     - name: web
       port: 5803
@@ -71,7 +71,7 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-4
+    drive-serial: BP52525B18131707
   ports:
     - name: web
       port: 5804
@@ -87,7 +87,7 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-5
+    drive-serial: BP52D24A16083824
   ports:
     - name: web
       port: 5805
@@ -103,7 +103,7 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-6
+    drive-serial: BP52E25510161815
   ports:
     - name: web
       port: 5806
@@ -119,10 +119,9 @@ spec:
   type: LoadBalancer
   selector:
     app: makemkv
-    statefulset.kubernetes.io/pod-name: makemkv-7
+    drive-serial: BP52E25512093803
   ports:
     - name: web
       port: 5807
       protocol: TCP
       targetPort: 5800
-

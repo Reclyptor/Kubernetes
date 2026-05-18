@@ -11,3 +11,107 @@ spec:
   resources:
     requests:
       storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52225b18130019
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52225b18133253
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52425b18130826
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52524422173906
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52525b18131707
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52d24a16083824
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52e25510161815
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-bp52e25512093803
+  namespace: makemkv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 1Gi

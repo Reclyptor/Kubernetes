@@ -1,0 +1,799 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive0
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52225B18130019
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52225B18130019
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52225B18130019
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52225b18130019
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive1
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52225B18133253
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52225B18133253
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52225B18133253
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52225b18133253
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive2
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52425B18130826
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52425B18130826
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52425B18130826
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52425b18130826
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive3
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52524422173906
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52524422173906
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52524422173906
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52524422173906
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive4
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52525B18131707
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52525B18131707
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52525B18131707
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52525b18131707
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive5
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52D24A16083824
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52D24A16083824
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52D24A16083824
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52d24a16083824
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive6
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52E25510161815
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52E25510161815
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52E25510161815
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52e25510161815
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive7
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52E25512093803
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52E25512093803
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52E25512093803
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52e25512093803
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output
