@@ -67,23 +67,17 @@ spec:
         - name: workspace
           mountPath: /home/node/clawd
         livenessProbe:
-          exec:
-            command:
-            - wget
-            - --spider
-            - -q
-            - http://127.0.0.1:18791/
+          httpGet:
+            path: /
+            port: 18791
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10
           failureThreshold: 3
         readinessProbe:
-          exec:
-            command:
-            - wget
-            - --spider
-            - -q
-            - http://127.0.0.1:18791/
+          httpGet:
+            path: /
+            port: 18791
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -173,23 +167,17 @@ spec:
         - name: workspace
           mountPath: /home/node/clawd
         livenessProbe:
-          exec:
-            command:
-            - wget
-            - --spider
-            - -q
-            - http://127.0.0.1:18792/
+          httpGet:
+            path: /
+            port: 18792
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10
           failureThreshold: 3
         readinessProbe:
-          exec:
-            command:
-            - wget
-            - --spider
-            - -q
-            - http://127.0.0.1:18792/
+          httpGet:
+            path: /
+            port: 18792
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
