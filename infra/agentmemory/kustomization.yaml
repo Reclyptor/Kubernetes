@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: agentmemory
+resources:
+  - namespace.yaml
+  - secrets
+  - configmap.yaml
+  - claude-statefulset.yaml
+  - claude-service.yaml
+  - qwen-statefulset.yaml
+  - qwen-service.yaml
+  - networkpolicy.yaml
