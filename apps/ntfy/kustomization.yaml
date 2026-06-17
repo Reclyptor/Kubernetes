@@ -7,4 +7,3 @@ resources:
   - statefulset.yaml
   - deployment.yaml
   - service.yaml
-  - networkpolicy.yaml

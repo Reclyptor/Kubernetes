@@ -7,4 +7,3 @@ resources:
   - statefulset.yaml
   - pv.yaml
   - pvc.yaml
-  - networkpolicy.yaml

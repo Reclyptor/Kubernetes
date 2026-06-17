@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: qdrant
   namespace: qdrant
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   selector:
     app: qdrant

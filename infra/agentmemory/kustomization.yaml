@@ -9,4 +9,3 @@ resources:
   - claude-service.yaml
   - qwen-statefulset.yaml
   - qwen-service.yaml
-  - networkpolicy.yaml

@@ -6,4 +6,3 @@ resources:
   - secrets
   - service.yaml
   - statefulset.yaml
-  - networkpolicy.yaml

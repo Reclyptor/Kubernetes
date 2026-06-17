@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: makemkv-drive0
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
@@ -19,6 +23,10 @@ kind: Service
 metadata:
   name: makemkv-drive1
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
@@ -35,6 +43,10 @@ kind: Service
 metadata:
   name: makemkv-drive2
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
@@ -51,6 +63,10 @@ kind: Service
 metadata:
   name: makemkv-drive3
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
@@ -67,6 +83,10 @@ kind: Service
 metadata:
   name: makemkv-drive4
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
@@ -83,6 +103,10 @@ kind: Service
 metadata:
   name: makemkv-drive5
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
@@ -99,6 +123,10 @@ kind: Service
 metadata:
   name: makemkv-drive6
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
@@ -115,6 +143,10 @@ kind: Service
 metadata:
   name: makemkv-drive7
   namespace: makemkv
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:

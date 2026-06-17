@@ -8,4 +8,3 @@ resources:
   - pvc.yaml
   - statefulset.yaml
   - service.yaml
-  - networkpolicy.yaml

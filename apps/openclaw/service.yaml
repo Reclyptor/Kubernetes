@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: openclaw
   namespace: openclaw
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
   labels:
     app: openclaw
 spec:
@@ -20,6 +24,10 @@ kind: Service
 metadata:
   name: belugabot
   namespace: openclaw
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
   labels:
     app: belugabot
 spec:

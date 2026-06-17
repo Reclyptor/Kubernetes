@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: kestra
   namespace: kestra
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   selector:
     app: kestra
