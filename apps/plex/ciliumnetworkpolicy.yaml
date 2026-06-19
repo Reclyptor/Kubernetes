@@ -24,6 +24,9 @@ spec:
         - matchName: "plex.tv"
         - matchPattern: "*.plex.tv"
         - matchPattern: "*.plex.direct"
+        - matchPattern: "*.plex.bz"
+        - matchName: "plexapp.com"
+        - matchPattern: "*.plexapp.com"
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
     - toEntities: [world]
