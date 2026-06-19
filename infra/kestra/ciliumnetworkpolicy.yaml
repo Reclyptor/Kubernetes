@@ -1,0 +1,23 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kestra
+  namespace: kestra
+spec:
+  endpointSelector:
+    matchLabels:
+      app: kestra
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "8080", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: mysql
+            k8s:io.kubernetes.pod.namespace: mysql
+      toPorts:
+        - ports: [{ port: "3306", protocol: TCP }]
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

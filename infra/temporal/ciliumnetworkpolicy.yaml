@@ -1,0 +1,44 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: temporal
+  namespace: temporal
+spec:
+  endpointSelector:
+    matchLabels:
+      app: temporal
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: temporal-web
+            k8s:io.kubernetes.pod.namespace: temporal
+      toPorts:
+        - ports: [{ port: "7233", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: mysql
+            k8s:io.kubernetes.pod.namespace: mysql
+      toPorts:
+        - ports: [{ port: "3306", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: temporal-web
+  namespace: temporal
+spec:
+  endpointSelector:
+    matchLabels:
+      app: temporal-web
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "8080", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: temporal
+            k8s:io.kubernetes.pod.namespace: temporal
+      toPorts:
+        - ports: [{ port: "7233", protocol: TCP }]

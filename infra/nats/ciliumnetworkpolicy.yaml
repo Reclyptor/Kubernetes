@@ -1,0 +1,13 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nats
+  namespace: nats
+spec:
+  endpointSelector:
+    matchLabels:
+      app: nats
+  ingress:
+    - fromEntities: [cluster]
+      toPorts:
+        - ports: [{ port: "4222", protocol: TCP }]

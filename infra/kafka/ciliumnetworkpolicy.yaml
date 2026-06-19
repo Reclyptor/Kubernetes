@@ -1,0 +1,13 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kafka
+  namespace: kafka
+spec:
+  endpointSelector:
+    matchLabels:
+      app: kafka
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "9091", protocol: TCP }]

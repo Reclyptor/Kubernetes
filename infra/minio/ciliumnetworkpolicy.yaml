@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: minio
+  namespace: minio
+spec:
+  endpointSelector:
+    matchLabels:
+      app: minio
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports:
+            - { port: "9000", protocol: TCP }
+            - { port: "9001", protocol: TCP }
