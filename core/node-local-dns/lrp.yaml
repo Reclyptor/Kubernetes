@@ -1,0 +1,25 @@
+apiVersion: cilium.io/v2
+kind: CiliumLocalRedirectPolicy
+metadata:
+  name: node-local-dns
+  namespace: kube-system
+spec:
+  redirectFrontend:
+    serviceMatcher:
+      serviceName: kube-dns
+      namespace: kube-system
+      toPorts:
+        - port: "53"
+          protocol: UDP
+        - port: "53"
+          protocol: TCP
+  redirectBackend:
+    localEndpointSelector:
+      matchLabels:
+        k8s-app: node-local-dns
+    toPorts:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+    skipRedirectFromBackend: true
