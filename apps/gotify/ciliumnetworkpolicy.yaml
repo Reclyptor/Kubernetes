@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: gotify
+  namespace: gotify
+spec:
+  endpointSelector:
+    matchLabels:
+      app: gotify
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]

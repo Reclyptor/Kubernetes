@@ -1,0 +1,44 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: agentmemory-claude
+  namespace: agentmemory
+spec:
+  endpointSelector:
+    matchLabels:
+      app: agentmemory-claude
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "3111", protocol: TCP }]
+  egress:
+    - toFQDNs:
+        - matchName: "api.anthropic.com"
+        - matchName: "registry.npmjs.org"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: agentmemory-qwen
+  namespace: agentmemory
+spec:
+  endpointSelector:
+    matchLabels:
+      app: agentmemory-qwen
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "3111", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: vllm
+            k8s:io.kubernetes.pod.namespace: vllm
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]
+    - toFQDNs:
+        - matchName: "registry.npmjs.org"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

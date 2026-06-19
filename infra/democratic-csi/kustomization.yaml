@@ -1,8 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: lucebox
+namespace: democratic-csi
 resources:
-  - namespace.yaml
-  - statefulset.yaml
-  - service.yaml
   - ciliumnetworkpolicy.yaml

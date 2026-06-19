@@ -1,0 +1,13 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: playit
+  namespace: playit
+spec:
+  endpointSelector:
+    matchLabels:
+      app: playit
+  egress:
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

@@ -1,0 +1,51 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ntfy
+  namespace: ntfy
+spec:
+  endpointSelector:
+    matchLabels:
+      app: ntfy
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
+        - matchLabels:
+            app: ntfy-proxy
+            k8s:io.kubernetes.pod.namespace: ntfy
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ntfy-proxy
+  namespace: ntfy
+spec:
+  endpointSelector:
+    matchLabels:
+      app: ntfy-proxy
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "4180", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: ntfy
+            k8s:io.kubernetes.pod.namespace: ntfy
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: authentik
+            k8s:io.kubernetes.pod.namespace: authentik
+      toPorts:
+        - ports:
+            - { port: "9000", protocol: TCP }
+            - { port: "9443", protocol: TCP }

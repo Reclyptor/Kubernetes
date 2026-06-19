@@ -1,0 +1,13 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: lucebox-dflash
+  namespace: lucebox
+spec:
+  endpointSelector:
+    matchLabels:
+      app: lucebox-dflash
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]

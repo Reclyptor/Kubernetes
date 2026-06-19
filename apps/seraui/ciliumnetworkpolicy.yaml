@@ -1,0 +1,23 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: seraui
+  namespace: seraui
+spec:
+  endpointSelector:
+    matchLabels:
+      app: seraui
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
+      toPorts:
+        - ports: [{ port: "3000", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: sera
+            k8s:io.kubernetes.pod.namespace: sera
+      toPorts:
+        - ports: [{ port: "3001", protocol: TCP }]

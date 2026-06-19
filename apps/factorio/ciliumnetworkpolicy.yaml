@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: factorio
+  namespace: factorio
+spec:
+  endpointSelector:
+    matchLabels:
+      app: factorio
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports:
+            - { port: "34197", protocol: UDP }
+            - { port: "27015", protocol: TCP }
+  egress:
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

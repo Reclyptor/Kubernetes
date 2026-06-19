@@ -1,0 +1,51 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cloudflare
+  namespace: cloudflare
+spec:
+  endpointSelector:
+    matchLabels:
+      app: cloudflare
+  egress:
+    - toEntities: [world]
+      toPorts:
+        - ports:
+            - { port: "7844", protocol: UDP }
+            - { port: "443", protocol: TCP }
+    - toEndpoints:
+        - matchLabels:
+            app: ntfy
+            k8s:io.kubernetes.pod.namespace: ntfy
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: gotify
+            k8s:io.kubernetes.pod.namespace: gotify
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: sera
+            k8s:io.kubernetes.pod.namespace: sera
+      toPorts:
+        - ports: [{ port: "3001", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: seraui
+            k8s:io.kubernetes.pod.namespace: seraui
+      toPorts:
+        - ports: [{ port: "3000", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: agentmemory-claude
+            k8s:io.kubernetes.pod.namespace: agentmemory
+      toPorts:
+        - ports: [{ port: "3111", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: agentmemory-qwen
+            k8s:io.kubernetes.pod.namespace: agentmemory
+      toPorts:
+        - ports: [{ port: "3111", protocol: TCP }]
