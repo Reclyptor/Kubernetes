@@ -1,0 +1,22 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mysql
+  namespace: mysql
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mysql
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "3306", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: kestra
+            k8s:io.kubernetes.pod.namespace: kestra
+        - matchLabels:
+            app: temporal
+            k8s:io.kubernetes.pod.namespace: temporal
+      toPorts:
+        - ports: [{ port: "3306", protocol: TCP }]

@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: qdrant
+  namespace: qdrant
+spec:
+  endpointSelector:
+    matchLabels:
+      app: qdrant
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports:
+            - { port: "6333", protocol: TCP }
+            - { port: "6334", protocol: TCP }

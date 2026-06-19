@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mongodb
+  namespace: mongodb
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mongodb
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "27017", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: sera
+            k8s:io.kubernetes.pod.namespace: sera
+      toPorts:
+        - ports: [{ port: "27017", protocol: TCP }]
