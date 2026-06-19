@@ -1,0 +1,23 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: tautulli
+  namespace: tautulli
+spec:
+  endpointSelector:
+    matchLabels:
+      app: tautulli
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "8181", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: plex
+            k8s:io.kubernetes.pod.namespace: plex
+      toPorts:
+        - ports: [{ port: "32400", protocol: TCP }]
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

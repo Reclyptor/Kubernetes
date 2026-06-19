@@ -8,3 +8,4 @@ resources:
   - pvc.yaml
   - deployments.yaml
   - service.yaml
+  - ciliumnetworkpolicy.yaml

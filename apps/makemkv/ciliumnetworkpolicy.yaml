@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: makemkv
+  namespace: makemkv
+spec:
+  endpointSelector:
+    matchLabels:
+      app: makemkv
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "5800", protocol: TCP }]
+  egress:
+    - toFQDNs:
+        - matchName: "makemkv.com"
+        - matchPattern: "*.makemkv.com"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

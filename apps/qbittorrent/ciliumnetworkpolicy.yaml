@@ -1,0 +1,17 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: qbittorrent
+  namespace: qbittorrent
+spec:
+  endpointSelector:
+    matchLabels:
+      app: qbittorrent
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "8080", protocol: TCP }]
+  egress:
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "51820", protocol: UDP }]
