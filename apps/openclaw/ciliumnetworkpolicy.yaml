@@ -12,8 +12,7 @@ spec:
       toPorts:
         - ports: [{ port: "18792", protocol: TCP }]
   egress:
-    - toCIDRSet:
-        - cidr: "169.254.20.10/32"
+    - toEntities: [host]
       toPorts:
         - ports: [{ port: "53", protocol: ANY }]
           rules:

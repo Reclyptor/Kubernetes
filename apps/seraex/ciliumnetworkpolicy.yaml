@@ -14,8 +14,7 @@ spec:
             k8s:io.kubernetes.pod.namespace: temporal
       toPorts:
         - ports: [{ port: "7233", protocol: TCP }]
-    - toCIDRSet:
-        - cidr: "169.254.20.10/32"
+    - toEntities: [host]
       toPorts:
         - ports: [{ port: "53", protocol: ANY }]
           rules:

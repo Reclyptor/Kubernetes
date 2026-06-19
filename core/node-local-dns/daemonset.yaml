@@ -21,6 +21,7 @@ spec:
       serviceAccountName: node-local-dns
       hostNetwork: true
       dnsPolicy: Default
+      enableServiceLinks: true
       priorityClassName: system-node-critical
       tolerations:
         - operator: Exists
@@ -30,10 +31,13 @@ spec:
       initContainers:
         - name: setup-lo
           image: busybox:1.36
+          env:
+            - name: NODE_LOCAL_DNS_IP
+              value: &nodeLocalDnsIP "169.254.20.10"
           command:
             - /bin/sh
             - -c
-            - ip addr add 169.254.20.10/32 dev lo || true
+            - ip addr add "${NODE_LOCAL_DNS_IP}/32" dev lo || true
           securityContext:
             capabilities:
               add: [NET_ADMIN]
@@ -41,6 +45,9 @@ spec:
         - name: node-cache
           image: rancher/mirrored-coredns-coredns:1.14.2
           imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_LOCAL_DNS_IP
+              value: *nodeLocalDnsIP
           args: ["-conf", "/etc/coredns/Corefile"]
           ports:
             - containerPort: 53
@@ -52,7 +59,6 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              host: "169.254.20.10"
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 60
@@ -62,7 +68,6 @@ spec:
           readinessProbe:
             httpGet:
               path: /ready
-              host: "169.254.20.10"
               port: 8181
               scheme: HTTP
             initialDelaySeconds: 5
