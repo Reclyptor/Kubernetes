@@ -26,6 +26,14 @@ spec:
       toPorts:
         - ports: [{ port: "32400", protocol: TCP }]
   egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
     - toFQDNs:
         - matchName: "plex.tv"
         - matchPattern: "*.plex.tv"
