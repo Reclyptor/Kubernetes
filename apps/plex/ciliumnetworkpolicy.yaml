@@ -26,3 +26,6 @@ spec:
         - matchPattern: "*.plex.direct"
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "1900", protocol: UDP }]
