@@ -1,0 +1,28 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cerbos
+  namespace: cerbos
+spec:
+  endpointSelector:
+    matchLabels:
+      app: cerbos
+  ingress:
+    - fromEntities: [host, remote-node]
+      toPorts:
+        - ports:
+            - { port: "3592", protocol: TCP }
+            - { port: "3593", protocol: TCP }
+    - fromEndpoints:
+        - matchLabels:
+            app: sera
+            k8s:io.kubernetes.pod.namespace: sera
+      toPorts:
+        - ports:
+            - { port: "3592", protocol: TCP }
+            - { port: "3593", protocol: TCP }
+  egress:
+    - toFQDNs:
+        - matchName: "github.com"
+      toPorts:
+        - ports: [{ port: "22", protocol: TCP }]

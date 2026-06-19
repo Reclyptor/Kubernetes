@@ -1,0 +1,28 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  endpointSelector:
+    matchLabels:
+      app: authentik
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports:
+            - { port: "9000", protocol: TCP }
+            - { port: "9443", protocol: TCP }
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: postgres
+            k8s:io.kubernetes.pod.namespace: postgres
+      toPorts:
+        - ports: [{ port: "5432", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: redis
+            k8s:io.kubernetes.pod.namespace: redis
+      toPorts:
+        - ports: [{ port: "6379", protocol: TCP }]
