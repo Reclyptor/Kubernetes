@@ -21,3 +21,11 @@ spec:
             k8s:io.kubernetes.pod.namespace: sera
       toPorts:
         - ports: [{ port: "3001", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: authentik
+            k8s:io.kubernetes.pod.namespace: authentik
+      toPorts:
+        - ports:
+            - { port: "9000", protocol: TCP }
+            - { port: "9443", protocol: TCP }

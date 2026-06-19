@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: seraex
+  namespace: seraex
+spec:
+  endpointSelector:
+    matchLabels:
+      app: seraex
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: temporal
+            k8s:io.kubernetes.pod.namespace: temporal
+      toPorts:
+        - ports: [{ port: "7233", protocol: TCP }]
+    - toFQDNs:
+        - matchName: "api.anthropic.com"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

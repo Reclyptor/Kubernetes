@@ -16,8 +16,17 @@ spec:
         - matchName: "discord.com"
         - matchName: "gateway.discord.gg"
         - matchName: "cdn.discordapp.com"
+        - matchName: "api.anthropic.com"
+        - matchName: "api.openai.com"
+        - matchName: "api.search.brave.com"
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: openclaw
+            k8s:io.kubernetes.pod.namespace: openclaw
+      toPorts:
+        - ports: [{ port: "18791", protocol: TCP }]
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -30,5 +39,11 @@ spec:
       app: openclaw
   ingress:
     - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "18791", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: belugabot
+            k8s:io.kubernetes.pod.namespace: openclaw
       toPorts:
         - ports: [{ port: "18791", protocol: TCP }]

@@ -11,3 +11,12 @@ spec:
     - fromEntities: [world, remote-node, health]
       toPorts:
         - ports: [{ port: "8000", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: sera
+            k8s:io.kubernetes.pod.namespace: sera
+        - matchLabels:
+            app: agentmemory-qwen
+            k8s:io.kubernetes.pod.namespace: agentmemory
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]

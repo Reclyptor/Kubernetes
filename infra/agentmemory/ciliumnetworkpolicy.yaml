@@ -40,5 +40,6 @@ spec:
         - ports: [{ port: "8000", protocol: TCP }]
     - toFQDNs:
         - matchName: "registry.npmjs.org"
+        - matchName: "api.openai.com"
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]

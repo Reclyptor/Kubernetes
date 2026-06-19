@@ -13,3 +13,11 @@ spec:
         - ports:
             - { port: "6333", protocol: TCP }
             - { port: "6334", protocol: TCP }
+    - fromEndpoints:
+        - matchLabels:
+            app: sera
+            k8s:io.kubernetes.pod.namespace: sera
+      toPorts:
+        - ports:
+            - { port: "6333", protocol: TCP }
+            - { port: "6334", protocol: TCP }

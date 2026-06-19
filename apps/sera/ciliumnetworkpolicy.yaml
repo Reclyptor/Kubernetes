@@ -30,3 +30,49 @@ spec:
             k8s:io.kubernetes.pod.namespace: redis
       toPorts:
         - ports: [{ port: "6379", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: authentik
+            k8s:io.kubernetes.pod.namespace: authentik
+      toPorts:
+        - ports:
+            - { port: "9000", protocol: TCP }
+            - { port: "9443", protocol: TCP }
+    - toEndpoints:
+        - matchLabels:
+            app: ntfy
+            k8s:io.kubernetes.pod.namespace: ntfy
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: qdrant
+            k8s:io.kubernetes.pod.namespace: qdrant
+      toPorts:
+        - ports:
+            - { port: "6333", protocol: TCP }
+            - { port: "6334", protocol: TCP }
+    - toEndpoints:
+        - matchLabels:
+            app: vllm
+            k8s:io.kubernetes.pod.namespace: vllm
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: minio
+            k8s:io.kubernetes.pod.namespace: minio
+      toPorts:
+        - ports: [{ port: "9000", protocol: TCP }]
+    - toEntities: [kube-apiserver]
+      toPorts:
+        - ports: [{ port: "6443", protocol: TCP }]
+    - toFQDNs:
+        - matchName: "api.anthropic.com"
+        - matchName: "api.openai.com"
+        - matchName: "api.search.brave.com"
+        - matchName: "github.com"
+        - matchName: "api.github.com"
+        - matchName: "raw.githubusercontent.com"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
