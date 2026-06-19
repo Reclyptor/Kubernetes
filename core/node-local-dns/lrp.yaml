@@ -4,6 +4,7 @@ metadata:
   name: node-local-dns
   namespace: kube-system
 spec:
+  skipRedirectFromBackend: true
   redirectFrontend:
     serviceMatcher:
       serviceName: kube-dns
@@ -22,4 +23,3 @@ spec:
         protocol: UDP
       - port: "53"
         protocol: TCP
-    skipRedirectFromBackend: true

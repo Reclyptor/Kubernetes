@@ -5,3 +5,4 @@ resources:
   - serviceaccount.yaml
   - configmap.yaml
   - daemonset.yaml
+  - lrp.yaml
