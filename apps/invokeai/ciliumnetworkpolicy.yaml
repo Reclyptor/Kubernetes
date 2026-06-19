@@ -1,0 +1,22 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: invokeai
+  namespace: invokeai
+spec:
+  endpointSelector:
+    matchLabels:
+      app: invokeai
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "9090", protocol: TCP }]
+  egress:
+    - toFQDNs:
+        - matchName: "civitai.com"
+        - matchName: "huggingface.co"
+        - matchPattern: "*.huggingface.co"
+        - matchPattern: "*.hf.co"
+        - matchName: "models.invoke.ai"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

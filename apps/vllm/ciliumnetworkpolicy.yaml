@@ -1,0 +1,13 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: vllm
+  namespace: vllm
+spec:
+  endpointSelector:
+    matchLabels:
+      app: vllm
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]

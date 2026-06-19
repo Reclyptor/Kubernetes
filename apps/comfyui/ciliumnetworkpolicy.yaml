@@ -1,0 +1,25 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: comfyui
+  namespace: comfyui
+spec:
+  endpointSelector:
+    matchLabels:
+      app: comfyui
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "8188", protocol: TCP }]
+  egress:
+    - toFQDNs:
+        - matchName: "github.com"
+        - matchPattern: "*.github.com"
+        - matchName: "huggingface.co"
+        - matchPattern: "*.huggingface.co"
+        - matchPattern: "*.hf.co"
+        - matchName: "civitai.com"
+        - matchName: "pypi.org"
+        - matchName: "files.pythonhosted.org"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

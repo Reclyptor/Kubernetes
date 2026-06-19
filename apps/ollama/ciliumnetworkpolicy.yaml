@@ -1,0 +1,22 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ollama
+  namespace: ollama
+spec:
+  endpointSelector:
+    matchLabels:
+      app: ollama
+  ingress:
+    - fromEntities: [world, remote-node, health]
+      toPorts:
+        - ports: [{ port: "11434", protocol: TCP }]
+  egress:
+    - toFQDNs:
+        - matchName: "registry.ollama.ai"
+        - matchPattern: "*.ollama.ai"
+        - matchName: "huggingface.co"
+        - matchPattern: "*.huggingface.co"
+        - matchPattern: "*.hf.co"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
