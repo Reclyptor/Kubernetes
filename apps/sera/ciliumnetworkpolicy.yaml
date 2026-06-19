@@ -67,10 +67,8 @@ spec:
     - toEntities: [kube-apiserver]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
-    - toEndpoints:
-        - matchLabels:
-            k8s:io.kubernetes.pod.namespace: kube-system
-            k8s:k8s-app: kube-dns
+    - toCIDRSet:
+        - cidr: "169.254.20.10/32"
       toPorts:
         - ports: [{ port: "53", protocol: ANY }]
           rules:

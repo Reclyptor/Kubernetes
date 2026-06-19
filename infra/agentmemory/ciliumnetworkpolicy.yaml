@@ -12,10 +12,8 @@ spec:
       toPorts:
         - ports: [{ port: "3111", protocol: TCP }]
   egress:
-    - toEndpoints:
-        - matchLabels:
-            k8s:io.kubernetes.pod.namespace: kube-system
-            k8s:k8s-app: kube-dns
+    - toCIDRSet:
+        - cidr: "169.254.20.10/32"
       toPorts:
         - ports: [{ port: "53", protocol: ANY }]
           rules:
@@ -46,10 +44,8 @@ spec:
             k8s:io.kubernetes.pod.namespace: vllm
       toPorts:
         - ports: [{ port: "8000", protocol: TCP }]
-    - toEndpoints:
-        - matchLabels:
-            k8s:io.kubernetes.pod.namespace: kube-system
-            k8s:k8s-app: kube-dns
+    - toCIDRSet:
+        - cidr: "169.254.20.10/32"
       toPorts:
         - ports: [{ port: "53", protocol: ANY }]
           rules:

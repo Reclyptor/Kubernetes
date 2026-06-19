@@ -13,18 +13,20 @@ data:
         }
         reload
         loop
+        bind 169.254.20.10
         forward . 10.43.0.10 {
             force_tcp
         }
         prometheus :9253
-        health :8080
-        ready :8181
+        health 169.254.20.10:8080
+        ready 169.254.20.10:8181
     }
     .:53 {
         errors
         cache 30
         reload
         loop
+        bind 169.254.20.10
         forward . 10.43.0.10 {
             force_tcp
         }

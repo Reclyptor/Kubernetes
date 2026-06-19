@@ -19,12 +19,24 @@ spec:
         k8s-app: node-local-dns
     spec:
       serviceAccountName: node-local-dns
+      hostNetwork: true
+      dnsPolicy: Default
       priorityClassName: system-node-critical
       tolerations:
         - operator: Exists
           effect: NoSchedule
         - operator: Exists
           effect: NoExecute
+      initContainers:
+        - name: setup-lo
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - ip addr add 169.254.20.10/32 dev lo || true
+          securityContext:
+            capabilities:
+              add: [NET_ADMIN]
       containers:
         - name: node-cache
           image: rancher/mirrored-coredns-coredns:1.14.2
@@ -32,17 +44,15 @@ spec:
           args: ["-conf", "/etc/coredns/Corefile"]
           ports:
             - containerPort: 53
-              name: dns-udp
+              name: dns
               protocol: UDP
-            - containerPort: 53
-              name: dns-tcp
-              protocol: TCP
             - containerPort: 9253
               name: metrics
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /health
+              host: "169.254.20.10"
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 60
@@ -52,6 +62,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /ready
+              host: "169.254.20.10"
               port: 8181
               scheme: HTTP
             initialDelaySeconds: 5
