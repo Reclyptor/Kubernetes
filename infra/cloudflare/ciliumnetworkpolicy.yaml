@@ -49,3 +49,9 @@ spec:
             k8s:io.kubernetes.pod.namespace: agentmemory
       toPorts:
         - ports: [{ port: "3111", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: plex
+            k8s:io.kubernetes.pod.namespace: plex
+      toPorts:
+        - ports: [{ port: "32400", protocol: TCP }]
