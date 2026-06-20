@@ -14,9 +14,7 @@ data:
         reload
         loop
         bind {$NODE_LOCAL_DNS_IP}
-        forward . {$KUBE_DNS_SERVICE_HOST} {
-            force_tcp
-        }
+        forward . {$KUBE_DNS_SERVICE_HOST}
         prometheus :9253
         health :8080
         ready :8181
@@ -27,8 +25,6 @@ data:
         reload
         loop
         bind {$NODE_LOCAL_DNS_IP}
-        forward . {$KUBE_DNS_SERVICE_HOST} {
-            force_tcp
-        }
+        forward . {$KUBE_DNS_SERVICE_HOST}
         prometheus :9253
     }
