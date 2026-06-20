@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - cilium
   - gpu
-  - node-local-dns
   - storage
