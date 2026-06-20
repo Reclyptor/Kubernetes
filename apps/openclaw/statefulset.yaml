@@ -67,17 +67,21 @@ spec:
         - name: workspace
           mountPath: /home/node/clawd
         livenessProbe:
-          httpGet:
-            path: /
-            port: 18791
+          exec:
+            command:
+              - node
+              - -e
+              - require('http').get('http://127.0.0.1:18791/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10
           failureThreshold: 3
         readinessProbe:
-          httpGet:
-            path: /
-            port: 18791
+          exec:
+            command:
+              - node
+              - -e
+              - require('http').get('http://127.0.0.1:18791/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -167,17 +171,21 @@ spec:
         - name: workspace
           mountPath: /home/node/clawd
         livenessProbe:
-          httpGet:
-            path: /
-            port: 18792
+          exec:
+            command:
+              - node
+              - -e
+              - require('http').get('http://127.0.0.1:18792/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10
           failureThreshold: 3
         readinessProbe:
-          httpGet:
-            path: /
-            port: 18792
+          exec:
+            command:
+              - node
+              - -e
+              - require('http').get('http://127.0.0.1:18792/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
