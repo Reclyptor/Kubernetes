@@ -18,5 +18,8 @@ spec:
         - matchLabels:
             app: agentmemory-qwen
             k8s:io.kubernetes.pod.namespace: agentmemory
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
       toPorts:
         - ports: [{ port: "8000", protocol: TCP }]

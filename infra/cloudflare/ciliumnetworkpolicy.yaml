@@ -55,3 +55,15 @@ spec:
             k8s:io.kubernetes.pod.namespace: plex
       toPorts:
         - ports: [{ port: "32400", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: authentik
+            k8s:io.kubernetes.pod.namespace: authentik
+      toPorts:
+        - ports: [{ port: "9000", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: vllm
+            k8s:io.kubernetes.pod.namespace: vllm
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]
