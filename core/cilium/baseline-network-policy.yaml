@@ -3,7 +3,7 @@ kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: baseline
 spec:
-  description: "Zero-trust foundation: default-deny for all non-system workloads, allowing only the universals — kubelet/health probes in, node-local DNS out."
+  description: "Zero-trust foundation: default-deny for all non-system workloads, allowing only the universals: kubelet/health probes in, plain L4 DNS to kube-dns out."
   endpointSelector:
     matchExpressions:
       - key: k8s:io.kubernetes.pod.namespace
@@ -14,6 +14,9 @@ spec:
   ingress:
     - fromEntities: [host, health]
   egress:
-    - toEntities: [host]
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
       toPorts:
         - ports: [{ port: "53", protocol: ANY }]
