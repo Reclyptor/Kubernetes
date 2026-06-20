@@ -10,9 +10,15 @@ metadata:
     # host loopback, DNS replies arrive from the host entity — not from a pod — so
     # the stock ingress rule drops them. This CNP adds the missing allow.
     #
+    # This is part of the workaround for Cilium DNS proxy + WireGuard issue #45837:
+    # https://github.com/cilium/cilium/issues/45837
+    #
     # This rule is required for NodeLocal DNSCache to work with Cilium and MUST NOT
-    # be removed without restoring an alternative DNS path. Removing it breaks Flux
-    # reconciliation and all cluster DNS for flux-system pods.
+    # be removed without restoring an alternative DNS path. If Cilium fixes host-netns
+    # DNS proxy reply handling over WireGuard, revert kubelet back to kube-dns,
+    # remove node-local-dns, then remove this Flux host-ingress exception.
+    # Removing it first breaks Flux reconciliation and all cluster DNS for flux-system
+    # pods.
 spec:
   endpointSelector: {}
   ingress:
