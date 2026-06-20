@@ -65,13 +65,28 @@ spec:
                 echo "waiting for iii engine on :49134..."
                 sleep 2
               done
-              npm install -g @agentmemory/agentmemory@0.9.26 --no-fund --no-audit
+              mkdir -p "$HOME" "$NPM_CONFIG_PREFIX"
+              if ! command -v agentmemory >/dev/null 2>&1; then
+                npm install -g @agentmemory/agentmemory@0.9.26 --no-fund --no-audit
+              fi
               exec agentmemory --no-engine
           env:
+            - name: HOME
+              value: /data/home
+            - name: NPM_CONFIG_PREFIX
+              value: /data/npm-global
+            - name: PATH
+              value: /data/npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
             - name: III_REST_PORT
               value: "3111"
             - name: AGENTMEMORY_URL
               value: http://127.0.0.1:3111
+            - name: AGENTMEMORY_EXPORT_ROOT
+              value: /data/exports
+            - name: SNAPSHOT_DIR
+              value: /data/snapshots
+            - name: STANDALONE_PERSIST_PATH
+              value: /data/local.db
             - name: AGENTMEMORY_AUTO_COMPRESS
               value: "true"
             - name: EMBEDDING_PROVIDER
@@ -86,6 +101,9 @@ spec:
                 secretKeyRef:
                   name: agentmemory-claude-secret
                   key: AGENTMEMORY_SECRET
+          volumeMounts:
+            - name: data
+              mountPath: /data
           readinessProbe:
             exec:
               command:
