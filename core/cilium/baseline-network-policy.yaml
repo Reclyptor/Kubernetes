@@ -17,9 +17,3 @@ spec:
     - toEntities: [host]
       toPorts:
         - ports: [{ port: "53", protocol: ANY }]
-    - toEndpoints:
-        - matchLabels:
-            k8s:io.kubernetes.pod.namespace: kube-system
-            k8s:k8s-app: kube-dns
-      toPorts:
-        - ports: [{ port: "53", protocol: ANY }]
