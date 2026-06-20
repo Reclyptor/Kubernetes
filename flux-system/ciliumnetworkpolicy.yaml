@@ -1,0 +1,9 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-node-local-dns
+  namespace: flux-system
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEntities: [host]
