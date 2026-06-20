@@ -3,6 +3,16 @@ kind: CiliumNetworkPolicy
 metadata:
   name: allow-node-local-dns
   namespace: flux-system
+  annotations:
+    # flux-system ships stock k8s NetworkPolicies (allow-egress, allow-scraping,
+    # allow-webhooks) that restrict ingress to same-namespace pods only. Since
+    # node-local-dns runs with hostNetwork: true and binds to 169.254.20.10 on the
+    # host loopback, DNS replies arrive from the host entity — not from a pod — so
+    # the stock ingress rule drops them. This CNP adds the missing allow.
+    #
+    # This rule is required for NodeLocal DNSCache to work with Cilium and MUST NOT
+    # be removed without restoring an alternative DNS path. Removing it breaks Flux
+    # reconciliation and all cluster DNS for flux-system pods.
 spec:
   endpointSelector: {}
   ingress:
