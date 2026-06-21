@@ -67,3 +67,9 @@ spec:
             k8s:io.kubernetes.pod.namespace: vllm
       toPorts:
         - ports: [{ port: "8000", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: ntfy-proxy
+            k8s:io.kubernetes.pod.namespace: ntfy
+      toPorts:
+        - ports: [{ port: "4180", protocol: TCP }]

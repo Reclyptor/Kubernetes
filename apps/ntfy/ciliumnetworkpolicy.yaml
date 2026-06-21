@@ -37,6 +37,12 @@ spec:
     - fromEntities: [world, remote-node, health]
       toPorts:
         - ports: [{ port: "4180", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
+      toPorts:
+        - ports: [{ port: "4180", protocol: TCP }]
   egress:
     - toEndpoints:
         - matchLabels:
