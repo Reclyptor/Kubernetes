@@ -64,6 +64,14 @@ spec:
             secretKeyRef:
               name: ntfy-proxy-secret
               key: OAUTH2_PROXY_OIDC_ISSUER_URL
+        - name: OAUTH2_PROXY_SKIP_OIDC_DISCOVERY
+          value: "true"
+        - name: OAUTH2_PROXY_LOGIN_URL
+          value: "https://auth.reclyptor.com/application/o/authorize/"
+        - name: OAUTH2_PROXY_REDEEM_URL
+          value: "http://authentik.authentik.svc.cluster.local:9000/application/o/token/"
+        - name: OAUTH2_PROXY_OIDC_JWKS_URL
+          value: "http://authentik.authentik.svc.cluster.local:9000/application/o/ntfy/jwks/"
         resources:
           requests:
             cpu: 100m
