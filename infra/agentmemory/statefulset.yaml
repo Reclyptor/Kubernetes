@@ -1,6 +1,166 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  name: agentmemory-claude
+  namespace: agentmemory
+spec:
+  serviceName: agentmemory-claude
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agentmemory-claude
+  template:
+    metadata:
+      labels:
+        app: agentmemory-claude
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 65532
+      containers:
+        - name: engine
+          image: iiidev/iii:0.11.2
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 65532
+            runAsGroup: 65532
+          ports:
+            - containerPort: 3111
+              name: rest
+            - containerPort: 3112
+              name: stream
+            - containerPort: 9464
+              name: metrics
+            - containerPort: 49134
+              name: worker
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: engine-config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+              readOnly: true
+          livenessProbe:
+            tcpSocket:
+              port: 3111
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: "1"
+        - name: app
+          image: node:22-slim
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - -c
+            - |
+              until (exec 3<>/dev/tcp/127.0.0.1/49134) 2>/dev/null; do
+                echo "waiting for iii engine on :49134..."
+                sleep 2
+              done
+              mkdir -p "$HOME" "$NPM_CONFIG_PREFIX"
+              if ! command -v agentmemory >/dev/null 2>&1; then
+                npm install -g @agentmemory/agentmemory@0.9.26 --no-fund --no-audit
+              fi
+              exec agentmemory --no-engine
+          env:
+            - name: HOME
+              value: /data/home
+            - name: NPM_CONFIG_PREFIX
+              value: /data/npm-global
+            - name: PATH
+              value: /data/npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+            - name: III_REST_PORT
+              value: "3111"
+            - name: AGENTMEMORY_URL
+              value: http://127.0.0.1:3111
+            - name: AGENTMEMORY_EXPORT_ROOT
+              value: /data/exports
+            - name: SNAPSHOT_DIR
+              value: /data/snapshots
+            - name: STANDALONE_PERSIST_PATH
+              value: /data/local.db
+            - name: AGENTMEMORY_AUTO_COMPRESS
+              value: "true"
+            - name: EMBEDDING_PROVIDER
+              value: local
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: agentmemory-claude-secret
+                  key: ANTHROPIC_API_KEY
+            - name: AGENTMEMORY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: agentmemory-claude-secret
+                  key: AGENTMEMORY_SECRET
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            exec:
+              command:
+                - node
+                - -e
+                - "const http=require('http');http.get({host:'127.0.0.1',port:3111,path:'/agentmemory/health',headers:{authorization:'Bearer '+(process.env.AGENTMEMORY_SECRET||'')}},r=>process.exit(r.statusCode<400?0:1)).on('error',()=>process.exit(1));"
+            initialDelaySeconds: 25
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 24
+          livenessProbe:
+            exec:
+              command:
+                - node
+                - -e
+                - "const http=require('http');http.get({host:'127.0.0.1',port:3111,path:'/agentmemory/health',headers:{authorization:'Bearer '+(process.env.AGENTMEMORY_SECRET||'')}},r=>process.exit(r.statusCode<400?0:1)).on('error',()=>process.exit(1));"
+            initialDelaySeconds: 240
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 2Gi
+              cpu: "2"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - voideon
+      volumes:
+        - name: engine-config
+          configMap:
+            name: agentmemory-engine-config
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
   name: agentmemory-qwen
   namespace: agentmemory
 spec:

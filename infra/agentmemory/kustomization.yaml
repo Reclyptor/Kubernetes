@@ -5,8 +5,6 @@ resources:
   - namespace.yaml
   - secrets
   - configmap.yaml
-  - claude-statefulset.yaml
-  - claude-service.yaml
-  - qwen-statefulset.yaml
-  - qwen-service.yaml
+  - statefulset.yaml
+  - service.yaml
   - ciliumnetworkpolicy.yaml
