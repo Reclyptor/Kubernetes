@@ -41,7 +41,8 @@ spec:
               subPath: config.yaml
               readOnly: true
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /agentmemory/livez
               port: 3111
             initialDelaySeconds: 15
             periodSeconds: 20
@@ -105,21 +106,17 @@ spec:
             - name: data
               mountPath: /data
           readinessProbe:
-            exec:
-              command:
-                - node
-                - -e
-                - "const http=require('http');http.get({host:'127.0.0.1',port:3111,path:'/agentmemory/health',headers:{authorization:'Bearer '+(process.env.AGENTMEMORY_SECRET||'')}},r=>process.exit(r.statusCode<400?0:1)).on('error',()=>process.exit(1));"
+            httpGet:
+              path: /agentmemory/livez
+              port: 3111
             initialDelaySeconds: 25
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 24
           livenessProbe:
-            exec:
-              command:
-                - node
-                - -e
-                - "const http=require('http');http.get({host:'127.0.0.1',port:3111,path:'/agentmemory/health',headers:{authorization:'Bearer '+(process.env.AGENTMEMORY_SECRET||'')}},r=>process.exit(r.statusCode<400?0:1)).on('error',()=>process.exit(1));"
+            httpGet:
+              path: /agentmemory/livez
+              port: 3111
             initialDelaySeconds: 240
             periodSeconds: 30
             timeoutSeconds: 5
@@ -201,7 +198,8 @@ spec:
               subPath: config.yaml
               readOnly: true
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /agentmemory/livez
               port: 3111
             initialDelaySeconds: 15
             periodSeconds: 20
@@ -269,21 +267,17 @@ spec:
             - name: data
               mountPath: /data
           readinessProbe:
-            exec:
-              command:
-                - node
-                - -e
-                - "const http=require('http');http.get({host:'127.0.0.1',port:3111,path:'/agentmemory/health',headers:{authorization:'Bearer '+(process.env.AGENTMEMORY_SECRET||'')}},r=>process.exit(r.statusCode<400?0:1)).on('error',()=>process.exit(1));"
+            httpGet:
+              path: /agentmemory/livez
+              port: 3111
             initialDelaySeconds: 25
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 24
           livenessProbe:
-            exec:
-              command:
-                - node
-                - -e
-                - "const http=require('http');http.get({host:'127.0.0.1',port:3111,path:'/agentmemory/health',headers:{authorization:'Bearer '+(process.env.AGENTMEMORY_SECRET||'')}},r=>process.exit(r.statusCode<400?0:1)).on('error',()=>process.exit(1));"
+            httpGet:
+              path: /agentmemory/livez
+              port: 3111
             initialDelaySeconds: 240
             periodSeconds: 30
             timeoutSeconds: 5
