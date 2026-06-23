@@ -73,6 +73,7 @@ spec:
           rules:
             dns: [{ matchPattern: "*" }]
     - toFQDNs:
+        - matchName: "auth.reclyptor.com"
         - matchName: "api.anthropic.com"
         - matchName: "api.openai.com"
         - matchName: "api.search.brave.com"
