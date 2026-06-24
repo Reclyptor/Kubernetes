@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - democratic-csi
   - snapshot-controller
+  - volsync
