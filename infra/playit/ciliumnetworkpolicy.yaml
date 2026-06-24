@@ -19,11 +19,13 @@ spec:
         - matchName: "api.playit.gg"
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
-    # playit tunnel/control edge servers — IPs come dynamically from the routing
-    # API, so they cannot be pinned to an FQDN
+    # playit tunnel/control edge — both the edge IPs and the data-channel port
+    # are assigned dynamically by playit (control is UDP 5525, but each tunnel's
+    # data channel uses a server-chosen UDP port), so neither can be pinned.
+    # Allow all UDP to world; TCP stays locked to api.playit.gg:443 above.
     - toEntities: [world]
       toPorts:
-        - ports: [{ port: "5525", protocol: UDP }]
+        - ports: [{ port: "1", endPort: 65535, protocol: UDP }]
     # forward tunneled player traffic to the game servers only
     - toEndpoints:
         - matchLabels:
