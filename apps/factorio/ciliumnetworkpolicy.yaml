@@ -10,9 +10,13 @@ spec:
   ingress:
     - fromEntities: [world, remote-node, health]
       toPorts:
-        - ports:
-            - { port: "34197", protocol: UDP }
-            - { port: "27015", protocol: TCP }
+        - ports: [{ port: "34197", protocol: UDP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "34197", protocol: UDP }]
   egress:
     - toEntities: [world]
       toPorts:

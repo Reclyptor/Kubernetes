@@ -15,6 +15,18 @@ spec:
     - name: game
       port: 34197
       protocol: UDP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: factorio-rcon
+  namespace: factorio
+spec:
+  type: ClusterIP
+  selector:
+    app: factorio
+  ports:
     - name: rcon
       port: 27015
       protocol: TCP

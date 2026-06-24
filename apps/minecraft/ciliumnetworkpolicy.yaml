@@ -11,6 +11,12 @@ spec:
     - fromEntities: [world, remote-node, health]
       toPorts:
         - ports: [{ port: "25565", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "25565", protocol: TCP }]
   egress:
     - toEntities: [world]
       toPorts:

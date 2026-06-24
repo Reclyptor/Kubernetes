@@ -15,7 +15,18 @@ spec:
         app: playit
     spec:
       automountServiceAccountToken: false
-      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - fluxeon
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: playit
           image: ghcr.io/playit-cloud/playit-agent:0.17
@@ -23,6 +34,10 @@ spec:
           envFrom:
             - secretRef:
                 name: playit-secret
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           resources:
             requests:
               cpu: "100m"

@@ -8,6 +8,22 @@ spec:
     matchLabels:
       app: playit
   egress:
+    # playit control/tunnel edge servers (UDP 5525) + HTTPS API (api.playit.gg)
     - toEntities: [world]
       toPorts:
-        - ports: [{ port: "443", protocol: TCP }]
+        - ports:
+            - { port: "5525", protocol: UDP }
+            - { port: "443", protocol: TCP }
+    # forward tunneled player traffic to the game servers only
+    - toEndpoints:
+        - matchLabels:
+            app: minecraft
+            k8s:io.kubernetes.pod.namespace: minecraft
+      toPorts:
+        - ports: [{ port: "25565", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: factorio
+            k8s:io.kubernetes.pod.namespace: factorio
+      toPorts:
+        - ports: [{ port: "34197", protocol: UDP }]
