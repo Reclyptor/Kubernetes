@@ -25,6 +25,9 @@ spec:
                     values:
                       - fluxeon
       securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -36,9 +39,16 @@ spec:
                 name: playit-secret
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: "100m"
               memory: "64Mi"
+      volumes:
+        - name: tmp
+          emptyDir: {}

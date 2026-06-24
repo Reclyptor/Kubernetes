@@ -8,12 +8,22 @@ spec:
     matchLabels:
       app: playit
   egress:
-    # playit control/tunnel edge servers (UDP 5525) + HTTPS API (api.playit.gg)
+    # DNS via the node-local proxy so FQDN policy can resolve api.playit.gg
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # playit HTTPS control API — the only host contacted at runtime
+    - toFQDNs:
+        - matchName: "api.playit.gg"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
+    # playit tunnel/control edge servers — IPs come dynamically from the routing
+    # API, so they cannot be pinned to an FQDN
     - toEntities: [world]
       toPorts:
-        - ports:
-            - { port: "5525", protocol: UDP }
-            - { port: "443", protocol: TCP }
+        - ports: [{ port: "5525", protocol: UDP }]
     # forward tunneled player traffic to the game servers only
     - toEndpoints:
         - matchLabels:
