@@ -45,7 +45,7 @@ spec:
               mountPath: /factorio
       containers:
         - name: factorio
-          image: factoriotools/factorio:latest
+          image: factoriotools/factorio:stable
           imagePullPolicy: Always
           ports:
             - name: game
