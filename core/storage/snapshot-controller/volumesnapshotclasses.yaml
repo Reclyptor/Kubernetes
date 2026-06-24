@@ -1,0 +1,20 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: iscsi-fs6712x
+driver: org.democratic-csi.iscsi-fs6712x
+deletionPolicy: Delete
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: iscsi-dxp4800
+driver: org.democratic-csi.iscsi-dxp4800
+deletionPolicy: Delete
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: iscsi-dxp6800
+driver: org.democratic-csi.iscsi-dxp6800
+deletionPolicy: Delete
