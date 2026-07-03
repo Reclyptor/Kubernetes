@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: seraui
   namespace: seraui
-  labels:
-    app: seraui
 spec:
   type: ClusterIP
   selector:
@@ -12,5 +10,4 @@ spec:
   ports:
     - name: http
       port: 3000
-      targetPort: 3000
       protocol: TCP

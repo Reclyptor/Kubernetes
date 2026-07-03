@@ -8,15 +8,13 @@ metadata:
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
 spec:
+  type: LoadBalancer
   selector:
     app: qdrant
-  type: LoadBalancer
   ports:
     - name: http
       port: 6333
-      targetPort: 6333
       protocol: TCP
     - name: grpc
       port: 6334
-      targetPort: 6334
       protocol: TCP

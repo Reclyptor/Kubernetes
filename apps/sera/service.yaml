@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: sera
   namespace: sera
-  labels:
-    app: sera
 spec:
   type: ClusterIP
   selector:
@@ -12,5 +10,4 @@ spec:
   ports:
     - name: http
       port: 3001
-      targetPort: 3001
       protocol: TCP

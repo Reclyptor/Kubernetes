@@ -7,8 +7,6 @@ metadata:
     lbipam.cilium.io/sharing-key: "lan-shared"
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
-  labels:
-    app: tautulli
 spec:
   type: LoadBalancer
   selector:
@@ -16,6 +14,5 @@ spec:
   ports:
     - name: http
       port: 8181
-      targetPort: 8181
       protocol: TCP
 

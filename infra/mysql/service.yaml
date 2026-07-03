@@ -8,10 +8,10 @@ metadata:
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
 spec:
+  type: LoadBalancer
   selector:
     app: mysql
-  type: LoadBalancer
   ports:
     - name: mysql
       port: 3306
-      targetPort: 3306
+      protocol: TCP
