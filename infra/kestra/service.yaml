@@ -8,10 +8,11 @@ metadata:
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
 spec:
+  type: LoadBalancer
   selector:
     app: kestra
-  type: LoadBalancer
   ports:
     - name: http
       port: 8081
+      protocol: TCP
       targetPort: 8080

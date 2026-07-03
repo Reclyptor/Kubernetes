@@ -4,13 +4,13 @@ metadata:
   name: temporal
   namespace: temporal
 spec:
+  type: ClusterIP
   selector:
     app: temporal
-  type: ClusterIP
   ports:
     - name: frontend
       port: 7233
-      targetPort: 7233
+      protocol: TCP
 
 ---
 apiVersion: v1
@@ -23,11 +23,12 @@ metadata:
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
 spec:
+  type: LoadBalancer
   selector:
     app: temporal-web
-  type: LoadBalancer
   ports:
     - name: http
       port: 7234
+      protocol: TCP
       targetPort: 8080
 

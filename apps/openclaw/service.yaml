@@ -7,8 +7,6 @@ metadata:
     lbipam.cilium.io/sharing-key: "lan-shared"
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
-  labels:
-    app: openclaw
 spec:
   type: LoadBalancer
   selector:
@@ -16,7 +14,6 @@ spec:
   ports:
     - name: http
       port: 18791
-      targetPort: 18791
       protocol: TCP
 ---
 apiVersion: v1
@@ -28,8 +25,6 @@ metadata:
     lbipam.cilium.io/sharing-key: "lan-shared"
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
-  labels:
-    app: belugabot
 spec:
   type: LoadBalancer
   selector:
@@ -37,5 +32,4 @@ spec:
   ports:
     - name: http
       port: 18792
-      targetPort: 18792
       protocol: TCP

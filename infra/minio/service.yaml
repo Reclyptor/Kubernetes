@@ -8,14 +8,16 @@ metadata:
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
 spec:
+  type: LoadBalancer
   selector:
     app: minio
-  type: LoadBalancer
   ports:
     - name: api
       port: 9500
+      protocol: TCP
       targetPort: 9000
     - name: console
       port: 9501
+      protocol: TCP
       targetPort: 9001
 

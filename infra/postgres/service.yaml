@@ -8,11 +8,11 @@ metadata:
     lbipam.cilium.io/sharing-cross-namespace: "*"
     lbipam.cilium.io/ips: "192.168.1.120"
 spec:
+  type: LoadBalancer
   selector:
     app: postgres
-  type: LoadBalancer
   ports:
     - name: postgres
       port: 5432
-      targetPort: 5432
+      protocol: TCP
 
