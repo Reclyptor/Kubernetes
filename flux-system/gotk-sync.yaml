@@ -20,9 +20,7 @@ metadata:
 spec:
   interval: 10m0s
   path: ./flux-system
-  # prune is temporarily disabled for the monolith -> layered cutover; once the
-  # core/infra/apps Kustomizations have adopted their resources, set back to true
-  prune: false
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
