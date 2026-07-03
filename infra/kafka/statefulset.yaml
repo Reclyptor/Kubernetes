@@ -22,7 +22,7 @@ spec:
       containers:
         - name: kafka
           image: apache/kafka:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 9092
               name: internal

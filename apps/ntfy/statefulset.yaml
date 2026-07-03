@@ -31,7 +31,7 @@ spec:
       initContainers:
       - name: ntfy-init
         image: binwiederhier/ntfy:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command: ["/bin/sh", "-c"]
         args:
         - printf '%s\n%s\n' "$NTFY_ADMIN_PASSWORD" "$NTFY_ADMIN_PASSWORD" | ntfy user add --role=admin "$NTFY_ADMIN_USER" || true
@@ -54,7 +54,7 @@ spec:
       containers:
       - name: ntfy
         image: binwiederhier/ntfy:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         args:
         - serve
         ports:

@@ -22,7 +22,7 @@ spec:
       containers:
         - name: mongodb
           image: mongo:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args:
             - "--bind_ip_all"
             - "--port=27017"

@@ -24,7 +24,7 @@ spec:
       containers:
         - name: authentik
           image: ghcr.io/goauthentik/server:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args: ["server"]
           resources:
             requests:
@@ -115,7 +115,7 @@ spec:
       containers:
         - name: authentik-worker
           image: ghcr.io/goauthentik/server:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args: ["worker"]
           resources:
             requests:
