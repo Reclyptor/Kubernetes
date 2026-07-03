@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: all-drives
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: makemkv
+          image: jlesage/makemkv:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 5800
+            - name: vnc
+              protocol: TCP
+              containerPort: 5900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: KEEP_APP_RUNNING
+              value: "1"
+            - name: DISPLAY_WIDTH
+              value: "1920"
+            - name: DISPLAY_HEIGHT
+              value: "1080"
+            - name: VNC_PASSWORD
+              value: ""
+            - name: MAKEMKV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: makemkv-key
+                  key: key
+            - name: AUTO_DISC_RIPPER
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: output
+              mountPath: /output
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5800
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        # bare entry merges with each stub's per-drive claim while keeping
+        # the config volume listed before output in the rendered output
+        - name: config
+        - name: output
+          persistentVolumeClaim:
+            claimName: makemkv-output

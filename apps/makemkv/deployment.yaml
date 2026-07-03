@@ -1,0 +1,191 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive0
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52225B18130019
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52225B18130019
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52225B18130019
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52225b18130019
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive1
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52225B18133253
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52225B18133253
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52225B18133253
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52225b18133253
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive2
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52425B18130826
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52425B18130826
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52425B18130826
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52425b18130826
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive3
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52524422173906
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52524422173906
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52524422173906
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52524422173906
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive4
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52525B18131707
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52525B18131707
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52525B18131707
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52525b18131707
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive5
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52D24A16083824
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52D24A16083824
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52D24A16083824
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52d24a16083824
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive6
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52E25510161815
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52E25510161815
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52E25510161815
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52e25510161815
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makemkv-drive7
+  namespace: makemkv
+  labels:
+    app: makemkv
+    drive-serial: BP52E25512093803
+spec:
+  selector:
+    matchLabels:
+      app: makemkv
+      drive-serial: BP52E25512093803
+  template:
+    metadata:
+      labels:
+        app: makemkv
+        drive-serial: BP52E25512093803
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-bp52e25512093803

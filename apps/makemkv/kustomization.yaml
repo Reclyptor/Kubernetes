@@ -6,6 +6,22 @@ resources:
   - secrets
   - pv.yaml
   - pvc.yaml
-  - deployments.yaml
+  - deployment.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
+patches:
+  # every makemkv-drive*/config-* stub carries only its per-drive facts
+  # (serial labels, config claim, web port); everything shared lives in
+  # these patches and is applied to all eight instances
+  - path: deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: makemkv-drive.*
+  - path: service-patch.yaml
+    target:
+      kind: Service
+      name: makemkv-drive.*
+  - path: pvc-patch.yaml
+    target:
+      kind: PersistentVolumeClaim
+      name: config-.*
