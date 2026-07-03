@@ -1,10 +1,9 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: seraui
   namespace: seraui
 spec:
-  serviceName: seraui
   replicas: 1
   selector:
     matchLabels:

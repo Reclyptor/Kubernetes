@@ -4,5 +4,5 @@ namespace: playit
 resources:
   - namespace.yaml
   - secrets
-  - statefulset.yaml
+  - deployment.yaml
   - ciliumnetworkpolicy.yaml

@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: temporal
   namespace: temporal
 spec:
-  serviceName: temporal
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -22,7 +23,7 @@ spec:
       containers:
         - name: temporal
           image: temporalio/auto-setup:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 7233
               name: frontend
@@ -65,12 +66,11 @@ spec:
 
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: temporal-web
   namespace: temporal
 spec:
-  serviceName: temporal-web
   replicas: 1
   selector:
     matchLabels:
@@ -87,7 +87,7 @@ spec:
       containers:
         - name: temporal-web
           image: temporalio/ui:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               name: http

@@ -1,10 +1,9 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: cerbos
   namespace: cerbos
 spec:
-  serviceName: cerbos
   replicas: 1
   selector:
     matchLabels:

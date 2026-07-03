@@ -4,6 +4,6 @@ namespace: seraui
 resources:
   - namespace.yaml
   - secrets
-  - statefulset.yaml
+  - deployment.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml

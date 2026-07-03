@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: playit
   namespace: playit
 spec:
-  serviceName: playit
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
