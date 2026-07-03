@@ -6,4 +6,5 @@ resources:
   - truenas-dxp6800
   - truenas-dxp4800
   - truenas-fs6712x
+  - ciliumnetworkpolicy.yaml
 
