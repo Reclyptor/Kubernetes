@@ -52,3 +52,18 @@ spec:
             k8s:io.kubernetes.pod.namespace: openclaw
       toPorts:
         - ports: [{ port: "18791", protocol: TCP }]
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    - toFQDNs:
+        - matchName: "discord.com"
+        - matchName: "gateway.discord.gg"
+        - matchName: "cdn.discordapp.com"
+        - matchName: "api.anthropic.com"
+        - matchName: "api.openai.com"
+        - matchName: "api.search.brave.com"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

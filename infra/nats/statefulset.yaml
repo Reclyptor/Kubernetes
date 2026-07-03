@@ -22,7 +22,7 @@ spec:
       containers:
         - name: nats
           image: nats:alpine
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 4222
               name: client

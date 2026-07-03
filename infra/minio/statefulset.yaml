@@ -22,7 +22,7 @@ spec:
       containers:
         - name: minio
           image: minio/minio:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args:
             - server
             - /data

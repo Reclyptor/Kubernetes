@@ -22,7 +22,7 @@ spec:
       containers:
         - name: kestra
           image: kestra/kestra:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - /bin/bash
             - -c
