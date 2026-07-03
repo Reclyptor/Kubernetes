@@ -16,9 +16,11 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        # the kestra image runs as kestra (uid 1001) and its launcher writes
+        # /app/confs/application.yml at startup, so the uid must match the image
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
       containers:
         - name: kestra
           image: kestra/kestra:latest
