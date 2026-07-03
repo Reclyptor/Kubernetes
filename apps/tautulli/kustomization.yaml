@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: tautulli
 resources:
   - namespace.yaml
-  - secrets
   - statefulset.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
