@@ -94,6 +94,20 @@ spec:
             - name: config
               mountPath: /config
               readOnly: true
+          livenessProbe:
+            tcpSocket:
+              port: 27015
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 27015
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
       volumes:
         - name: config
           configMap:
