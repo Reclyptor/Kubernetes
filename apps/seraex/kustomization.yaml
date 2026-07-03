@@ -4,7 +4,7 @@ namespace: seraex
 resources:
   - namespace.yaml
   - secrets
-  - statefulset.yaml
   - pv.yaml
   - pvc.yaml
+  - statefulset.yaml
   - ciliumnetworkpolicy.yaml

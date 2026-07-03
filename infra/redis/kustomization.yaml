@@ -4,6 +4,6 @@ namespace: redis
 resources:
   - namespace.yaml
   - secrets
-  - service.yaml
   - statefulset.yaml
+  - service.yaml
   - ciliumnetworkpolicy.yaml
