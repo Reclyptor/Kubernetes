@@ -14,7 +14,21 @@ spec:
     - name: controller
       port: 9093
       protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-external
+  namespace: kafka
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
+spec:
+  type: LoadBalancer
+  selector:
+    app: kafka
+  ports:
     - name: external
       port: 9091
       protocol: TCP
-
