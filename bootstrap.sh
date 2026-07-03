@@ -1,5 +1,5 @@
-#! /usr/bin/env bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 echo ">>> Creating flux-system namespace..."
 kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f -

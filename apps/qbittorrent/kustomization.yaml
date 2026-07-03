@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: qbittorrent
 resources:
   - namespace.yaml
-  - secrets/
+  - secrets
   - pv.yaml
   - pvc.yaml
   - statefulset.yaml
