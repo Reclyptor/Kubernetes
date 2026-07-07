@@ -9,6 +9,8 @@ data:
     set -e
     sed -e "s/\${NATS_USER}/${NATS_USER}/g" \
         -e "s/\${NATS_PASSWORD}/${NATS_PASSWORD}/g" \
+        -e "s/\${NATS_SYS_USER}/${NATS_SYS_USER}/g" \
+        -e "s/\${NATS_SYS_PASSWORD}/${NATS_SYS_PASSWORD}/g" \
         -e "s/\${POD_NAME}/${POD_NAME}/g" \
         /etc/nats-config/nats.conf.tpl > /tmp/nats.conf
     exec nats-server --config /tmp/nats.conf
@@ -43,11 +45,17 @@ data:
     #   ]
     # }
     
-    # System account for server monitoring
+    # System account for server monitoring (JetStream is not permitted on it)
     system_account: SYS
-    
+
     accounts: {
       SYS: {
+        users: [
+          {user: "${NATS_SYS_USER}", password: "${NATS_SYS_PASSWORD}"}
+        ]
+      },
+      APP: {
+        jetstream: enabled,
         users: [
           {user: "${NATS_USER}", password: "${NATS_PASSWORD}"}
         ]
