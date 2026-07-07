@@ -4,6 +4,7 @@ namespace: authentik
 resources:
   - namespace.yaml
   - secrets
+  - pvc.yaml
   - statefulset.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml

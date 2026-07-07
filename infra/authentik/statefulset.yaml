@@ -59,6 +59,13 @@ spec:
             periodSeconds: 10
             failureThreshold: 6
             timeoutSeconds: 3
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: authentik-media
+        - name: templates
+          persistentVolumeClaim:
+            claimName: authentik-templates
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -68,26 +75,6 @@ spec:
                     operator: In
                     values:
                       - voideon
-  persistentVolumeClaimRetentionPolicy:
-    whenDeleted: Retain
-    whenScaled: Retain
-  volumeClaimTemplates:
-    - metadata:
-        name: media
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        storageClassName: iscsi-persistent-fs6712x
-        resources:
-          requests:
-            storage: 5Gi
-    - metadata:
-        name: templates
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        storageClassName: iscsi-persistent-fs6712x
-        resources:
-          requests:
-            storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -143,6 +130,13 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 3
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: authentik-media
+        - name: templates
+          persistentVolumeClaim:
+            claimName: authentik-templates
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -152,25 +146,5 @@ spec:
                     operator: In
                     values:
                       - voideon
-  persistentVolumeClaimRetentionPolicy:
-    whenDeleted: Retain
-    whenScaled: Retain
-  volumeClaimTemplates:
-    - metadata:
-        name: media
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        storageClassName: iscsi-persistent-fs6712x
-        resources:
-          requests:
-            storage: 5Gi
-    - metadata:
-        name: templates
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        storageClassName: iscsi-persistent-fs6712x
-        resources:
-          requests:
-            storage: 1Gi
 
 
