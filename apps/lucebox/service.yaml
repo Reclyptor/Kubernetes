@@ -16,3 +16,13 @@ spec:
       port: 8001
       protocol: TCP
       targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lucebox-megakernel
+  namespace: lucebox
+spec:
+  clusterIP: None
+  selector:
+    app: lucebox-megakernel
