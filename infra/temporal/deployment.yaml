@@ -102,6 +102,14 @@ spec:
             periodSeconds: 5
             failureThreshold: 3
             timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 3
           resources:
             requests:
               memory: "128Mi"
