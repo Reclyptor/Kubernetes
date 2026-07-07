@@ -53,14 +53,36 @@ spec:
         - name: http
           containerPort: 18791
           protocol: TCP
-        envFrom:
-        - secretRef:
-            name: openclaw-secret
         env:
         - name: TZ
           value: "America/Chicago"
         - name: NODE_ENV
           value: "production"
+        - name: OPENCLAW_GATEWAY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: openclaw-secret
+              key: OPENCLAW_GATEWAY_TOKEN
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openclaw-secret
+              key: ANTHROPIC_API_KEY
+        - name: DISCORD_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: openclaw-secret
+              key: DISCORD_BOT_TOKEN
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openclaw-secret
+              key: OPENAI_API_KEY
+        - name: BRAVE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openclaw-secret
+              key: BRAVE_API_KEY
         volumeMounts:
         - name: config
           mountPath: /home/node/.openclaw
@@ -157,14 +179,36 @@ spec:
         - name: http
           containerPort: 18792
           protocol: TCP
-        envFrom:
-        - secretRef:
-            name: belugabot-secret
         env:
         - name: TZ
           value: "America/Chicago"
         - name: NODE_ENV
           value: "production"
+        - name: OPENCLAW_GATEWAY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: belugabot-secret
+              key: OPENCLAW_GATEWAY_TOKEN
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: belugabot-secret
+              key: ANTHROPIC_API_KEY
+        - name: DISCORD_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: belugabot-secret
+              key: DISCORD_BOT_TOKEN
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: belugabot-secret
+              key: OPENAI_API_KEY
+        - name: BRAVE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: belugabot-secret
+              key: BRAVE_API_KEY
         volumeMounts:
         - name: config
           mountPath: /home/node/.openclaw
