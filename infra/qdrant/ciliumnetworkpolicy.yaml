@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: qdrant
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports:
             - { port: "6333", protocol: TCP }

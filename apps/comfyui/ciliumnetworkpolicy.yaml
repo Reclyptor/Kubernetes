@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: comfyui
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "8188", protocol: TCP }]
   egress:

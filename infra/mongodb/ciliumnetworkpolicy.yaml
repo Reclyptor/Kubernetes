@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: mongodb
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "27017", protocol: TCP }]
     - fromEndpoints:

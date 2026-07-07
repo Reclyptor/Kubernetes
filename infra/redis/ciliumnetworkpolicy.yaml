@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: redis
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "6379", protocol: TCP }]
     - fromEndpoints:

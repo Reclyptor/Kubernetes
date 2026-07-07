@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: factorio
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "34197", protocol: UDP }]
     - fromEndpoints:

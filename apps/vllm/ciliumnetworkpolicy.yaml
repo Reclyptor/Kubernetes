@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: vllm
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "8000", protocol: TCP }]
     - fromEndpoints:
