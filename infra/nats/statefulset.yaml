@@ -52,6 +52,16 @@ spec:
                 secretKeyRef:
                   name: nats-auth-secret
                   key: password
+            - name: NATS_SYS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nats-auth-secret
+                  key: sys-username
+            - name: NATS_SYS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nats-auth-secret
+                  key: sys-password
           volumeMounts:
             - name: config
               mountPath: /etc/nats-config
