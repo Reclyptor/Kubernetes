@@ -28,8 +28,8 @@ spec:
               name: mysql
           volumeMounts:
             - name: data
-              mountPath: /var/lib
-              subPath: mysql
+              mountPath: /var/lib/mysql
+              subPath: mysql/mysql
             - name: mysql-init-configmap
               mountPath: /etc/mysql/conf.d/custom.cnf
               subPath: custom.cnf
