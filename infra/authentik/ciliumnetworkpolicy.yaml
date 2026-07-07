@@ -23,6 +23,17 @@ spec:
       toPorts:
         - ports:
             - { port: "9000", protocol: TCP }
+    - fromEndpoints:
+        - matchLabels:
+            app: sera
+            k8s:io.kubernetes.pod.namespace: sera
+        - matchLabels:
+            app: seraui
+            k8s:io.kubernetes.pod.namespace: seraui
+      toPorts:
+        - ports:
+            - { port: "9000", protocol: TCP }
+            - { port: "9443", protocol: TCP }
   egress:
     - toEndpoints:
         - matchLabels:

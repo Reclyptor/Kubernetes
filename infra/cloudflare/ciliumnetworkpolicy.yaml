@@ -39,18 +39,6 @@ spec:
         - ports: [{ port: "3000", protocol: TCP }]
     - toEndpoints:
         - matchLabels:
-            app: agentmemory-claude
-            k8s:io.kubernetes.pod.namespace: agentmemory
-      toPorts:
-        - ports: [{ port: "3111", protocol: TCP }]
-    - toEndpoints:
-        - matchLabels:
-            app: agentmemory-qwen
-            k8s:io.kubernetes.pod.namespace: agentmemory
-      toPorts:
-        - ports: [{ port: "3111", protocol: TCP }]
-    - toEndpoints:
-        - matchLabels:
             app: plex
             k8s:io.kubernetes.pod.namespace: plex
       toPorts:
