@@ -19,5 +19,15 @@ spec:
     - name: https
       port: 9443
       protocol: TCP
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentik-worker
+  namespace: authentik
+spec:
+  clusterIP: None
+  selector:
+    app: authentik
+    component: worker
 
