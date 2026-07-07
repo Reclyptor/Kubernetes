@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: makemkv
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "5800", protocol: TCP }]
   egress:

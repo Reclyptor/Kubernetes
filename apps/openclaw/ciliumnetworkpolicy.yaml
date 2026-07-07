@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: belugabot
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "18792", protocol: TCP }]
   egress:
@@ -43,7 +43,7 @@ spec:
     matchLabels:
       app: openclaw
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "18791", protocol: TCP }]
     - fromEndpoints:

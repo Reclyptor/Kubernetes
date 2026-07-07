@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: qbittorrent
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "8080", protocol: TCP }]
   egress:

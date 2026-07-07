@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: ntfy
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "80", protocol: TCP }]
     - fromEndpoints:
@@ -34,7 +34,7 @@ spec:
     matchLabels:
       app: ntfy-proxy
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "4180", protocol: TCP }]
     - fromEndpoints:

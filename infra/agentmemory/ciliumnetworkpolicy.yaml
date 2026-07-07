@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: agentmemory-claude
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "3111", protocol: TCP }]
   egress:
@@ -33,7 +33,7 @@ spec:
     matchLabels:
       app: agentmemory-qwen
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "3111", protocol: TCP }]
   egress:

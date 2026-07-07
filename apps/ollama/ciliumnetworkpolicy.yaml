@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: ollama
   ingress:
-    - fromEntities: [world, remote-node, health]
+    - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "11434", protocol: TCP }]
   egress:
