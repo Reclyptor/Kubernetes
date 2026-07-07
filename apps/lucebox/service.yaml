@@ -15,3 +15,4 @@ spec:
     - name: http
       port: 8001
       protocol: TCP
+      targetPort: 8000
