@@ -7,10 +7,6 @@ spec:
   endpointSelector:
     matchLabels:
       app: belugabot
-  ingress:
-    - fromEntities: [world, remote-node]
-      toPorts:
-        - ports: [{ port: "18792", protocol: TCP }]
   egress:
     - toEntities: [host]
       toPorts:
@@ -43,9 +39,6 @@ spec:
     matchLabels:
       app: openclaw
   ingress:
-    - fromEntities: [world, remote-node]
-      toPorts:
-        - ports: [{ port: "18791", protocol: TCP }]
     - fromEndpoints:
         - matchLabels:
             app: belugabot
