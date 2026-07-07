@@ -25,4 +25,4 @@ data:
         updatePollInterval: "60s"
         operationTimeout: "30s"
         ssh:
-          privateKeyFile: "/root/.ssh/id_rsa"
+          privateKeyFile: "/etc/cerbos-ssh/id_rsa"

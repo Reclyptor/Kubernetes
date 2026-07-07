@@ -23,15 +23,28 @@ spec:
                 operator: In
                 values:
                 - voideon
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: cerbos
         image: ghcr.io/cerbos/cerbos:latest
         args:
           - server
           - --config=/etc/cerbos/config.yaml
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
         env:
         - name: SSH_KNOWN_HOSTS
-          value: "/root/.ssh/known_hosts"
+          value: "/etc/cerbos-ssh/known_hosts"
+        - name: CERBOS_NO_TELEMETRY
+          value: "1"
         - name: CERBOS_ADMIN_USERNAME
           valueFrom:
             secretKeyRef:
@@ -70,7 +83,7 @@ spec:
         - name: policies
           mountPath: /policies
         - name: ssh-key
-          mountPath: /root/.ssh
+          mountPath: /etc/cerbos-ssh
           readOnly: true
         resources:
           requests:
@@ -88,7 +101,7 @@ spec:
       - name: ssh-key
         secret:
           secretName: cerbos-git-secret
-          defaultMode: 0400
+          defaultMode: 0440
           items:
           - key: id_rsa
             path: id_rsa
