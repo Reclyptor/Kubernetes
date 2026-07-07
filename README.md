@@ -70,9 +70,13 @@ All secrets are committed SOPS-encrypted with [age](https://age-encryption.org)
 - **HTTP ingress goes through Cloudflare Tunnels** (`infra/cloudflare`) —
   there is deliberately no ingress controller, cert-manager, or Gateway API.
   Game/UDP traffic ingresses via playit.gg (`infra/playit`).
-- **CoreDNS** (`core/coredns`) is a hand-maintained replacement of the
-  distro's deployment (2 replicas + pod anti-affinity for HA). Its image and
-  pod spec must be kept in sync with cluster upgrades manually.
+- **CoreDNS** (`core/coredns`) overrides only the Deployment of the k3s
+  addon (2 replicas + pod anti-affinity for HA); its image and pod spec must
+  be kept in sync with cluster upgrades manually. The Corefile ConfigMap,
+  ServiceAccount/RBAC, and `kube-dns` Service stay k3s-managed on purpose:
+  DNS must exist before Flux can fetch this repo, so vendoring them here
+  would create a bootstrap chicken-and-egg. A fresh cluster therefore needs
+  the k3s CoreDNS addon enabled before Flux takes over the Deployment.
 - **NodeLocal DNSCache** (`core/node-local-dns`) is required for Cilium
   `toFQDNs` policies to work with WireGuard — do not remove it while any
   policy uses FQDN rules.
