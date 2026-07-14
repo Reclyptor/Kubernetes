@@ -66,7 +66,7 @@ metadata:
 spec:
   selector:
     app: makemkv
-    drive-serial: BP52525B18131707
+    drive-serial: BP52225C07131304
   ports:
     - name: web
       port: 5804
