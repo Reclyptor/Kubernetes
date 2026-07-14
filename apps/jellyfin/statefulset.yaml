@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jellyfin
+  namespace: jellyfin
+spec:
+  serviceName: jellyfin
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: jellyfin
+          image: jellyfin/jellyfin:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8096
+            - name: https
+              protocol: TCP
+              containerPort: 8920
+            - name: discovery
+              protocol: UDP
+              containerPort: 7359
+            - name: dlna
+              protocol: UDP
+              containerPort: 1900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: LIBVA_DRIVER_NAME
+              value: "radeonsi"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: cache
+              mountPath: /cache
+            - name: transcode
+              mountPath: /cache/transcodes
+            - name: media
+              mountPath: /media
+              readOnly: true
+            - name: render
+              mountPath: /dev/dri/renderD128
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /health
+              port: 8096
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /health
+              port: 8096
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 5
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: jellyfin-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: jellyfin-media
+        - name: cache
+          emptyDir: {}
+        - name: transcode
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+        - name: render
+          hostPath:
+            path: /dev/dri/renderD128
+            type: CharDevice
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
