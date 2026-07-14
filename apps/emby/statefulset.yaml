@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: emby
+  namespace: emby
+spec:
+  serviceName: emby
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emby
+  template:
+    metadata:
+      labels:
+        app: emby
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - styxeon
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: emby
+          image: emby/embyserver:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8096
+            - name: https
+              protocol: TCP
+              containerPort: 8920
+            - name: discovery
+              protocol: UDP
+              containerPort: 7359
+            - name: dlna
+              protocol: UDP
+              containerPort: 1900
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            - name: UID
+              value: "0"
+            - name: GID
+              value: "0"
+            - name: LIBVA_DRIVER_NAME
+              value: "radeonsi"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: transcode
+              mountPath: /config/transcoding-temp
+            - name: media
+              mountPath: /media
+              readOnly: true
+            - name: render
+              mountPath: /dev/dri/renderD128
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /System/Info/Public
+              port: 8096
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /System/Info/Public
+              port: 8096
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 5
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: emby-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: emby-media
+        - name: transcode
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+        - name: render
+          hostPath:
+            path: /dev/dri/renderD128
+            type: CharDevice
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain

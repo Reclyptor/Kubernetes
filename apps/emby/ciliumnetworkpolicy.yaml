@@ -1,0 +1,29 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: emby
+  namespace: emby
+spec:
+  endpointSelector:
+    matchLabels:
+      app: emby
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports:
+            - { port: "8096", protocol: TCP }
+            - { port: "8920", protocol: TCP }
+            - { port: "7359", protocol: UDP }
+            - { port: "1900", protocol: UDP }
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "1900", protocol: UDP }]
