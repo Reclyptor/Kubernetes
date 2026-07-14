@@ -39,7 +39,7 @@ metadata:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: config-bp52525b18131707
+  name: config-bp52225c07131304
   namespace: makemkv
 ---
 apiVersion: v1

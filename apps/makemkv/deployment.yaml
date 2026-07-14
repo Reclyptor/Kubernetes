@@ -101,22 +101,22 @@ metadata:
   namespace: makemkv
   labels:
     app: makemkv
-    drive-serial: BP52525B18131707
+    drive-serial: BP52225C07131304
 spec:
   selector:
     matchLabels:
       app: makemkv
-      drive-serial: BP52525B18131707
+      drive-serial: BP52225C07131304
   template:
     metadata:
       labels:
         app: makemkv
-        drive-serial: BP52525B18131707
+        drive-serial: BP52225C07131304
     spec:
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: config-bp52525b18131707
+            claimName: config-bp52225c07131304
 ---
 apiVersion: apps/v1
 kind: Deployment
