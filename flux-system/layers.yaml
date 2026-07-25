@@ -17,13 +17,14 @@ spec:
     secretRef:
       name: sops-age
   healthChecks:
+    # coredns (a Deployment) is the cluster-DNS readiness gate. node-local-dns
+    # is intentionally NOT health-checked: as a per-node DaemonSet, Flux marks
+    # it unhealthy whenever any single node is down, which would freeze the
+    # entire core -> infra -> apps chain on one node outage. Its readiness is
+    # per-node and non-blocking for workloads on healthy nodes.
     - apiVersion: apps/v1
       kind: Deployment
       name: coredns
-      namespace: kube-system
-    - apiVersion: apps/v1
-      kind: DaemonSet
-      name: node-local-dns
       namespace: kube-system
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease
