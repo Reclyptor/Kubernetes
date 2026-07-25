@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: headscale-config
+  namespace: headscale
+data:
+  config.yaml: |
+    server_url: https://headscale.reclyptor.com
+    listen_addr: 0.0.0.0:8080
+    metrics_listen_addr: 0.0.0.0:9090
+    grpc_listen_addr: 0.0.0.0:50443
+    grpc_allow_insecure: false
+
+    # Keep the control socket on the writable PVC so the container can run
+    # with a read-only root filesystem.
+    unix_socket: /var/lib/headscale/headscale.sock
+
+    noise:
+      private_key_path: /var/lib/headscale/noise_private.key
+
+    prefixes:
+      v4: 100.64.0.0/10
+      v6: fd7a:115c:a1e0::/48
+      allocation: sequential
+
+    # Self-hosted embedded DERP so relayed sessions never leave our infra.
+    # The public STUN/DERP endpoints are published to clients via playit
+    # (configured in a later phase); the default Tailscale DERP map is
+    # disabled on purpose (urls/paths empty).
+    derp:
+      server:
+        enabled: true
+        region_id: 999
+        region_code: headscale
+        region_name: Headscale Embedded DERP
+        stun_listen_addr: 0.0.0.0:3478
+        private_key_path: /var/lib/headscale/derp_server_private.key
+        automatically_add_embedded_derp_region: true
+      urls: []
+      paths: []
+      auto_update_enabled: false
+      update_frequency: 24h
+
+    disable_check_updates: true
+    ephemeral_node_inactivity_timeout: 30m
+
+    database:
+      type: sqlite
+      sqlite:
+        path: /var/lib/headscale/db.sqlite
+
+    dns:
+      magic_dns: true
+      base_domain: tailnet.reclyptor.com
+      nameservers:
+        global:
+          - 1.1.1.1
+          - 1.0.0.1
+
+    # OIDC against Authentik — only the media-family group may register a
+    # node. client_secret is mounted from a SOPS secret (later phase);
+    # client_id is set to match the Authentik provider.
+    oidc:
+      issuer: https://authentik.reclyptor.com/application/o/headscale/
+      client_id: headscale
+      client_secret_path: /etc/headscale/secrets/oidc_client_secret
+      scope:
+        - openid
+        - profile
+        - email
+      allowed_groups:
+        - media-family
+
+    policy:
+      mode: file
+      path: /etc/headscale/policy.hujson
+
+    log:
+      level: info
+      format: text
+
+  policy.hujson: |
+    // Tailnet access policy. Family reach ONLY the two media services on the
+    // shared VIP; the subnet router may advertise just that VIP. This is the
+    // membership gate — network-layer backstops live in the Cilium policies.
+    {
+      "groups": {
+        // Add each family member's Authentik identity (email) here.
+        "group:media-family": ["admin@reclyptor.com"],
+      },
+      "tagOwners": {
+        "tag:router": ["group:media-family"],
+      },
+      "hosts": {
+        "media-vip": "192.168.1.120/32",
+      },
+      "autoApprovers": {
+        "routes": {
+          "192.168.1.120/32": ["tag:router"],
+        },
+      },
+      "acls": [
+        {
+          "action": "accept",
+          "src": ["group:media-family"],
+          "dst": ["media-vip:8097,8098"],
+        },
+      ],
+    }
