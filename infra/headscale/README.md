@@ -70,7 +70,7 @@ Put the key → `infra/tailscale/secrets/tailscale-authkey-secret.yaml`
 ### 3. Jellyfin / Emby app config
 
 - **Jellyfin**: install the **SSO-Auth** plugin, add an OpenID provider
-  pointing at `https://authentik.reclyptor.com/application/o/jellyfin/` with the
+  pointing at `https://auth.reclyptor.com/application/o/jellyfin/` with the
   Client ID/Secret from step 1. Enable "role/group" gating on `media-family`.
 - **Emby**: install the **LDAP** plugin, bind to
   `authentik-ldap.authentik.svc.cluster.local:389`, base DN

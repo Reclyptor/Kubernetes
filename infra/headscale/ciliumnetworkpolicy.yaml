@@ -36,15 +36,8 @@ spec:
         - ports: [{ port: "53", protocol: ANY }]
           rules:
             dns: [{ matchPattern: "*" }]
-    # OIDC token/JWKS exchange with Authentik (internal path if split-DNS,
-    # otherwise the public issuer is reached over 443 below).
-    - toEndpoints:
-        - matchLabels:
-            app: authentik
-            component: server
-            k8s:io.kubernetes.pod.namespace: authentik
-      toPorts:
-        - ports: [{ port: "9000", protocol: TCP }]
-    - toEntities: [world]
+    # OIDC discovery/token/JWKS with Authentik at its public issuer.
+    - toFQDNs:
+        - matchName: "auth.reclyptor.com"
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
