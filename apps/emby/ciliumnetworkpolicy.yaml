@@ -27,3 +27,12 @@ spec:
     - toEntities: [world]
       toPorts:
         - ports: [{ port: "1900", protocol: UDP }]
+    # Authentik-backed logins via the LDAP outpost.
+    - toEndpoints:
+        - matchLabels:
+            app: authentik-ldap
+            k8s:io.kubernetes.pod.namespace: authentik
+      toPorts:
+        - ports:
+            - { port: "3389", protocol: TCP }
+            - { port: "6636", protocol: TCP }

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik-ldap
+  namespace: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik-ldap
+  template:
+    metadata:
+      labels:
+        app: authentik-ldap
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ldap
+          image: ghcr.io/goauthentik/ldap:latest
+          imagePullPolicy: Always
+          env:
+            # Reach the Authentik core over the in-cluster service, not the
+            # public URL, so outpost<->core traffic never leaves the cluster.
+            - name: AUTHENTIK_HOST
+              value: http://authentik.authentik.svc.cluster.local:9000
+            - name: AUTHENTIK_INSECURE
+              value: "true"
+            - name: AUTHENTIK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-ldap-outpost
+                  key: token
+          ports:
+            - name: ldap
+              protocol: TCP
+              containerPort: 3389
+            - name: ldaps
+              protocol: TCP
+              containerPort: 6636
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            tcpSocket:
+              port: 3389
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: tmp
+          emptyDir: {}

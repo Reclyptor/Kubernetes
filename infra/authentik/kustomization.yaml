@@ -6,5 +6,6 @@ resources:
   - secrets
   - pvc.yaml
   - statefulset.yaml
+  - ldap-deployment.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
