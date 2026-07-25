@@ -1,0 +1,50 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: headscale
+  namespace: headscale
+spec:
+  endpointSelector:
+    matchLabels:
+      app: headscale
+  ingress:
+    # LAN clients register/coordinate directly over the shared VIP.
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports:
+            - { port: "8080", protocol: TCP }
+            - { port: "3478", protocol: UDP }
+    # Public control plane at headscale.reclyptor.com via the Cloudflare tunnel.
+    - fromEndpoints:
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
+      toPorts:
+        - ports: [{ port: "8080", protocol: TCP }]
+    # Data path: playit publishes the embedded DERP (HTTP) and STUN endpoints.
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports:
+            - { port: "8080", protocol: TCP }
+            - { port: "3478", protocol: UDP }
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # OIDC token/JWKS exchange with Authentik (internal path if split-DNS,
+    # otherwise the public issuer is reached over 443 below).
+    - toEndpoints:
+        - matchLabels:
+            app: authentik
+            component: server
+            k8s:io.kubernetes.pod.namespace: authentik
+      toPorts:
+        - ports: [{ port: "9000", protocol: TCP }]
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
