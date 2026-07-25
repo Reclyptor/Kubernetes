@@ -95,7 +95,7 @@ spec:
           secret:
             secretName: headscale-oidc
             items:
-              - key: oidc_client_secret
+              - key: OIDC_CLIENT_SECRET
                 path: oidc_client_secret
         - name: tmp
           emptyDir: {}
