@@ -4,21 +4,27 @@ metadata:
   name: emby
   namespace: emby
   annotations:
-    lbipam.cilium.io/ips: "192.168.1.122"
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
 spec:
   type: LoadBalancer
   selector:
     app: emby
   ports:
     - name: http
-      port: 8096
+      port: 8098
+      targetPort: 8096
       protocol: TCP
     - name: https
-      port: 8920
+      port: 8921
+      targetPort: 8920
       protocol: TCP
     - name: discovery
-      port: 7359
+      port: 7360
+      targetPort: 7359
       protocol: UDP
     - name: dlna
-      port: 1900
+      port: 1902
+      targetPort: 1900
       protocol: UDP
