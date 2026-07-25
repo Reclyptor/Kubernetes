@@ -30,4 +30,23 @@ spec:
   selector:
     app: authentik
     component: worker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentik-ldap
+  namespace: authentik
+spec:
+  type: ClusterIP
+  selector:
+    app: authentik-ldap
+  ports:
+    - name: ldap
+      port: 389
+      targetPort: 3389
+      protocol: TCP
+    - name: ldaps
+      port: 636
+      targetPort: 6636
+      protocol: TCP
 

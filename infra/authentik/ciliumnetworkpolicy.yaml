@@ -47,3 +47,37 @@ spec:
             k8s:io.kubernetes.pod.namespace: redis
       toPorts:
         - ports: [{ port: "6379", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: authentik-ldap
+  namespace: authentik
+spec:
+  endpointSelector:
+    matchLabels:
+      app: authentik-ldap
+  ingress:
+    # Emby binds to the LDAP outpost for authentication.
+    - fromEndpoints:
+        - matchLabels:
+            app: emby
+            k8s:io.kubernetes.pod.namespace: emby
+      toPorts:
+        - ports:
+            - { port: "3389", protocol: TCP }
+            - { port: "6636", protocol: TCP }
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # Outpost <-> Authentik core API (in-cluster).
+    - toEndpoints:
+        - matchLabels:
+            app: authentik
+            component: server
+            k8s:io.kubernetes.pod.namespace: authentik
+      toPorts:
+        - ports: [{ port: "9000", protocol: TCP }]
