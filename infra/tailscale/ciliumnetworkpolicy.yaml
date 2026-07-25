@@ -1,0 +1,54 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: tailscale
+  namespace: tailscale
+spec:
+  endpointSelector:
+    matchLabels:
+      app: tailscale
+  ingress:
+    # Remote family WireGuard arrives via the playit-published UDP endpoint.
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "41641", protocol: UDP }]
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # Headscale control + STUN, in-cluster.
+    - toEndpoints:
+        - matchLabels:
+            app: headscale
+            k8s:io.kubernetes.pod.namespace: headscale
+      toPorts:
+        - ports:
+            - { port: "8080", protocol: TCP }
+            - { port: "3478", protocol: UDP }
+    # Public control-plane URL (headscale.reclyptor.com via Cloudflare).
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
+    # WireGuard/STUN to remote peers and relays over arbitrary UDP ports.
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "1", endPort: 65535, protocol: UDP }]
+    # Defense-in-depth: the advertised route covers all of .120, but the
+    # router may forward ONLY to the two media services — nothing else.
+    - toEndpoints:
+        - matchLabels:
+            app: jellyfin
+            k8s:io.kubernetes.pod.namespace: jellyfin
+      toPorts:
+        - ports: [{ port: "8096", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: emby
+            k8s:io.kubernetes.pod.namespace: emby
+      toPorts:
+        - ports: [{ port: "8096", protocol: TCP }]

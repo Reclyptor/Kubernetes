@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tailscale
+  namespace: tailscale
+spec:
+  serviceName: tailscale
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tailscale
+  template:
+    metadata:
+      labels:
+        app: tailscale
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+        - name: tailscale
+          image: ghcr.io/tailscale/tailscale:latest
+          imagePullPolicy: Always
+          env:
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-authkey
+                  key: authkey
+            - name: TS_STATE_DIR
+              value: /var/lib/tailscale
+            # Persist state on the PVC, not a kube Secret (no RBAC needed).
+            - name: TS_KUBE_SECRET
+              value: ""
+            # Kernel networking so the pod can forward subnet traffic.
+            - name: TS_USERSPACE
+              value: "false"
+            # Advertise only the shared VIP; the netpol below narrows which
+            # services behind it the router may actually reach.
+            - name: TS_ROUTES
+              value: "192.168.1.120/32"
+            - name: TS_EXTRA_ARGS
+              value: "--login-server=https://headscale.reclyptor.com --advertise-tags=tag:router --hostname=tailscale --accept-dns=false"
+          ports:
+            - name: wireguard
+              protocol: UDP
+              containerPort: 41641
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+              add: [NET_ADMIN]
+          volumeMounts:
+            - name: state
+              mountPath: /var/lib/tailscale
+            - name: tun
+              mountPath: /dev/net/tun
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "tailscale status --peers=false >/dev/null 2>&1"]
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: state
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 1Gi
