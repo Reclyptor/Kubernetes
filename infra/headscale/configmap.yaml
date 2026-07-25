@@ -61,7 +61,7 @@ data:
     # node. client_secret is mounted from a SOPS secret (later phase);
     # client_id is set to match the Authentik provider.
     oidc:
-      issuer: https://authentik.reclyptor.com/application/o/headscale/
+      issuer: https://auth.reclyptor.com/application/o/headscale/
       client_id: headscale
       client_secret_path: /etc/headscale/secrets/oidc_client_secret
       scope:
