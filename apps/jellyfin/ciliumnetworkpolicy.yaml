@@ -15,6 +15,13 @@ spec:
             - { port: "8920", protocol: TCP }
             - { port: "7359", protocol: UDP }
             - { port: "1900", protocol: UDP }
+    # Remote family via the tailnet subnet router (forwarded to HTTP only).
+    - fromEndpoints:
+        - matchLabels:
+            app: tailscale
+            k8s:io.kubernetes.pod.namespace: tailscale
+      toPorts:
+        - ports: [{ port: "8096", protocol: TCP }]
   egress:
     - toEntities: [host]
       toPorts:
