@@ -5,11 +5,17 @@ metadata:
   namespace: headscale
 data:
   config.yaml: |
-    server_url: https://headscale.reclyptor.com
-    listen_addr: 0.0.0.0:8080
+    server_url: https://headscale.reclyptor.com:1587
+    listen_addr: 0.0.0.0:8443
     metrics_listen_addr: 0.0.0.0:9090
     grpc_listen_addr: 0.0.0.0:50443
     grpc_allow_insecure: false
+
+    # TLS is terminated by headscale itself — playit forwards raw TCP, so there
+    # is no upstream proxy doing it. Cert is issued by cert-manager (Let's
+    # Encrypt DNS-01) and mounted from the headscale-tls secret.
+    tls_cert_path: /etc/headscale/tls/tls.crt
+    tls_key_path: /etc/headscale/tls/tls.key
 
     # Keep the control socket on the writable PVC so the container can run
     # with a read-only root filesystem.

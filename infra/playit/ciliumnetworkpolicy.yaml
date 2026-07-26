@@ -48,7 +48,7 @@ spec:
             k8s:io.kubernetes.pod.namespace: headscale
       toPorts:
         - ports:
-            - { port: "8080", protocol: TCP }
+            - { port: "8443", protocol: TCP }
             - { port: "3478", protocol: UDP }
     - toEndpoints:
         - matchLabels:

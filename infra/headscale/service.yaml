@@ -12,9 +12,9 @@ spec:
   selector:
     app: headscale
   ports:
-    - name: http
-      port: 8082
-      targetPort: 8080
+    - name: https
+      port: 8443
+      targetPort: 8443
       protocol: TCP
     - name: stun
       port: 3478
