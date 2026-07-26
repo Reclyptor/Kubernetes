@@ -12,7 +12,7 @@ LAN they stay reachable directly on the shared VIP `192.168.1.120`
 family device (Tailscale client)
    │  control: register/coordinate (OIDC-gated by Authentik)
    ▼
-headscale.reclyptor.com  ──(Cloudflare Tunnel)──►  headscale svc :8080
+headscale.reclyptor.com  ──(Cloudflare Tunnel)──►  headscale svc :8082
    │  data: WireGuard (direct p2p, else self-hosted DERP)
    ▼
 playit.gg UDP  ──►  tailscale :41641  ──►  192.168.1.120:8097/8098
@@ -83,12 +83,13 @@ playit agent already reaches:
 
 - **UDP** → `tailscale.tailscale.svc:41641` (WireGuard data path)
 - **UDP** → `headscale.headscale.svc:3478` (DERP STUN)
-- **TCP** → `headscale.headscale.svc:8080` (embedded DERP relay fallback)
+- **TCP** → `headscale.headscale.svc:8082` (embedded DERP relay fallback)
 
 ### 5. Cloudflare — control plane hostname
 
 Add a tunnel route: `headscale.reclyptor.com` →
-`http://headscale.headscale.svc.cluster.local:8080`.
+`http://headscale.headscale.svc.cluster.local:8082` (the service port; the
+pod listens on 8080 but 8080 is already taken on the shared .120 VIP).
 
 ### 6. Encrypt and go live
 
