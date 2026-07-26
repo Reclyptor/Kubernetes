@@ -35,9 +35,16 @@ spec:
         - name: playit
           image: ghcr.io/playit-cloud/playit-agent:1.0.10
           imagePullPolicy: IfNotPresent
-          envFrom:
-            - secretRef:
-                name: playit-secret
+          # playitd 1.0 is a daemon: it binds an IPC socket (must land on the
+          # writable /tmp under a read-only root) and reads its secret from a
+          # file rather than the old SECRET_KEY env var.
+          command: ["playitd"]
+          args:
+            - "--platform-docker"
+            - "--socket-path"
+            - "/tmp/playit.sock"
+            - "--secret-path"
+            - "/etc/playit/SECRET_KEY"
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -46,6 +53,9 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: secret
+              mountPath: /etc/playit
+              readOnly: true
           resources:
             requests:
               cpu: "100m"
@@ -53,3 +63,6 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {}
+        - name: secret
+          secret:
+            secretName: playit-secret
