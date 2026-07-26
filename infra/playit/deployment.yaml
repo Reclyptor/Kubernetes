@@ -33,7 +33,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: playit
-          image: ghcr.io/playit-cloud/playit-agent:0.17
+          image: ghcr.io/playit-cloud/playit-agent:1.0.10
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
