@@ -61,3 +61,10 @@ spec:
             k8s:io.kubernetes.pod.namespace: ntfy
       toPorts:
         - ports: [{ port: "4180", protocol: TCP }]
+    # Public control plane at headscale.reclyptor.com.
+    - toEndpoints:
+        - matchLabels:
+            app: headscale
+            k8s:io.kubernetes.pod.namespace: headscale
+      toPorts:
+        - ports: [{ port: "8080", protocol: TCP }]
