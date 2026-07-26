@@ -13,6 +13,7 @@ resources:
   - ntfy
   - ollama
   - openclaw
+  - palworld
   - plex
   - qbittorrent
   - sera
