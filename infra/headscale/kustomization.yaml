@@ -4,6 +4,7 @@ namespace: headscale
 resources:
   - namespace.yaml
   - secrets
+  - headscale-cert.yaml
   - configmap.yaml
   - statefulset.yaml
   - service.yaml
