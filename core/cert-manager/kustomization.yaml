@@ -5,3 +5,5 @@ resources:
   - helmrepository.yaml
   - helmrelease.yaml
   - ciliumnetworkpolicy.yaml
+  - cloudflare-token-secret.yaml
+  - clusterissuer.yaml
