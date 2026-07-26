@@ -41,7 +41,7 @@ spec:
             - name: TS_ROUTES
               value: "192.168.1.120/32"
             - name: TS_EXTRA_ARGS
-              value: "--login-server=https://headscale.reclyptor.com --advertise-tags=tag:router --hostname=tailscale --accept-dns=false"
+              value: "--login-server=https://headscale.reclyptor.com:1587 --advertise-tags=tag:router --hostname=tailscale --accept-dns=false"
           ports:
             - name: wireguard
               protocol: UDP

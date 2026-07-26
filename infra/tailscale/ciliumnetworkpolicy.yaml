@@ -21,19 +21,12 @@ spec:
         - ports: [{ port: "53", protocol: ANY }]
           rules:
             dns: [{ matchPattern: "*" }]
-    # Headscale control + STUN, in-cluster.
-    - toEndpoints:
-        - matchLabels:
-            app: headscale
-            k8s:io.kubernetes.pod.namespace: headscale
+    # Control + DERP relay reach headscale over its public URL, which resolves
+    # to the playit edge (headscale.reclyptor.com:1587).
+    - toFQDNs:
+        - matchName: "headscale.reclyptor.com"
       toPorts:
-        - ports:
-            - { port: "8080", protocol: TCP }
-            - { port: "3478", protocol: UDP }
-    # Public control-plane URL (headscale.reclyptor.com via Cloudflare).
-    - toEntities: [world]
-      toPorts:
-        - ports: [{ port: "443", protocol: TCP }]
+        - ports: [{ port: "1587", protocol: TCP }]
     # WireGuard/STUN to remote peers and relays over arbitrary UDP ports.
     - toEntities: [world]
       toPorts:
