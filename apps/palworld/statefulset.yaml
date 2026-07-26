@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: palworld
+  namespace: palworld
+spec:
+  serviceName: palworld-server
+  replicas: 1
+  selector:
+    matchLabels:
+      app: palworld
+  template:
+    metadata:
+      labels:
+        app: palworld
+    spec:
+      automountServiceAccountToken: false
+      # This image starts as root to run SteamCMD (UPDATE_ON_BOOT) and fix
+      # permissions, then drops the server process to PUID:PGID. It therefore
+      # cannot run under a fixed non-root runAsUser like factorio/minecraft do;
+      # baseline pod-security permits the root start. fsGroup keeps the iSCSI
+      # volume writable by the dropped 1000:1000 user.
+      securityContext:
+        fsGroup: 1000
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - fluxeon
+      containers:
+        - name: palworld
+          image: thijsvanloef/palworld-server-docker:latest
+          imagePullPolicy: Always
+          ports:
+            - name: game
+              containerPort: 8211
+              protocol: UDP
+            - name: rcon
+              containerPort: 25575
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: palworld-secret
+          env:
+            # ── Runtime ──
+            - name: TZ
+              value: "America/Chicago"
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            # Pull/verify the dedicated server via SteamCMD on every boot.
+            - name: UPDATE_ON_BOOT
+              value: "true"
+            - name: MULTITHREADING
+              value: "true"
+            # ── Server Identity ──
+            - name: SERVER_NAME
+              value: "Palworld Server"
+            - name: SERVER_DESCRIPTION
+              value: ""
+            - name: PLAYERS
+              value: "16"
+            # Private, password-gated server — keep it off the community browser.
+            - name: COMMUNITY
+              value: "false"
+            # ── Networking ──
+            - name: PORT
+              value: "8211"
+            - name: QUERY_PORT
+              value: "27015"
+            # ── RCON (authenticates with ADMIN_PASSWORD) ──
+            - name: RCON_ENABLED
+              value: "true"
+            - name: RCON_PORT
+              value: "25575"
+          volumeMounts:
+            - name: data
+              mountPath: /palworld
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "8Gi"
+          # First boot downloads ~7GB via SteamCMD and generates the world, so
+          # gate readiness/liveness behind a long startupProbe rather than a
+          # fixed initialDelay: up to ~15 min before the tighter probes engage.
+          startupProbe:
+            tcpSocket:
+              port: 25575
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket:
+              port: 25575
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
+              port: 25575
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 30Gi

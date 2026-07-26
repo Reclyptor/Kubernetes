@@ -1,0 +1,31 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: palworld
+  namespace: palworld
+spec:
+  endpointSelector:
+    matchLabels:
+      app: palworld
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "8211", protocol: UDP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "8211", protocol: UDP }]
+  egress:
+    # SteamCMD installs/updates the dedicated server on every boot. Steam's CDN
+    # rides HTTP/HTTPS while its connection-manager and content fleet span the
+    # published 27000-27100/4380 port ranges with no stable IP allowlist.
+    - toEntities: [world]
+      toPorts:
+        - ports:
+            - { port: "80", protocol: TCP }
+            - { port: "443", protocol: TCP }
+            - { port: "27015", endPort: 27050, protocol: TCP }
+            - { port: "27000", endPort: 27100, protocol: UDP }
+            - { port: "4380", protocol: UDP }
