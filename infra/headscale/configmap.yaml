@@ -97,18 +97,8 @@ data:
         // Add each family member's Authentik identity (email) here.
         "group:media-family": ["admin@reclyptor.com"],
       },
-      "tagOwners": {
-        // The subnet-router service user owns its own tag; family members do
-        // not create the router node.
-        "tag:router": ["router@"],
-      },
       "hosts": {
         "media-vip": "192.168.1.120/32",
-      },
-      "autoApprovers": {
-        "routes": {
-          "192.168.1.120/32": ["tag:router"],
-        },
       },
       "acls": [
         {
