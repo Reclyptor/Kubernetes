@@ -13,7 +13,7 @@ spec:
           cloudflare:
             apiTokenSecretRef:
               name: cloudflare-api-token
-              key: api-token
+              key: API_TOKEN
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -30,4 +30,4 @@ spec:
           cloudflare:
             apiTokenSecretRef:
               name: cloudflare-api-token
-              key: api-token
+              key: API_TOKEN
