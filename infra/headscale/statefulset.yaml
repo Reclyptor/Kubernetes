@@ -29,9 +29,9 @@ spec:
           args:
             - serve
           ports:
-            - name: http
+            - name: https
               protocol: TCP
-              containerPort: 8080
+              containerPort: 8443
             - name: metrics
               protocol: TCP
               containerPort: 9090
@@ -53,6 +53,9 @@ spec:
             - name: secrets
               mountPath: /etc/headscale/secrets
               readOnly: true
+            - name: tls
+              mountPath: /etc/headscale/tls
+              readOnly: true
             - name: data
               mountPath: /var/lib/headscale
             - name: tmp
@@ -69,7 +72,8 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 8443
+              scheme: HTTPS
             initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 5
@@ -77,7 +81,8 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 8443
+              scheme: HTTPS
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
@@ -97,6 +102,9 @@ spec:
             items:
               - key: OIDC_CLIENT_SECRET
                 path: oidc_client_secret
+        - name: tls
+          secret:
+            secretName: headscale-tls
         - name: tmp
           emptyDir: {}
   persistentVolumeClaimRetentionPolicy:
