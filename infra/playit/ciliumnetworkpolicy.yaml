@@ -14,19 +14,17 @@ spec:
         - ports: [{ port: "53", protocol: ANY }]
           rules:
             dns: [{ matchPattern: "*" }]
-    # playit HTTPS control API — the only host contacted at runtime
-    - toFQDNs:
-        - matchName: "api.playit.gg"
+    # playit's edge is a large, distributed, unpublished fleet of tunnel servers:
+    # the control API rides Cloudflare, and each connection is claimed on a
+    # server-chosen TCP/UDP port across several netblocks (e.g. 69.9.176.0/20,
+    # 209.25.140.0/24). There is no stable allowlist to pin, so this relay gets
+    # broad egress to the internet. Containment lives below — it may only
+    # FORWARD into the cluster to the explicit game/tailnet services.
+    - toEntities: [world]
       toPorts:
-        - ports: [{ port: "443", protocol: TCP }]
-    # playit tunnel/control edge — playit's own registered netblock
-    # (Developed Methods LLC, 69.9.176.0/20). Control is UDP 5525 and each
-    # tunnel's data channel uses a server-chosen UDP port, so allow all UDP to
-    # playit's range only. TCP stays locked to api.playit.gg:443 above.
-    - toCIDR:
-        - 69.9.176.0/20
-      toPorts:
-        - ports: [{ port: "1", endPort: 65535, protocol: UDP }]
+        - ports:
+            - { port: "1", endPort: 65535, protocol: TCP }
+            - { port: "1", endPort: 65535, protocol: UDP }
     # forward tunneled player traffic to the game servers only
     - toEndpoints:
         - matchLabels:
