@@ -38,6 +38,12 @@ spec:
             k8s:io.kubernetes.pod.namespace: factorio
       toPorts:
         - ports: [{ port: "34197", protocol: UDP }]
+    - toEndpoints:
+        - matchLabels:
+            app: palworld
+            k8s:io.kubernetes.pod.namespace: palworld
+      toPorts:
+        - ports: [{ port: "8211", protocol: UDP }]
     # tailnet data path: publish Headscale's embedded DERP/STUN and the
     # subnet router's WireGuard endpoint
     - toEndpoints:
