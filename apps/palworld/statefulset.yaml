@@ -56,6 +56,15 @@ spec:
             # Pull/verify the dedicated server via SteamCMD on every boot.
             - name: UPDATE_ON_BOOT
               value: "true"
+            # In-container cron checks Steam for a new build, warns players over
+            # RCON, saves, then updates and restarts the server process in place
+            # (no pod restart). Requires RCON_ENABLED and UPDATE_ON_BOOT above.
+            - name: AUTO_UPDATE_ENABLED
+              value: "true"
+            - name: AUTO_UPDATE_CRON_EXPRESSION
+              value: "0 * * * *"
+            - name: AUTO_UPDATE_WARN_MINUTES
+              value: "15"
             - name: MULTITHREADING
               value: "true"
             # ── Server Identity ──
