@@ -12,12 +12,14 @@ DEFAULT_CONNECT_TIMEOUT=30
 DEFAULT_MAX_TIMEOUT=30
 DISCORD_FLAGS=0
 
+TITLE=$1
 MESSAGE=$2
 ENABLED=$4
 URL=$5
 
-# Preserve the image's silent (@silent) behavior driven by the env var.
-if [ "$DISCORD_SUPPRESS_NOTIFICATIONS" = true ]; then
+# Silent (@silent) when globally suppressed, and always for "Backup" messages so
+# the nightly backup doesn't ping; every other event follows the global flag.
+if [ "$DISCORD_SUPPRESS_NOTIFICATIONS" = true ] || [ "$TITLE" = "Backup" ]; then
     DISCORD_FLAGS=4096
 fi
 
