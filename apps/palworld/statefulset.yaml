@@ -82,14 +82,57 @@ spec:
               value: "8211"
             - name: QUERY_PORT
               value: "27015"
+            # REST API — pod-internal only; the player-logging poller reads it on
+            # 127.0.0.1:8212. No Service targets it and the CiliumNetworkPolicy
+            # has no 8212 ingress rule (default-deny), so it stays unreachable.
+            - name: REST_API_ENABLED
+              value: "true"
+            - name: REST_API_PORT
+              value: "8212"
             # ── RCON (authenticates with ADMIN_PASSWORD) ──
             - name: RCON_ENABLED
               value: "true"
             - name: RCON_PORT
               value: "25575"
+            # ── Discord (DISCORD_WEBHOOK_URL is injected from palworld-secret) ──
+            # Announces player join/leave plus server start/stop, update, and
+            # backup events. Player logging polls the REST API above every 5s;
+            # each lifecycle notification defaults on once the webhook URL is set.
+            - name: ENABLE_PLAYER_LOGGING
+              value: "true"
+            # Post as silent (@silent) messages so the channel isn't ping-spammed.
+            - name: DISCORD_SUPPRESS_NOTIFICATIONS
+              value: "true"
+            # Plain-text message bodies (the mounted discord.sh override strips
+            # the card/title/color). "player_name" is substituted at send time.
+            # The boot update-check messages fire before the start phase, so they
+            # describe the step rather than claim the server is online; the start
+            # message announces go-live (the delay until it's joinable is trivial).
+            - name: DISCORD_PLAYER_JOIN_MESSAGE
+              value: "🟢 **player_name** joined the server."
+            - name: DISCORD_PLAYER_LEAVE_MESSAGE
+              value: "🔴 **player_name** left the server."
+            - name: DISCORD_PRE_START_MESSAGE
+              value: "🌴 The Palworld server is online — hop in!"
+            - name: DISCORD_POST_SHUTDOWN_MESSAGE
+              value: "💤 The Palworld server has shut down."
+            - name: DISCORD_PRE_UPDATE_BOOT_MESSAGE
+              value: "⏳ Checking for server updates…"
+            - name: DISCORD_POST_UPDATE_BOOT_MESSAGE
+              value: "🚀 Palworld server has been updated!"
+            - name: DISCORD_PRE_BACKUP_MESSAGE
+              value: "💾 Backing up the world…"
+            - name: DISCORD_POST_BACKUP_MESSAGE
+              value: "✅ World backup complete."
           volumeMounts:
             - name: data
               mountPath: /palworld
+            # Plain-text override of the image's Discord notifier (see the
+            # configMapGenerator in kustomization.yaml).
+            - name: discord-override
+              mountPath: /home/steam/server/discord.sh
+              subPath: discord.sh
+              readOnly: true
           resources:
             requests:
               cpu: "2000m"
@@ -116,6 +159,11 @@ spec:
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
+      volumes:
+        - name: discord-override
+          configMap:
+            name: palworld-discord
+            defaultMode: 0755
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain

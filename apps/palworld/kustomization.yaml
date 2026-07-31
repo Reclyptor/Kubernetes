@@ -7,3 +7,8 @@ resources:
   - statefulset.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
+configMapGenerator:
+  # Titleless override of the image's discord.sh (mounted in the statefulset).
+  - name: palworld-discord
+    files:
+      - discord.sh
