@@ -65,6 +65,10 @@ spec:
               value: "0 * * * *"
             - name: AUTO_UPDATE_WARN_MINUTES
               value: "15"
+            # Nightly world backup at 04:00 America/Chicago (TZ above) — a live
+            # REST save + tar with no downtime; archives land on the data PVC.
+            - name: BACKUP_CRON_EXPRESSION
+              value: "0 4 * * *"
             - name: MULTITHREADING
               value: "true"
             # ── Server Identity ──
