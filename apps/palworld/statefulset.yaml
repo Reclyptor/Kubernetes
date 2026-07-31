@@ -100,9 +100,9 @@ spec:
             # each lifecycle notification defaults on once the webhook URL is set.
             - name: ENABLE_PLAYER_LOGGING
               value: "true"
-            # Post as silent (@silent) messages so the channel isn't ping-spammed.
+            # Post as normal (non-@silent) messages so the channel notifies.
             - name: DISCORD_SUPPRESS_NOTIFICATIONS
-              value: "true"
+              value: "false"
             # Plain-text message bodies (the mounted discord.sh override strips
             # the card/title/color). "player_name" is substituted at send time.
             # The boot update-check messages fire before the start phase, so they
