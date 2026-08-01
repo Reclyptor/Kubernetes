@@ -111,6 +111,13 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+          # A limit, unlike the agent container's request-only resources. This
+          # is what contains a runaway process spawned by agent-authored code:
+          # the sidecar OOM-kills and restarts on its own while the agent keeps
+          # running. RLIMIT_NPROC cannot do this job — it is counted per-uid
+          # host-wide, so it is already consumed by unrelated pods.
+          limits:
+            memory: 512Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
