@@ -48,9 +48,17 @@ spec:
           value: "production"
         - name: PORT
           value: "3001"
+        # Was unset, which defaulted the agent's workspace to process.cwd() —
+        # /app, the application's own code and node_modules. Pointing it at a
+        # dedicated volume both narrows what the file tools can reach and gives
+        # the sandbox sidecar something to share.
+        - name: WORKSPACE_DIR
+          value: /workspace
         volumeMounts:
         - name: media
           mountPath: /mnt/media
+        - name: workspace
+          mountPath: /workspace
         resources:
           requests:
             cpu: 100m
@@ -71,7 +79,49 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
+      # Runs the agent's shell/exec/code_execution commands so that the agent
+      # container never does. Same image, different entrypoint.
+      #
+      # The security property is the absence below: there is no `envFrom` on
+      # this container, so the Secret is never in its environment. That matters
+      # because /proc/1/environ is readable by any process sharing a container's
+      # uid — a command running in the agent container can read every credential
+      # the agent holds, however carefully its own env is scrubbed. Pod
+      # containers get separate PID namespaces, so a command here cannot.
+      #
+      # Do not add envFrom here, and do not set shareProcessNamespace on this
+      # pod; either one collapses the boundary.
+      - name: sandbox
+        image: ghcr.io/reclyptor/sera:latest
+        imagePullPolicy: Always
+        command: ["node", "dist/sandbox-runner/main.js"]
+        env:
+        - name: TZ
+          value: "America/Chicago"
+        - name: NODE_ENV
+          value: "production"
+        - name: SANDBOX_RUNNER_PORT
+          value: "3002"
+        volumeMounts:
+        - name: media
+          mountPath: /mnt/media
+        - name: workspace
+          mountPath: /workspace
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
       volumes:
       - name: media
         persistentVolumeClaim:
           claimName: sera-media
+      # Ephemeral by design: the workspace was previously the container
+      # filesystem, so it already did not survive a restart. Anything meant to
+      # persist belongs on the media PVC.
+      - name: workspace
+        emptyDir: {}
