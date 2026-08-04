@@ -5,7 +5,7 @@ metadata:
   namespace: vllm
 spec:
   serviceName: vllm-api
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: vllm
