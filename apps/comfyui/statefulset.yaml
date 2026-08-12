@@ -30,16 +30,21 @@ spec:
                     values:
                       - bytheon
       initContainers:
-        - name: seed-manager
+        - name: seed-custom-nodes
           image: ghcr.io/reclyptor/comfyui:latest
           command:
             - sh
             - -c
             - |
+              set -eu
               rm -rf /mnt/custom_nodes/lost+found
-              if [ ! -d /mnt/custom_nodes/ComfyUI-Manager ]; then
-                cp -a /app/custom_nodes/ComfyUI-Manager /mnt/custom_nodes/
-              fi
+              # The image owns these; refresh every start so Dockerfile pin
+              # bumps land. Manager-installed nodes alongside them are left
+              # alone, as is Manager's own state on the user volume.
+              for node in ComfyUI-Manager ComfyUI-MultiGPU ComfyUI-GGUF; do
+                rm -rf "/mnt/custom_nodes/$node"
+                cp -a "/app/custom_nodes/$node" /mnt/custom_nodes/
+              done
           volumeMounts:
             - name: custom-nodes
               mountPath: /mnt/custom_nodes
