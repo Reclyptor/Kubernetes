@@ -113,7 +113,11 @@ spec:
         storageClassName: iscsi-persistent-fs6712x
         resources:
           requests:
-            storage: 500Gi
+            # volumeClaimTemplates is immutable, so growing this means
+            # expanding the PVC directly then recreating the StatefulSet with
+            # --cascade=orphan. Editing it against a live StatefulSet is
+            # rejected and wedges Flux on every later reconcile.
+            storage: 3Ti
     - metadata:
         name: output
       spec:
