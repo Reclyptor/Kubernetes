@@ -24,7 +24,12 @@ spec:
         - matchName: "api.comfy.org"
         - matchName: "huggingface.co"
         - matchPattern: "*.huggingface.co"
+        # Model downloads redirect to Xet CDN hosts several labels deep
+        # (us.aws.cdn.hf.co, cas-bridge.xethub.hf.co). Cilium wildcards do not
+        # span dots, so each depth needs its own pattern.
         - matchPattern: "*.hf.co"
+        - matchPattern: "*.*.hf.co"
+        - matchPattern: "*.*.*.hf.co"
         - matchName: "civitai.com"
         - matchName: "pypi.org"
         - matchName: "files.pythonhosted.org"
