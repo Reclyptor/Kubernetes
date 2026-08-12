@@ -40,8 +40,9 @@ spec:
               rm -rf /mnt/custom_nodes/lost+found
               # The image owns these; refresh every start so Dockerfile pin
               # bumps land. Manager-installed nodes alongside them are left
-              # alone, as is Manager's own state on the user volume.
-              for node in ComfyUI-Manager ComfyUI-MultiGPU ComfyUI-GGUF; do
+              # alone. ComfyUI-Manager is deliberately absent — it ships as a
+              # pip package and must not live here.
+              for node in ComfyUI-MultiGPU ComfyUI-GGUF; do
                 rm -rf "/mnt/custom_nodes/$node"
                 cp -a "/app/custom_nodes/$node" /mnt/custom_nodes/
               done
