@@ -20,6 +20,8 @@ spec:
     - toFQDNs:
         - matchName: "github.com"
         - matchPattern: "*.github.com"
+        - matchPattern: "*.githubusercontent.com"
+        - matchName: "api.comfy.org"
         - matchName: "huggingface.co"
         - matchPattern: "*.huggingface.co"
         - matchPattern: "*.hf.co"
