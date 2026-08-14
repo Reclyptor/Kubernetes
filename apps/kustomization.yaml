@@ -12,7 +12,6 @@ resources:
   - minecraft
   - ntfy
   - ollama
-  - openclaw
   - palworld
   - plex
   - qbittorrent
