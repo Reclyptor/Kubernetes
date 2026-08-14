@@ -117,7 +117,7 @@ spec:
             # expanding the PVC directly then recreating the StatefulSet with
             # --cascade=orphan. Editing it against a live StatefulSet is
             # rejected and wedges Flux on every later reconcile.
-            storage: 3Ti
+            storage: 6Ti
     - metadata:
         name: output
       spec:
