@@ -53,6 +53,24 @@ spec:
         - name: comfyui
           image: ghcr.io/reclyptor/comfyui:latest
           imagePullPolicy: Always
+          # Mirrors the image CMD plus --enable-assets. Without it the assets
+          # table is never written and the asset browser falls back to the
+          # in-memory /history, so generated images vanish from the UI on every
+          # restart even though the files are safe on the output PVC. The index
+          # lives in /app/user/comfyui.db, which is persisted.
+          #
+          # --enable-asset-hashing is deliberately absent: it blake3-checksums
+          # every file it scans, and the models root is 5.5 TiB. Without it the
+          # scan is a stat plus a safetensors header read.
+          command:
+            - python3
+            - main.py
+            - --listen
+            - 0.0.0.0
+            - --port
+            - "8188"
+            - --enable-manager
+            - --enable-assets
           ports:
             - name: http
               containerPort: 8188
