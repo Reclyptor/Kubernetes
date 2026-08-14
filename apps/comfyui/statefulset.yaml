@@ -53,23 +53,6 @@ spec:
         - name: comfyui
           image: ghcr.io/reclyptor/comfyui:latest
           imagePullPolicy: Always
-          # Mirrors the image CMD plus --disable-dynamic-vram. DynamicVRAM
-          # wraps large UNets in ModelPatcherDynamic, which overrides the
-          # partially_load that ComfyUI-MultiGPU patches to split a model
-          # across both cards. With it on, DisTorch2 allocation strings are
-          # silently ignored and overflow streams from system RAM instead of
-          # cuda:1. Turning it off is the only way to get real layer
-          # distribution; models without a MultiGPU loader fall back to
-          # estimate-based loading.
-          command:
-            - python3
-            - main.py
-            - --listen
-            - 0.0.0.0
-            - --port
-            - "8188"
-            - --enable-manager
-            - --disable-dynamic-vram
           ports:
             - name: http
               containerPort: 8188
