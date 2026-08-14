@@ -1,1 +1,5 @@
 .claude/
+
+# Specs are working documents, not configuration. This is a configuration-only
+# repo, so SPEC.md stays local and is never checked in.
+SPEC.md
