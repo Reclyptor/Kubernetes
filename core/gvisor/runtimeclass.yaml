@@ -1,0 +1,11 @@
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: gvisor
+handler: gvisor
+# Every node runs runsc, but a node only carries this label once it has been
+# rebuilt and verified. The selector is what keeps gVisor pods off a node that
+# has not caught up yet, during a rollout or after a replacement.
+scheduling:
+  nodeSelector:
+    gvisor.io/runsc: "true"
