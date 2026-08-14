@@ -16,11 +16,15 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext:
-        # the kestra image runs as kestra (uid 1001) and its launcher writes
-        # /app/confs/application.yml at startup, so the uid must match the image
-        runAsUser: 1001
-        runAsGroup: 1001
-        fsGroup: 1001
+        # the kestra image runs as kestra (uid 1000) and its launcher writes
+        # /app/confs/application.yml at startup, so the uid must match the image.
+        # This was 1001 and the image moved to 1000 under :latest, which left
+        # /app/confs (0755, owned by 1000) unwritable and crashed every start on
+        # "Permission denied" before Kestra could read its own config. Verify
+        # against the image, not from memory, if it ever moves again.
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: kestra
           image: kestra/kestra:latest
