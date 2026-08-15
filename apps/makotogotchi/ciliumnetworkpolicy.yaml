@@ -1,0 +1,42 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: makotogotchi
+  namespace: makotogotchi
+spec:
+  endpointSelector:
+    matchLabels:
+      app: makotogotchi
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
+      toPorts:
+        - ports: [{ port: "3000", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: mongodb
+            k8s:io.kubernetes.pod.namespace: mongodb
+      toPorts:
+        - ports: [{ port: "27017", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: redis
+            k8s:io.kubernetes.pod.namespace: redis
+      toPorts:
+        - ports: [{ port: "6379", protocol: TCP }]
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # Web Push delivery (SPEC §12): the four real-world push services.
+    - toFQDNs:
+        - matchName: "fcm.googleapis.com"
+        - matchPattern: "*.push.services.mozilla.com"
+        - matchName: "web.push.apple.com"
+        - matchPattern: "*.notify.windows.com"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
