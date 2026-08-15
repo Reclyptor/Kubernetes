@@ -18,5 +18,8 @@ spec:
         - matchLabels:
             app: sera
             k8s:io.kubernetes.pod.namespace: sera
+        - matchLabels:
+            app: makotogotchi
+            k8s:io.kubernetes.pod.namespace: makotogotchi
       toPorts:
         - ports: [{ port: "6379", protocol: TCP }]
