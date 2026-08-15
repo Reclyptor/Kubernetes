@@ -42,7 +42,7 @@ spec:
               # bumps land. Manager-installed nodes alongside them are left
               # alone. ComfyUI-Manager is deliberately absent — it ships as a
               # pip package and must not live here.
-              for node in ComfyUI-MultiGPU ComfyUI-GGUF; do
+              for node in ComfyUI-MultiGPU ComfyUI-GGUF comfyui-history-rehydrate; do
                 rm -rf "/mnt/custom_nodes/$node"
                 cp -a "/app/custom_nodes/$node" /mnt/custom_nodes/
               done
