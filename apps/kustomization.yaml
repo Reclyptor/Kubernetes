@@ -9,6 +9,7 @@ resources:
   - jellyfin
   - lucebox
   - makemkv
+  - makotogotchi
   - minecraft
   - ntfy
   - ollama
