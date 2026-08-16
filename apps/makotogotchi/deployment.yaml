@@ -5,6 +5,18 @@ metadata:
   namespace: makotogotchi
 spec:
   replicas: 1
+  # Surge-then-terminate: the replacement pod must pass /ready (Mongo and
+  # Redis reachable) before the old one stops, so deploys never drop the pet
+  # offline. The overlap window is correct by construction — the Redis write
+  # lock serializes both pods' writes and the leader lease keeps one ticker
+  # (SPEC §3.3–3.4). Full blue-green machinery would add nothing: any
+  # cutover severs SSE streams equally, and EventSource reconnects in
+  # seconds while client-side projection keeps the meters moving.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: makotogotchi
