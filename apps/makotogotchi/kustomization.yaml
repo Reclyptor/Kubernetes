@@ -7,4 +7,3 @@ resources:
   - deployment.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
-  - imageautomation.yaml
