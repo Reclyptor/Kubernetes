@@ -19,7 +19,10 @@ spec:
       author:
         email: flux@reclyptor.com
         name: Flux
-      messageTemplate: "Deployed {{ range .Changed.Changes }}{{ .NewValue }}{{ end }} via Image Automation"
+      # Subject-only per repo convention: the diff carries the old → new
+      # image refs, and the Flux author line carries provenance. Deliberately
+      # app-agnostic — this one automation serves every app under ./apps.
+      messageTemplate: "Deployed the Latest Images"
     push:
       branch: master
   update:
