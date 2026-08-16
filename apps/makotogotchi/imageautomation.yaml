@@ -2,7 +2,7 @@
 # The app's CI publishes a sortable `<timestamp>-<sha>` tag; the policy picks
 # the newest; the automation (flux-system/image-update-automation.yaml)
 # commits the winning tag onto the deployment's marker line.
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageRepository
 metadata:
   name: makotogotchi
@@ -13,7 +13,7 @@ spec:
   secretRef:
     name: ghcr-secret
 ---
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
 metadata:
   name: makotogotchi
