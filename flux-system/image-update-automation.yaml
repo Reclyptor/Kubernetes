@@ -1,0 +1,27 @@
+# Writes ImagePolicy winners back to this repository: scans for
+# `# {"$imagepolicy": ...}` markers, updates the tags, commits to master.
+# The flux-system deploy key has write access (verified read_only: false).
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: master
+    commit:
+      author:
+        email: flux@reclyptor.com
+        name: Flux
+      messageTemplate: "Deployed {{ range .Changed.Changes }}{{ .NewValue }}{{ end }} via Image Automation"
+    push:
+      branch: master
+  update:
+    path: ./apps
+    strategy: Setters
