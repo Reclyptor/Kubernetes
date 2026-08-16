@@ -6,3 +6,16 @@ resources:
 - layers.yaml
 - ciliumnetworkpolicy.yaml
 - image-update-automation.yaml
+- makotogotchi-image.yaml
+- ../secrets/ghcr-secret.yaml
+patches:
+  - patch: |
+      - op: replace
+        path: /metadata/namespace
+        value: flux-system
+      - op: replace
+        path: /metadata/name
+        value: ghcr-makotogotchi
+    target:
+      kind: Secret
+      name: ghcr
