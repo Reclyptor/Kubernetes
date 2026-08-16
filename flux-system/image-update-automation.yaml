@@ -19,10 +19,20 @@ spec:
       author:
         email: flux@reclyptor.com
         name: Flux
-      # Subject-only per repo convention: the diff carries the old → new
-      # image refs, and the Flux author line carries provenance. Deliberately
-      # app-agnostic — this one automation serves every app under ./apps.
-      messageTemplate: "Deployed the Latest Images"
+      # Subject-only per repo convention. Renders as
+      #   "Deployed the Latest Makotogotchi Image: 1de08a1"
+      # deriving the app name and short hash from the image ref
+      # (ghcr.io/reclyptor/<app>:<timestamp>-<shorthash>), so it stays
+      # correct for every app this automation serves. Sprig functions are
+      # available per the ImageUpdateAutomation v1 docs; the "; " separator
+      # covers the rare commit containing several apps' updates at once.
+      messageTemplate: >-
+        {{- $first := true -}}
+        {{- range .Changed.Changes -}}
+        {{- if not $first }}; {{ end -}}
+        {{- $first = false -}}
+        Deployed the Latest {{ .NewValue | splitList ":" | first | splitList "/" | last | title }} Image: {{ .NewValue | splitList ":" | last | splitList "-" | last }}
+        {{- end -}}
     push:
       branch: master
   update:
