@@ -61,3 +61,9 @@ spec:
             k8s:io.kubernetes.pod.namespace: ntfy
       toPorts:
         - ports: [{ port: "4180", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: makotogotchi
+            k8s:io.kubernetes.pod.namespace: makotogotchi
+      toPorts:
+        - ports: [{ port: "3000", protocol: TCP }]
