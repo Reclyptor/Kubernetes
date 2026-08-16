@@ -1,0 +1,29 @@
+# Flux image automation: every green master build of the app deploys itself.
+# The app's CI publishes a sortable `<timestamp>-<sha>` tag; the policy picks
+# the newest; the automation (flux-system/image-update-automation.yaml)
+# commits the winning tag onto the deployment's marker line.
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: makotogotchi
+  namespace: makotogotchi
+spec:
+  image: ghcr.io/reclyptor/makotogotchi
+  interval: 2m0s
+  secretRef:
+    name: ghcr-secret
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: makotogotchi
+  namespace: makotogotchi
+spec:
+  imageRepositoryRef:
+    name: makotogotchi
+  filterTags:
+    pattern: '^(?P<ts>\d{14})-.+$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
