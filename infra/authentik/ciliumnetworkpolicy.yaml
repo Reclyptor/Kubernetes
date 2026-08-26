@@ -20,6 +20,12 @@ spec:
         - matchLabels:
             app: ntfy-proxy
             k8s:io.kubernetes.pod.namespace: ntfy
+        # The LDAP outpost polls the server API for its configuration. Its own
+        # policy already permits the egress; without the matching ingress here
+        # Cilium drops the connection and the outpost never becomes ready.
+        - matchLabels:
+            app: authentik-ldap
+            k8s:io.kubernetes.pod.namespace: authentik
       toPorts:
         - ports:
             - { port: "9000", protocol: TCP }
