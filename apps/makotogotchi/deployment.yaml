@@ -43,7 +43,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: makotogotchi
-        image: ghcr.io/reclyptor/makotogotchi:20260823021850-91bff86 # {"$imagepolicy": "flux-system:makotogotchi"}
+        image: ghcr.io/reclyptor/makotogotchi:20260828094428-5e54bfb # {"$imagepolicy": "flux-system:makotogotchi"}
         imagePullPolicy: Always
         ports:
         - name: http
