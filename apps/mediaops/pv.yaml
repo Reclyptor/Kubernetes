@@ -1,0 +1,18 @@
+# The whole media root, read-write. Work spans _pending/, _processing/,
+# _archive/ and every category directory (anime/, ecchi/, animation/, ...) in a
+# single operation -- an archive-then-promote move crosses three of them. Narrower
+# mounts would not shrink the blast radius, only obscure it.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mediaops-media-dxp6800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-mediaops-media
+  nfs:
+    server: 192.168.1.2
+    path: /mnt/primary/videos

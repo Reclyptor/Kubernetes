@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediaops
+  namespace: mediaops
+spec:
+  replicas: 1
+  # A workbench, not a service: it holds no state worth preserving across a
+  # restart, and two pods sharing a read-write mount on the media root is a
+  # hazard rather than a benefit. Replace outright.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mediaops
+  template:
+    metadata:
+      labels:
+        app: mediaops
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: ghcr-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - styxeon
+      securityContext:
+        # Matches every file under /mnt/primary/videos (3000:100, mode 770). The
+        # image has no root path at runtime, so a root-owned media file cannot
+        # be produced even by accident.
+        runAsUser: 3000
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+      - name: mediaops
+        image: ghcr.io/reclyptor/mediaops:20260903033059-4f807cc # {"$imagepolicy": "flux-system:mediaops"}
+        imagePullPolicy: Always
+        env:
+        - name: TZ
+          value: "America/Chicago"
+        - name: MEDIA_ROOT
+          value: /mnt/media
+        volumeMounts:
+        - name: media
+          mountPath: /mnt/media
+        - name: work
+          mountPath: /work
+        # Idles cheap -- it is asleep most of the time -- but bursts wide when a
+        # split batch runs. styxeon has 16 cores / 28 GiB and sits near 20% used.
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: "12"
+            memory: 16Gi
+        livenessProbe:
+          exec:
+            command: ["mkvmerge", "--version"]
+          initialDelaySeconds: 15
+          periodSeconds: 60
+          timeoutSeconds: 10
+          failureThreshold: 3
+      volumes:
+      - name: media
+        persistentVolumeClaim:
+          claimName: mediaops-media
+      - name: work
+        emptyDir: {}
