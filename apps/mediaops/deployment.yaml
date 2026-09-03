@@ -46,6 +46,14 @@ spec:
           value: "America/Chicago"
         - name: MEDIA_ROOT
           value: /mnt/media
+        # The image gives `media` no home directory, so fontconfig has nowhere to
+        # cache and floods every drawtext call with "No writable cache
+        # directories". The labels still render, which is the danger: pages of
+        # benign noise are exactly what a real error hides in.
+        - name: HOME
+          value: /work
+        - name: XDG_CACHE_HOME
+          value: /work/.cache
         volumeMounts:
         - name: media
           mountPath: /mnt/media
