@@ -1,0 +1,29 @@
+# Flux image automation: every green master build of the image deploys itself.
+# The repo's CI publishes a sortable `<timestamp>-<sha>` tag; the policy picks
+# the newest; the automation (flux-system/image-update-automation.yaml)
+# commits the winning tag onto the deployment's marker line.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: mediaops
+  namespace: flux-system
+spec:
+  image: ghcr.io/reclyptor/mediaops
+  interval: 2m0s
+  secretRef:
+    name: ghcr
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: mediaops
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: mediaops
+  filterTags:
+    pattern: '^(?P<ts>\d{14})-.+$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc

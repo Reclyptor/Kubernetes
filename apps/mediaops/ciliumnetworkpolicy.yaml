@@ -1,0 +1,28 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mediaops
+  namespace: mediaops
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mediaops
+  # No ingress rule: the workbench exposes nothing and has no Service. It is
+  # driven by `kubectl exec`, which arrives through the kubelet, not the pod
+  # network.
+  #
+  # NFS needs no rule either. The media volume is mounted by the kubelet on the
+  # node, so that traffic leaves from the host network namespace rather than
+  # this endpoint's.
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # Episode metadata. AniList returns 403 without a User-Agent header.
+    - toFQDNs:
+        - matchName: "graphql.anilist.co"
+        - matchName: "api4.thetvdb.com"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
