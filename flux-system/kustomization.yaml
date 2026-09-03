@@ -15,7 +15,7 @@ patches:
         value: flux-system
       - op: replace
         path: /metadata/name
-        value: ghcr-makotogotchi
+        value: ghcr
     target:
       kind: Secret
       name: ghcr
