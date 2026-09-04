@@ -39,7 +39,7 @@ spec:
         fsGroup: 100
       containers:
       - name: mediaops
-        image: ghcr.io/reclyptor/mediaops:20260903221416-ad74810 # {"$imagepolicy": "flux-system:mediaops"}
+        image: ghcr.io/reclyptor/mediaops:20260904000020-e7ed01c # {"$imagepolicy": "flux-system:mediaops"}
         imagePullPolicy: Always
         env:
         - name: TZ
