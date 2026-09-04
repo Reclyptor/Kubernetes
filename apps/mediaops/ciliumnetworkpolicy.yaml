@@ -20,9 +20,25 @@ spec:
         - ports: [{ port: "53", protocol: ANY }]
           rules:
             dns: [{ matchPattern: "*" }]
-    # Episode metadata. AniList returns 403 without a User-Agent header.
-    - toFQDNs:
-        - matchName: "graphql.anilist.co"
-        - matchName: "api4.thetvdb.com"
+    # The workbench runs tools that reach arbitrary hosts -- web search, page
+    # fetches, metadata lookups against whatever provider fits the title. An
+    # FQDN allowlist cannot enumerate that set, so the public internet is open
+    # on the two ports those tools speak.
+    #
+    # The LAN is carved back out. Everything worth attacking here is on
+    # 192.168.1.0/24 -- the NAS at .2 holds the entire media root and answers on
+    # 443 -- and a pod that fetches untrusted content has no reason to reach it.
+    # 169.254.0.0/16 goes too: link-local is the classic metadata-service pivot.
+    # Cluster-internal destinations carry their own identities and never match a
+    # CIDR rule, so in-cluster services stay unreachable without listing them.
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 169.254.0.0/16
       toPorts:
-        - ports: [{ port: "443", protocol: TCP }]
+        - ports:
+            - { port: "443", protocol: TCP }
+            - { port: "80", protocol: TCP }
