@@ -16,3 +16,22 @@ spec:
   nfs:
     server: 192.168.1.2
     path: /mnt/primary/videos
+---
+# The torrent staging box, read-write. Normalisation runs against files that
+# land here and promotes the finished tree onto the media root above; doing the
+# heavy work in-pod keeps ~25 GiB of remux traffic per episode on the cluster's
+# network instead of round-tripping through a workstation mount.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mediaops-asustor
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-mediaops-asustor
+  nfs:
+    server: 192.168.1.5
+    path: /volume1/data
