@@ -37,6 +37,11 @@ spec:
         runAsUser: 3000
         runAsGroup: 100
         fsGroup: 100
+        # /mnt/media is 3000:100, but the asustor tree is owned 1000:1000. The
+        # supplementary group is what makes the second mount writable; without
+        # it the pod can read the staging box and nothing more.
+        supplementalGroups:
+          - 1000
       containers:
       - name: mediaops
         image: ghcr.io/reclyptor/mediaops:20260904000020-e7ed01c # {"$imagepolicy": "flux-system:mediaops"}
@@ -57,6 +62,8 @@ spec:
         volumeMounts:
         - name: media
           mountPath: /mnt/media
+        - name: asustor
+          mountPath: /mnt/asustor
         - name: work
           mountPath: /work
         # Idles cheap -- it is asleep most of the time -- but bursts wide when a
@@ -79,5 +86,8 @@ spec:
       - name: media
         persistentVolumeClaim:
           claimName: mediaops-media
+      - name: asustor
+        persistentVolumeClaim:
+          claimName: mediaops-asustor
       - name: work
         emptyDir: {}

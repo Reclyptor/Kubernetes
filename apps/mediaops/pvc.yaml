@@ -11,3 +11,17 @@ spec:
   resources:
     requests:
       storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mediaops-asustor
+  namespace: mediaops
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-mediaops-asustor
+  volumeName: mediaops-asustor
+  resources:
+    requests:
+      storage: 1Mi
