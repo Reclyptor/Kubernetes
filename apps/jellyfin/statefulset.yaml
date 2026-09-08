@@ -57,8 +57,11 @@ spec:
               mountPath: /cache
             - name: transcode
               mountPath: /cache/transcodes
-            - name: media
-              mountPath: /media
+            - name: media-dxp6800
+              mountPath: /media/dxp6800
+              readOnly: true
+            - name: media-dxp4800
+              mountPath: /media/dxp4800
               readOnly: true
             - name: render
               mountPath: /dev/dri/renderD128
@@ -88,9 +91,12 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: jellyfin-config
-        - name: media
+        - name: media-dxp6800
           persistentVolumeClaim:
             claimName: jellyfin-media
+        - name: media-dxp4800
+          persistentVolumeClaim:
+            claimName: jellyfin-media-dxp4800
         - name: cache
           emptyDir: {}
         - name: transcode

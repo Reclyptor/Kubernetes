@@ -1,3 +1,6 @@
+# The library spans both NAS boxes. Each box exports every category as its own
+# ZFS dataset, and NFSv4 follows into an exported child on its own, so one
+# volume per box reaches everything under it.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -13,4 +16,21 @@ spec:
     - ro
   nfs:
     server: 192.168.1.2
+    path: /mnt/primary/videos
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jellyfin-media-dxp4800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-media-dxp4800
+  mountOptions:
+    - ro
+  nfs:
+    server: 192.168.1.3
     path: /mnt/primary/videos
