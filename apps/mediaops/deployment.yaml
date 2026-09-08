@@ -60,8 +60,10 @@ spec:
         - name: XDG_CACHE_HOME
           value: /work/.cache
         volumeMounts:
-        - name: media
-          mountPath: /mnt/media
+        - name: media-dxp6800
+          mountPath: /mnt/media/dxp6800
+        - name: media-dxp4800
+          mountPath: /mnt/media/dxp4800
         - name: asustor
           mountPath: /mnt/asustor
         - name: work
@@ -83,9 +85,12 @@ spec:
           timeoutSeconds: 10
           failureThreshold: 3
       volumes:
-      - name: media
+      - name: media-dxp6800
         persistentVolumeClaim:
           claimName: mediaops-media
+      - name: media-dxp4800
+        persistentVolumeClaim:
+          claimName: mediaops-media-dxp4800
       - name: asustor
         persistentVolumeClaim:
           claimName: mediaops-asustor
