@@ -10,6 +10,9 @@ data:
     log_bin_trust_function_creators = 1
     # Kestra's schema migrations refuse to run under the REPEATABLE-READ default
     transaction_isolation = READ-COMMITTED
+    # Binlogs filled the data volume at the 1G/30d defaults and corrupted the filesystem
+    max_binlog_size = 268435456
+    binlog_expire_logs_seconds = 604800
   10-create-admin.sh: |
     #!/bin/sh
     # Runs only on first boot when datadir is empty.
