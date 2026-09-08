@@ -71,8 +71,11 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
-            - name: media
-              mountPath: /media
+            - name: media-dxp6800
+              mountPath: /media/dxp6800
+              readOnly: true
+            - name: media-dxp4800
+              mountPath: /media/dxp4800
               readOnly: true
             - name: transcode
               mountPath: /transcode
@@ -104,9 +107,12 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: plex-config
-        - name: media
+        - name: media-dxp6800
           persistentVolumeClaim:
             claimName: plex-media
+        - name: media-dxp4800
+          persistentVolumeClaim:
+            claimName: plex-media-dxp4800
         - name: transcode
           emptyDir:
             medium: Memory

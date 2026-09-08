@@ -15,6 +15,20 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: mediaops-media-dxp4800
+  namespace: mediaops
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-mediaops-media-dxp4800
+  volumeName: mediaops-media-dxp4800
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: mediaops-asustor
   namespace: mediaops
 spec:

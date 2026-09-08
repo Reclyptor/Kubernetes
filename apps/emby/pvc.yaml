@@ -15,6 +15,20 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: emby-media-dxp4800
+  namespace: emby
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: nfs-media-dxp4800
+  volumeName: emby-media-dxp4800
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: emby-config
   namespace: emby
 spec:
