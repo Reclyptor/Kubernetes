@@ -13,14 +13,6 @@ spec:
         - ports:
             - { port: "3592", protocol: TCP }
             - { port: "3593", protocol: TCP }
-    - fromEndpoints:
-        - matchLabels:
-            app: sera
-            k8s:io.kubernetes.pod.namespace: sera
-      toPorts:
-        - ports:
-            - { port: "3592", protocol: TCP }
-            - { port: "3593", protocol: TCP }
   egress:
     - toEntities: [host]
       toPorts:

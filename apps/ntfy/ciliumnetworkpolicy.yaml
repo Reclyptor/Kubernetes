@@ -18,9 +18,6 @@ spec:
         - matchLabels:
             app: ntfy-proxy
             k8s:io.kubernetes.pod.namespace: ntfy
-        - matchLabels:
-            app: sera
-            k8s:io.kubernetes.pod.namespace: sera
       toPorts:
         - ports: [{ port: "80", protocol: TCP }]
 ---

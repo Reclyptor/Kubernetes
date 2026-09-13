@@ -16,9 +16,6 @@ spec:
             app: authentik
             k8s:io.kubernetes.pod.namespace: authentik
         - matchLabels:
-            app: sera
-            k8s:io.kubernetes.pod.namespace: sera
-        - matchLabels:
             app: makotogotchi
             k8s:io.kubernetes.pod.namespace: makotogotchi
       toPorts:
