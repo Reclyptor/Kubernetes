@@ -95,12 +95,12 @@ spec:
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: agentmemory-claude-secret
+                  name: agentmemory-secret
                   key: ANTHROPIC_API_KEY
             - name: AGENTMEMORY_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: agentmemory-claude-secret
+                  name: agentmemory-secret
                   key: AGENTMEMORY_SECRET
           volumeMounts:
             - name: data
