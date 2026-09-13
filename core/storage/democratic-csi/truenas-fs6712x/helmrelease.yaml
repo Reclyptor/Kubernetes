@@ -71,7 +71,7 @@ spec:
         zfs:
           datasetParentName: "primary/kubernetes/volumes"
           detachedSnapshotsDatasetParentName: "primary/kubernetes/snapshots"
-          zvolBlocksize: "4K"
+          zvolBlocksize: "16K"
           zvolCompression: "lz4"
           cli:
             sudoEnabled: true
