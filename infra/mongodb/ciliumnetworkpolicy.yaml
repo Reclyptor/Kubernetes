@@ -13,9 +13,6 @@ spec:
         - ports: [{ port: "27017", protocol: TCP }]
     - fromEndpoints:
         - matchLabels:
-            app: sera
-            k8s:io.kubernetes.pod.namespace: sera
-        - matchLabels:
             app: makotogotchi
             k8s:io.kubernetes.pod.namespace: makotogotchi
       toPorts:
