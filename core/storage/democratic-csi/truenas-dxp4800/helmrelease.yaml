@@ -71,7 +71,7 @@ spec:
         zfs:
           datasetParentName: "qubit/kubernetes/volumes"
           detachedSnapshotsDatasetParentName: "qubit/kubernetes/snapshots"
-          zvolBlocksize: "4K"
+          zvolBlocksize: "16K"
           zvolCompression: "lz4"
           cli:
             sudoEnabled: true
