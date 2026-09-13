@@ -5,7 +5,7 @@ metadata:
   namespace: agentmemory
 spec:
   serviceName: agentmemory-claude
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: agentmemory-claude
