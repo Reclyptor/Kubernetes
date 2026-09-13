@@ -5,6 +5,8 @@ resources:
   - namespace.yaml
   - secrets
   - configmap.yaml
+  - pvc.yaml
   - statefulset.yaml
+  - job.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
