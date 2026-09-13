@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: agentmemory-data-migration
+  namespace: agentmemory
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+        - name: copy
+          image: alpine:3.22
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          command: ["/bin/sh", "-eu", "-c"]
+          args:
+            - |
+              manifest() (
+                cd "$1"
+                find . -path ./lost+found -prune -o -print | sort | while IFS= read -r p; do
+                  if [ -L "$p" ]; then
+                    printf 'L %s -> %s\n' "$p" "$(readlink "$p")"
+                  elif [ -d "$p" ]; then
+                    printf 'D %s %s\n' "$p" "$(stat -c '%u:%g:%a' "$p")"
+                  elif [ -f "$p" ]; then
+                    printf 'F %s %s %s\n' "$p" "$(stat -c '%u:%g:%a' "$p")" "$(sha256sum < "$p" | cut -d' ' -f1)"
+                  else
+                    printf 'O %s\n' "$p"
+                  fi
+                done
+              )
+
+              echo "== source =="
+              ls -la /src
+              du -sh /src
+
+              echo "== destination before =="
+              ls -la /dst
+
+              echo "== copying =="
+              tar -C /src --exclude=./lost+found -cf - . | tar -C /dst -xpf -
+              sync
+
+              echo "== verifying =="
+              manifest /src > /tmp/src.manifest
+              manifest /dst > /tmp/dst.manifest
+              echo "source entries:      $(wc -l < /tmp/src.manifest)"
+              echo "destination entries: $(wc -l < /tmp/dst.manifest)"
+
+              if diff -u /tmp/src.manifest /tmp/dst.manifest > /tmp/manifest.diff; then
+                echo "MIGRATION VERIFIED: destination is byte-identical to source"
+                du -sh /dst
+              else
+                echo "MIGRATION FAILED: manifests differ"
+                head -60 /tmp/manifest.diff
+                exit 1
+              fi
+          volumeMounts:
+            - name: src
+              mountPath: /src
+              readOnly: true
+            - name: dst
+              mountPath: /dst
+      volumes:
+        - name: src
+          persistentVolumeClaim:
+            claimName: data-agentmemory-claude-0
+            readOnly: true
+        - name: dst
+          persistentVolumeClaim:
+            claimName: data-agentmemory-0
