@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: agentmemory-claude
+  name: agentmemory
   namespace: agentmemory
 spec:
-  serviceName: agentmemory-claude
-  replicas: 0
+  serviceName: agentmemory
+  replicas: 1
   selector:
     matchLabels:
-      app: agentmemory-claude
+      app: agentmemory
   template:
     metadata:
       labels:
-        app: agentmemory-claude
+        app: agentmemory
     spec:
       automountServiceAccountToken: false
       securityContext:

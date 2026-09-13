@@ -1,12 +1,12 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: agentmemory-claude
+  name: agentmemory
   namespace: agentmemory
 spec:
   endpointSelector:
     matchLabels:
-      app: agentmemory-claude
+      app: agentmemory
   ingress:
     - fromEntities: [world, remote-node]
       toPorts:
