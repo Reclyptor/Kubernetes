@@ -7,7 +7,6 @@ resources:
   - headscale
   - kafka
   - kestra
-  - minio
   - mongodb
   - mysql
   - nats
