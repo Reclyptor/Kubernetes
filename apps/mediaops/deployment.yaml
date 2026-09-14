@@ -41,10 +41,10 @@ spec:
         # supplementary group is what makes the second mount writable; without
         # it the pod can read the staging box and nothing more.
         supplementalGroups:
-          - 1000
+        - 1000
       containers:
       - name: mediaops
-        image: ghcr.io/reclyptor/mediaops:20260904000020-e7ed01c # {"$imagepolicy": "flux-system:mediaops"}
+        image: ghcr.io/reclyptor/mediaops:20260914094934-7332f35 # {"$imagepolicy": "flux-system:mediaops"}
         imagePullPolicy: Always
         env:
         - name: TZ
