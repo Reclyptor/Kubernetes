@@ -44,6 +44,18 @@ spec:
             k8s:io.kubernetes.pod.namespace: palworld
       toPorts:
         - ports: [{ port: "8211", protocol: UDP }]
+    - toEndpoints:
+        - matchLabels:
+            app: terraria
+            k8s:io.kubernetes.pod.namespace: terraria
+      toPorts:
+        - ports: [{ port: "7777", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: corekeeper
+            k8s:io.kubernetes.pod.namespace: corekeeper
+      toPorts:
+        - ports: [{ port: "27015", protocol: UDP }]
     # tailnet data path: publish Headscale's embedded DERP/STUN and the
     # subnet router's WireGuard endpoint
     - toEndpoints:
