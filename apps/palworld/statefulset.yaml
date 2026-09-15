@@ -15,12 +15,11 @@ spec:
         app: palworld
     spec:
       automountServiceAccountToken: false
-      # This image starts as root to run SteamCMD (UPDATE_ON_BOOT) and fix
-      # permissions, then drops the server process to PUID:PGID. It therefore
-      # cannot run under a fixed non-root runAsUser like factorio/minecraft do;
-      # baseline pod-security permits the root start. fsGroup keeps the iSCSI
-      # volume writable by the dropped 1000:1000 user.
+      # The image runs as uid/gid 1000 throughout; SteamCMD installs the server
+      # into the data volume. fsGroup keeps the volume writable by it.
       securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
       affinity:
         nodeAffinity:
@@ -31,143 +30,95 @@ spec:
                     operator: In
                     values:
                       - fluxeon
+      # STOP_TIMEOUT (120s) plus the REST save that precedes it must fit in here.
+      terminationGracePeriodSeconds: 180
       containers:
         - name: palworld
-          image: thijsvanloef/palworld-server-docker:latest
-          imagePullPolicy: Always
+          image: ghcr.io/reclyptor/palworld:20260915011906-012f166 # {"$imagepolicy": "flux-system:palworld"}
           ports:
             - name: game
               containerPort: 8211
               protocol: UDP
-            - name: rcon
-              containerPort: 25575
+            # The toolkit's read-only /metrics and /healthz (no scraper yet).
+            - name: metrics
+              containerPort: 9110
               protocol: TCP
+          # ADMIN_PASSWORD, GAME_PASSWORD, DISCORD_WEBHOOK_URL, SERVER_ADDRESS
           envFrom:
             - secretRef:
                 name: palworld-secret
           env:
-            # ── Runtime ──
+            # ── GameOps: nightly backups kept 14 days; hourly update check; players warned in-game
+            #    where the game can broadcast, otherwise the update waits for an empty server ──
             - name: TZ
               value: "America/Chicago"
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
-            # Pull/verify the dedicated server via SteamCMD on every boot.
-            - name: UPDATE_ON_BOOT
-              value: "true"
-            # In-container cron checks Steam for a new build, warns players over
-            # RCON, saves, then updates and restarts the server process in place
-            # (no pod restart). Requires RCON_ENABLED and UPDATE_ON_BOOT above.
-            - name: AUTO_UPDATE_ENABLED
-              value: "true"
-            - name: AUTO_UPDATE_CRON_EXPRESSION
-              value: "0 * * * *"
-            - name: AUTO_UPDATE_WARN_MINUTES
-              value: "15"
-            # Nightly world backup at 04:00 America/Chicago (TZ above) — a live
-            # REST save + tar with no downtime; archives land on the data PVC.
-            - name: BACKUP_CRON_EXPRESSION
-              value: "0 4 * * *"
-            - name: MULTITHREADING
-              value: "true"
-            # ── Server Identity ──
             - name: SERVER_NAME
-              value: "Palworld Server"
+              value: "Palworld"
+            - name: BACKUP_CRON
+              value: "0 4 * * *"
+            - name: BACKUP_RETAIN_DAYS
+              value: "14"
+            - name: UPDATE_CRON
+              value: "0 * * * *"
+            - name: UPDATE_WARN_MINUTES
+              value: "15"
+            - name: UPDATE_FORCE_AFTER_MINUTES
+              value: "30"
+            - name: STOP_TIMEOUT
+              value: "120"
+            # ── Palworld ──
             - name: SERVER_DESCRIPTION
               value: ""
-            - name: PLAYERS
+            - name: MAX_PLAYERS
               value: "16"
-            # Private, password-gated server — keep it off the community browser.
-            - name: COMMUNITY
+            # Private server — keep it off the community browser.
+            - name: PUBLIC
               value: "false"
-            # ── Networking ──
+            - name: MULTITHREADING
+              value: "true"
             - name: PORT
               value: "8211"
             - name: QUERY_PORT
               value: "27015"
-            # REST API — pod-internal only; the player-logging poller reads it on
-            # 127.0.0.1:8212. No Service targets it and the CiliumNetworkPolicy
-            # has no 8212 ingress rule (default-deny), so it stays unreachable.
+            # REST API is loopback-only inside the pod: the toolkit saves, counts
+            # players, announces and stops through it. No Service targets it.
             - name: REST_API_ENABLED
               value: "true"
             - name: REST_API_PORT
               value: "8212"
-            # ── RCON (authenticates with ADMIN_PASSWORD) ──
-            - name: RCON_ENABLED
-              value: "true"
-            - name: RCON_PORT
-              value: "25575"
-            # ── Discord (DISCORD_WEBHOOK_URL is injected from palworld-secret) ──
-            # Announces player join/leave plus server start/stop, update, and
-            # backup events. Player logging polls the REST API above every 5s;
-            # each lifecycle notification defaults on once the webhook URL is set.
-            - name: ENABLE_PLAYER_LOGGING
-              value: "true"
-            # Post as normal (non-@silent) messages so the channel notifies.
-            - name: DISCORD_SUPPRESS_NOTIFICATIONS
-              value: "false"
-            # Plain-text message bodies (the mounted discord.sh override strips
-            # the card/title/color). "player_name" is substituted at send time.
-            # The boot update-check messages fire before the start phase, so they
-            # describe the step rather than claim the server is online; the start
-            # message announces go-live (the delay until it's joinable is trivial).
-            - name: DISCORD_PLAYER_JOIN_MESSAGE
-              value: "🟢 **player_name** joined the server."
-            - name: DISCORD_PLAYER_LEAVE_MESSAGE
-              value: "🔴 **player_name** left the server."
-            - name: DISCORD_PRE_START_MESSAGE
-              value: "🌴 The Palworld server is online — hop in!"
-            - name: DISCORD_POST_SHUTDOWN_MESSAGE
-              value: "💤 The Palworld server has shut down."
-            - name: DISCORD_PRE_UPDATE_BOOT_MESSAGE
-              value: "⏳ Checking for server updates…"
-            - name: DISCORD_POST_UPDATE_BOOT_MESSAGE
-              value: "🚀 Palworld server has been updated!"
-            - name: DISCORD_PRE_BACKUP_MESSAGE
-              value: "💾 Backing up the world…"
-            - name: DISCORD_POST_BACKUP_MESSAGE
-              value: "✅ World backup complete."
           volumeMounts:
             - name: data
-              mountPath: /palworld
-            # Plain-text override of the image's Discord notifier (see the
-            # configMapGenerator in kustomization.yaml).
-            - name: discord-override
-              mountPath: /home/steam/server/discord.sh
-              subPath: discord.sh
-              readOnly: true
+              mountPath: /data
+            - name: backups
+              mountPath: /backups
           resources:
             requests:
               cpu: "2000m"
               memory: "8Gi"
-          # First boot downloads ~7GB via SteamCMD and generates the world, so
-          # gate readiness/liveness behind a long startupProbe rather than a
-          # fixed initialDelay: up to ~15 min before the tighter probes engage.
+          # gameops health = process alive + ready flag; the game port is UDP and is
+          # not probed. The first start installs ~7 GB via SteamCMD, hence the gate.
           startupProbe:
-            tcpSocket:
-              port: 25575
-            initialDelaySeconds: 30
+            exec:
+              command: ["gameops", "health"]
             periodSeconds: 15
-            timeoutSeconds: 5
-            failureThreshold: 60
-          livenessProbe:
-            tcpSocket:
-              port: 25575
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 5
+            timeoutSeconds: 10
+            failureThreshold: 120
           readinessProbe:
-            tcpSocket:
-              port: 25575
-            periodSeconds: 15
-            timeoutSeconds: 5
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 60
+            timeoutSeconds: 10
             failureThreshold: 3
       volumes:
-        - name: discord-override
-          configMap:
-            name: palworld-discord
-            defaultMode: 0755
+        - name: backups
+          persistentVolumeClaim:
+            claimName: palworld-backups
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain

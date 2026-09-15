@@ -15,18 +15,3 @@ spec:
     - name: game
       port: 8211
       protocol: UDP
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: palworld-rcon
-  namespace: palworld
-spec:
-  type: ClusterIP
-  selector:
-    app: palworld
-  ports:
-    - name: rcon
-      port: 25575
-      protocol: TCP
