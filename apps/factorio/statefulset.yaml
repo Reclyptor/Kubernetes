@@ -33,7 +33,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: factorio
-          image: ghcr.io/reclyptor/factorio:20260915011803-4015504 # {"$imagepolicy": "flux-system:factorio"}
+          image: ghcr.io/reclyptor/factorio:20260915033843-cdbddd2 # {"$imagepolicy": "flux-system:factorio"}
           ports:
             - name: game
               containerPort: 34197
