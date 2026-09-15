@@ -35,7 +35,7 @@ spec:
           # ghcr.io/reclyptor/minecraft: the GameOps toolkit (backups, in-place
           # updates, Discord, player events) around the vanilla server, which
           # the image resolves and downloads itself on first start.
-          image: ghcr.io/reclyptor/minecraft:20260915033838-1548100 # {"$imagepolicy": "flux-system:minecraft"}
+          image: ghcr.io/reclyptor/minecraft:20260915051331-2dfd8d8 # {"$imagepolicy": "flux-system:minecraft"}
           ports:
             - name: game
               containerPort: 25565
