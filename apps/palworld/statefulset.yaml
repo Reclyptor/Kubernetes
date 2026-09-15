@@ -34,7 +34,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: palworld
-          image: ghcr.io/reclyptor/palworld:20260915033950-6667c78 # {"$imagepolicy": "flux-system:palworld"}
+          image: ghcr.io/reclyptor/palworld:20260915051408-c7ce628 # {"$imagepolicy": "flux-system:palworld"}
           ports:
             - name: game
               containerPort: 8211
