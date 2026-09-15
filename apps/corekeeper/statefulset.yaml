@@ -35,7 +35,7 @@ spec:
           # Direct-connect mode (PORT set): players join by IP:port through
           # the shared LAN IP or the playit tunnel, and the START message posts
           # the address to Discord. No Game ID is announced in this mode.
-          image: ghcr.io/reclyptor/corekeeper:20260915053808-d414611 # {"$imagepolicy": "flux-system:corekeeper"}
+          image: ghcr.io/reclyptor/corekeeper:20260915181252-d414611 # {"$imagepolicy": "flux-system:corekeeper"}
           ports:
             - name: game
               containerPort: 27015
