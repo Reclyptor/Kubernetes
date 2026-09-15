@@ -86,7 +86,7 @@ spec:
           namePrefix: "k8s-dxp6800-"
           targetGroups:
             - targetGroupPortalGroup: 1    # from Shares » Block (iSCSI) » Portals
-              targetGroupInitiatorGroup: 1 # from Shares » Block (iSCSI) » Initiators
+              targetGroupInitiatorGroup: 2 # from Shares » Block (iSCSI) » Initiators — the allow-all group is id 2 on this box
               targetGroupAuthType: CHAP    # or CHAP / CHAP Mutual if you use auth
               targetGroupAuthGroup: 1      # only if using CHAP
 
