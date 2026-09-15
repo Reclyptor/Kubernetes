@@ -1,0 +1,12 @@
+# Archives live on fs6712x, next to the game data.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: corekeeper-backups
+  namespace: corekeeper
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 10Gi
