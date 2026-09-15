@@ -28,217 +28,152 @@ spec:
                     operator: In
                     values:
                       - fluxeon
+      # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
+      terminationGracePeriodSeconds: 180
       containers:
         - name: minecraft
-          image: itzg/minecraft-server:latest
-          imagePullPolicy: Always
+          # ghcr.io/reclyptor/minecraft: the GameOps toolkit (backups, in-place
+          # updates, Discord, player events) around the vanilla server, which
+          # the image resolves and downloads itself on first start.
+          image: ghcr.io/reclyptor/minecraft:20260915011753-7eb9d38 # {"$imagepolicy": "flux-system:minecraft"}
           ports:
             - name: game
               containerPort: 25565
               protocol: TCP
-            - name: rcon
-              containerPort: 25575
+            # The toolkit's read-only /metrics and /healthz (no scraper yet).
+            - name: metrics
+              containerPort: 9110
               protocol: TCP
+          # RCON_PASSWORD, DISCORD_WEBHOOK_URL, SERVER_ADDRESS
           envFrom:
             - secretRef:
                 name: minecraft-secret
           env:
-            # ── Image Settings ──
+            # ── GameOps: nightly backups kept 14 days; hourly update check; players warned in-game
+            #    where the game can broadcast, otherwise the update waits for an empty server ──
             - name: TZ
               value: "America/Chicago"
+            - name: SERVER_NAME
+              value: "Minecraft"
+            - name: BACKUP_CRON
+              value: "0 4 * * *"
+            - name: BACKUP_RETAIN_DAYS
+              value: "14"
+            - name: UPDATE_CRON
+              value: "0 * * * *"
+            - name: UPDATE_WARN_MINUTES
+              value: "15"
+            - name: UPDATE_FORCE_AFTER_MINUTES
+              value: "30"
+            - name: STOP_TIMEOUT
+              value: "120"
+            # ── Minecraft ──
             - name: EULA
               value: "TRUE"
-            - name: TYPE
-              value: "VANILLA"
+            - name: SERVER_TYPE
+              value: "vanilla"
             - name: VERSION
-              value: "LATEST"
-            # - name: MEMORY
-            #   value: ""
-            # - name: JVM_XX_OPTS
-            #   value: ""
-            # - name: JVM_OPTS
-            #   value: ""
-            # - name: CUSTOM_SERVER_PROPERTIES
-            #   value: ""
-            - name: OVERRIDE_SERVER_PROPERTIES
-              value: "true"
-            - name: SKIP_SERVER_PROPERTIES
-              value: "false"
-            - name: DUMP_SERVER_PROPERTIES
-              value: "false"
-            # - name: SERVER_PROPERTIES_ESCAPE_UNICODE
-            #   value: ""
-            # ── Server Properties ──
+              value: "latest"
+            - name: MEMORY
+              value: "2G"
+            # Operators and whitelist: comma-separated player names, applied
+            # over RCON at every start. A non-empty whitelist turns it on.
+            - name: ADMINS
+              value: ""
+            - name: WHITELIST
+              value: ""
             - name: MOTD
               value: "A Minecraft Server"
             - name: DIFFICULTY
               value: "easy"
-            - name: MODE
-              value: "survival"
-            - name: HARDCORE
-              value: "false"
-            - name: FORCE_GAMEMODE
-              value: "false"
             - name: MAX_PLAYERS
               value: "20"
-            - name: MAX_WORLD_SIZE
-              value: "29999984"
-            - name: MAX_TICK_TIME
-              value: "60000"
-            - name: SPAWN_PROTECTION
-              value: "16"
-            - name: VIEW_DISTANCE
-              value: "10"
-            - name: SIMULATION_DISTANCE
-              value: "10"
-            - name: PLAYER_IDLE_TIMEOUT
-              value: "0"
-            - name: PAUSE_WHEN_EMPTY_SECONDS
-              value: "60"
-            - name: ALLOW_FLIGHT
-              value: "false"
-            - name: ONLINE_MODE
-              value: "true"
-            - name: ENFORCE_SECURE_PROFILE
-              value: "true"
-            - name: PREVENT_PROXY_CONNECTIONS
-              value: "false"
-            - name: ACCEPTS_TRANSFERS
-              value: "false"
-            - name: HIDE_ONLINE_PLAYERS
-              value: "false"
-            - name: LOG_IPS
-              value: "true"
-            # ── World Generation ──
-            - name: LEVEL
+            - name: WORLD_NAME
               value: "world"
-            - name: SEED
+            - name: WORLD_SEED
               value: ""
-            - name: LEVEL_TYPE
+            # ── server.properties (PROP_<KEY>, _ → -) ──
+            - name: PROP_GAMEMODE
+              value: "survival"
+            - name: PROP_HARDCORE
+              value: "false"
+            - name: PROP_FORCE_GAMEMODE
+              value: "false"
+            - name: PROP_VIEW_DISTANCE
+              value: "10"
+            - name: PROP_SIMULATION_DISTANCE
+              value: "10"
+            - name: PROP_SPAWN_PROTECTION
+              value: "16"
+            - name: PROP_PLAYER_IDLE_TIMEOUT
+              value: "0"
+            - name: PROP_PAUSE_WHEN_EMPTY_SECONDS
+              value: "60"
+            - name: PROP_ALLOW_FLIGHT
+              value: "false"
+            - name: PROP_ONLINE_MODE
+              value: "true"
+            - name: PROP_ENFORCE_SECURE_PROFILE
+              value: "true"
+            - name: PROP_LEVEL_TYPE
               value: "minecraft:normal"
-            - name: GENERATE_STRUCTURES
+            - name: PROP_GENERATE_STRUCTURES
               value: "true"
-            - name: GENERATOR_SETTINGS
-              value: "{}"
-            - name: INITIAL_ENABLED_PACKS
-              value: "vanilla"
-            - name: INITIAL_DISABLED_PACKS
-              value: ""
-            # ── Operators & Whitelist ──
-            - name: OPS
-              value: ""
-            - name: OPS_FILE
-              value: "/config/ops.json"
-            - name: EXISTING_OPS_FILE
-              value: "SYNCHRONIZE"
-            - name: WHITELIST
-              value: ""
-            - name: WHITELIST_FILE
-              value: "/config/whitelist.json"
-            - name: EXISTING_WHITELIST_FILE
-              value: "SYNCHRONIZE"
-            - name: ENABLE_WHITELIST
-              value: "false"
-            - name: ENFORCE_WHITELIST
-              value: "false"
-            - name: OP_PERMISSION_LEVEL
+            - name: PROP_OP_PERMISSION_LEVEL
               value: "4"
-            - name: FUNCTION_PERMISSION_LEVEL
+            - name: PROP_FUNCTION_PERMISSION_LEVEL
               value: "2"
-            # ── RCON ──
-            - name: ENABLE_RCON
-              value: "true"
-            - name: RCON_PORT
-              value: "25575"
-            # ── Query ──
-            - name: ENABLE_QUERY
+            - name: PROP_ENABLE_QUERY
               value: "false"
-            - name: QUERY_PORT
-              value: "25565"
-            # ── Network & Performance ──
-            - name: SERVER_PORT
-              value: "25565"
-            - name: NETWORK_COMPRESSION_THRESHOLD
+            - name: PROP_ENABLE_STATUS
+              value: "true"
+            - name: PROP_BROADCAST_CONSOLE_TO_OPS
+              value: "true"
+            - name: PROP_BROADCAST_RCON_TO_OPS
+              value: "true"
+            - name: PROP_LOG_IPS
+              value: "true"
+            - name: PROP_SYNC_CHUNK_WRITES
+              value: "true"
+            - name: PROP_USE_NATIVE_TRANSPORT
+              value: "true"
+            - name: PROP_NETWORK_COMPRESSION_THRESHOLD
               value: "256"
-            - name: RATE_LIMIT
-              value: "0"
-            - name: SYNC_CHUNK_WRITES
-              value: "true"
-            - name: USE_NATIVE_TRANSPORT
-              value: "true"
-            - name: ENTITY_BROADCAST_RANGE_PERCENTAGE
-              value: "100"
-            - name: MAX_CHAINED_NEIGHBOR_UPDATES
-              value: "1000000"
-            - name: REGION_FILE_COMPRESSION
-              value: "deflate"
-            # ── Console & Broadcasting ──
-            - name: BROADCAST_CONSOLE_TO_OPS
-              value: "true"
-            - name: BROADCAST_RCON_TO_OPS
-              value: "true"
-            - name: ENABLE_STATUS
-              value: "true"
-            - name: STATUS_HEARTBEAT_INTERVAL
-              value: "0"
-            # ── Resource Pack ──
-            - name: RESOURCE_PACK
-              value: ""
-            - name: RESOURCE_PACK_SHA1
-              value: ""
-            - name: RESOURCE_PACK_ID
-              value: ""
-            - name: RESOURCE_PACK_PROMPT
-              value: ""
-            - name: RESOURCE_PACK_ENFORCE
-              value: "false"
-            # ── Server Icon ──
-            # - name: ICON
-            #   value: ""
-            - name: OVERRIDE_ICON
-              value: "false"
-            # ── Mods & Plugins ──
-            # - name: MODS
-            #   value: ""
-            # - name: SPIGET_RESOURCES
-            #   value: ""
-            # - name: MODRINTH_PROJECTS
-            #   value: ""
-            # ── Misc ──
-            - name: SERVER_NAME
-              value: ""
-            - name: BUG_REPORT_LINK
-              value: ""
+            - name: PROP_MAX_TICK_TIME
+              value: "60000"
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: config
-              mountPath: /config
-              readOnly: true
+            - name: backups
+              mountPath: /backups
           resources:
             requests:
               cpu: "1000m"
-              memory: "2Gi"
-          livenessProbe:
+              memory: "3Gi"
+          # gameops health = process alive + ready flag + TCP 25565. The first start
+          # downloads the server jar and generates the world, hence the gate.
+          startupProbe:
             exec:
-              command:
-                - mc-health
-            initialDelaySeconds: 120
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 5
-          readinessProbe:
-            exec:
-              command:
-                - mc-health
-            initialDelaySeconds: 60
+              command: ["gameops", "health"]
             periodSeconds: 15
             timeoutSeconds: 10
-            failureThreshold: 5
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
       volumes:
-        - name: config
-          configMap:
-            name: minecraft-config
+        - name: backups
+          persistentVolumeClaim:
+            claimName: minecraft-backups
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
