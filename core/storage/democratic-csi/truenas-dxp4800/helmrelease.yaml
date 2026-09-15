@@ -86,7 +86,7 @@ spec:
           namePrefix: "k8s-dxp4800-"
           targetGroups:
             - targetGroupPortalGroup: 1    # from Shares » Block (iSCSI) » Portals
-              targetGroupInitiatorGroup: 2 # from Shares » Block (iSCSI) » Initiators
+              targetGroupInitiatorGroup: 1 # from Shares » Block (iSCSI) » Initiators
               targetGroupAuthType: CHAP    # or CHAP / CHAP Mutual if you use auth
               targetGroupAuthGroup: 1      # only if using CHAP
 
