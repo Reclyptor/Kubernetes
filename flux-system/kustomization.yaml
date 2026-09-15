@@ -8,6 +8,11 @@ resources:
 - image-update-automation.yaml
 - makotogotchi-image.yaml
 - mediaops-image.yaml
+- factorio-image.yaml
+- palworld-image.yaml
+- minecraft-image.yaml
+- terraria-image.yaml
+- corekeeper-image.yaml
 - ../secrets/ghcr-secret.yaml
 patches:
   - patch: |
