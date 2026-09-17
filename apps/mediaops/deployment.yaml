@@ -19,8 +19,6 @@ spec:
         app: mediaops
     spec:
       automountServiceAccountToken: false
-      imagePullSecrets:
-      - name: ghcr-secret
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
