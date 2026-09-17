@@ -44,7 +44,8 @@ spec:
             - name: metrics
               containerPort: 9110
               protocol: TCP
-          # DISCORD_WEBHOOK_URL, SERVER_ADDRESS
+          # GAME_PASSWORD, DISCORD_WEBHOOK_URL, SERVER_ADDRESS. Joining by IP always takes
+          # a password: GAME_PASSWORD, or one the server generates when it is empty.
           envFrom:
             - secretRef:
                 name: corekeeper-secret
@@ -174,7 +175,8 @@ spec:
             - name: metrics
               containerPort: 9110
               protocol: TCP
-          # DISCORD_WEBHOOK_URL, SERVER_ADDRESS
+          # GAME_PASSWORD, DISCORD_WEBHOOK_URL, SERVER_ADDRESS. Joining by IP always takes
+          # a password: GAME_PASSWORD, or one the server generates when it is empty.
           envFrom:
             - secretRef:
                 name: corekeeper-makoto-secret
