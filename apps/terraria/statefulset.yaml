@@ -32,7 +32,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: terraria
-          image: ghcr.io/reclyptor/terraria:20260917171900-065c790 # {"$imagepolicy": "flux-system:terraria"}
+          image: ghcr.io/reclyptor/terraria:20260917230608-065c790 # {"$imagepolicy": "flux-system:terraria"}
           ports:
             - name: game
               containerPort: 7777
@@ -161,7 +161,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: terraria
-          image: ghcr.io/reclyptor/terraria:20260917171900-065c790 # {"$imagepolicy": "flux-system:terraria"}
+          image: ghcr.io/reclyptor/terraria:20260917230608-065c790 # {"$imagepolicy": "flux-system:terraria"}
           ports:
             - name: game
               containerPort: 7779
