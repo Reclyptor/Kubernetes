@@ -28,3 +28,34 @@ spec:
             - { port: "27015", endPort: 27050, protocol: TCP }
             - { port: "27000", endPort: 27100, protocol: UDP }
             - { port: "4380", protocol: UDP }
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: corekeeper-makoto
+  namespace: corekeeper
+spec:
+  endpointSelector:
+    matchLabels:
+      app: corekeeper-makoto
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "27016", protocol: UDP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "27016", protocol: UDP }]
+  egress:
+    # SteamCMD installs/updates the server and the game talks to Steam for
+    # authentication; no stable IP allowlist exists. Same shape as Palworld's.
+    - toEntities: [world]
+      toPorts:
+        - ports:
+            - { port: "80", protocol: TCP }
+            - { port: "443", protocol: TCP }
+            - { port: "27015", endPort: 27050, protocol: TCP }
+            - { port: "27000", endPort: 27100, protocol: UDP }
+            - { port: "4380", protocol: UDP }
