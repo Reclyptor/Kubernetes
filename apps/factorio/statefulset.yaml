@@ -66,6 +66,8 @@ spec:
             - name: STOP_TIMEOUT
               value: "120"
             # ── Factorio ──
+            - name: PORT
+              value: "34197"
             - name: SERVER_DESCRIPTION
               value: "Space Age"
             # factorio.com usernames. Both empty = an open server: no admins and
@@ -164,7 +166,7 @@ spec:
       # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
-        - name: factorio-makoto
+        - name: factorio
           image: ghcr.io/reclyptor/factorio:20260915181215-a67207d # {"$imagepolicy": "flux-system:factorio"}
           ports:
             - name: game
@@ -184,7 +186,7 @@ spec:
             - name: TZ
               value: "America/Chicago"
             - name: SERVER_NAME
-              value: "Factorio Makoto"
+              value: "Factorio"
             - name: BACKUP_CRON
               value: "0 4 * * *"
             - name: BACKUP_RETAIN_DAYS
@@ -198,8 +200,7 @@ spec:
             - name: STOP_TIMEOUT
               value: "120"
             # ── Factorio ──
-            # The first server keeps the image default (34197); this one shifts
-            # by one so both can share the LAN load balancer IP.
+            # One port apart so both servers can share the LAN load balancer IP.
             - name: PORT
               value: "34198"
             - name: SERVER_DESCRIPTION

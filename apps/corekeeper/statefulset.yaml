@@ -161,7 +161,7 @@ spec:
       # STOP_TIMEOUT (120s) plus the world flush on SIGTERM must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
-        - name: corekeeper-makoto
+        - name: corekeeper
           # Direct-connect mode (PORT set): players join by IP:port through
           # the shared LAN IP or the playit tunnel, and the START message posts
           # the address to Discord. No Game ID is announced in this mode.
@@ -184,7 +184,7 @@ spec:
             - name: TZ
               value: "America/Chicago"
             - name: SERVER_NAME
-              value: "Core Keeper Makoto"
+              value: "Core Keeper"
             - name: BACKUP_CRON
               value: "0 4 * * *"
             - name: BACKUP_RETAIN_DAYS
