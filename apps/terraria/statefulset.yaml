@@ -65,6 +65,8 @@ spec:
             - name: STOP_TIMEOUT
               value: "120"
             # ── Terraria ──
+            - name: PORT
+              value: "7777"
             # Size, seed and difficulty apply to the first generation only.
             - name: WORLD_NAME
               value: "world"
@@ -158,7 +160,7 @@ spec:
       # STOP_TIMEOUT (120s) plus the save on `exit` must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
-        - name: terraria-makoto
+        - name: terraria
           image: ghcr.io/reclyptor/terraria:20260915191326-065c790 # {"$imagepolicy": "flux-system:terraria"}
           ports:
             - name: game
@@ -178,7 +180,7 @@ spec:
             - name: TZ
               value: "America/Chicago"
             - name: SERVER_NAME
-              value: "Terraria Makoto"
+              value: "Terraria"
             - name: BACKUP_CRON
               value: "0 4 * * *"
             - name: BACKUP_RETAIN_DAYS

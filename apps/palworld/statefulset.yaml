@@ -169,7 +169,7 @@ spec:
       # STOP_TIMEOUT (120s) plus the REST save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
-        - name: palworld-makoto
+        - name: palworld
           image: ghcr.io/reclyptor/palworld:20260915181318-3681855 # {"$imagepolicy": "flux-system:palworld"}
           ports:
             - name: game
@@ -189,7 +189,7 @@ spec:
             - name: TZ
               value: "America/Chicago"
             - name: SERVER_NAME
-              value: "Palworld Makoto"
+              value: "Palworld"
             - name: BACKUP_CRON
               value: "0 4 * * *"
             - name: BACKUP_RETAIN_DAYS

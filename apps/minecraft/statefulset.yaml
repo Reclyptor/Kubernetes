@@ -68,6 +68,8 @@ spec:
             - name: STOP_TIMEOUT
               value: "120"
             # ── Minecraft ──
+            - name: PORT
+              value: "25565"
             - name: EULA
               value: "TRUE"
             - name: SERVER_TYPE
@@ -222,7 +224,7 @@ spec:
       # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
-        - name: minecraft-makoto
+        - name: minecraft
           # ghcr.io/reclyptor/minecraft: the GameOps toolkit (backups, in-place
           # updates, Discord, player events) around the vanilla server, which
           # the image resolves and downloads itself on first start.
@@ -245,7 +247,7 @@ spec:
             - name: TZ
               value: "America/Chicago"
             - name: SERVER_NAME
-              value: "Minecraft Makoto"
+              value: "Minecraft"
             - name: BACKUP_CRON
               value: "0 4 * * *"
             - name: BACKUP_RETAIN_DAYS
@@ -259,9 +261,8 @@ spec:
             - name: STOP_TIMEOUT
               value: "120"
             # ── Minecraft ──
-            # The first server keeps the image default (25565); this one shifts
-            # by one so both can share the LAN load balancer IP. The adapter
-            # also writes it into server.properties as server-port.
+            # One port apart so both servers can share the LAN load balancer IP.
+            # The adapter also writes it into server.properties as server-port.
             - name: PORT
               value: "25566"
             - name: EULA
