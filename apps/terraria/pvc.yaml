@@ -10,3 +10,15 @@ spec:
   resources:
     requests:
       storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: terraria-makoto-backups
+  namespace: terraria
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 10Gi

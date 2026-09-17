@@ -16,3 +16,21 @@ spec:
       port: 25565
       protocol: TCP
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-makoto-server
+  namespace: minecraft
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
+spec:
+  type: LoadBalancer
+  selector:
+    app: minecraft-makoto
+  ports:
+    - name: game
+      port: 25566
+      protocol: TCP

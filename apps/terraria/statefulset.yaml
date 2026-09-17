@@ -27,7 +27,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - fluxeon
+                      - bytheon
       # STOP_TIMEOUT (120s) plus the save on `exit` must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
@@ -110,6 +110,138 @@ spec:
         - name: backups
           persistentVolumeClaim:
             claimName: terraria-backups
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 5Gi
+---
+# Second instance for the makoto group. Identical to the server above apart
+# from its name, port, secret and volumes; both track the same image policy.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: terraria-makoto
+  namespace: terraria
+spec:
+  serviceName: terraria-makoto-server
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terraria-makoto
+  template:
+    metadata:
+      labels:
+        app: terraria-makoto
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - bytheon
+      # STOP_TIMEOUT (120s) plus the save on `exit` must fit in here.
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: terraria-makoto
+          image: ghcr.io/reclyptor/terraria:20260915191326-065c790 # {"$imagepolicy": "flux-system:terraria"}
+          ports:
+            - name: game
+              containerPort: 7779
+              protocol: TCP
+            # The toolkit's read-only /metrics and /healthz (no scraper yet).
+            - name: metrics
+              containerPort: 9110
+              protocol: TCP
+          # DISCORD_WEBHOOK_URL, SERVER_ADDRESS
+          envFrom:
+            - secretRef:
+                name: terraria-makoto-secret
+          env:
+            # ── GameOps: nightly backups kept 14 days; hourly update check; players warned in-game
+            #    where the game can broadcast, otherwise the update waits for an empty server ──
+            - name: TZ
+              value: "America/Chicago"
+            - name: SERVER_NAME
+              value: "Terraria Makoto"
+            - name: BACKUP_CRON
+              value: "0 4 * * *"
+            - name: BACKUP_RETAIN_DAYS
+              value: "14"
+            - name: UPDATE_CRON
+              value: "0 * * * *"
+            - name: UPDATE_WARN_MINUTES
+              value: "15"
+            - name: UPDATE_FORCE_AFTER_MINUTES
+              value: "30"
+            - name: STOP_TIMEOUT
+              value: "120"
+            # ── Terraria ──
+            # 7779, not 7778: the first server takes 7777 and the image already
+            # uses 7778 inside every pod as GATE_TARGET_PORT, the loopback
+            # address the game itself binds behind the toolkit's TCP gate.
+            - name: PORT
+              value: "7779"
+            # Size, seed and difficulty apply to the first generation only.
+            - name: WORLD_NAME
+              value: "world"
+            - name: WORLD_SIZE
+              value: "2"
+            - name: DIFFICULTY
+              value: "0"
+            - name: MAX_PLAYERS
+              value: "8"
+            - name: MOTD
+              value: "Welcome!"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: backups
+              mountPath: /backups
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+          # gameops health = process alive + ready flag (from the console log); the
+          # game port is never probed: a bare connect-and-close on 7779 can crash
+          # Terraria (ObjectDisposedException in Netplay).
+          startupProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: backups
+          persistentVolumeClaim:
+            claimName: terraria-makoto-backups
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain

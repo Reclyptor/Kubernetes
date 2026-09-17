@@ -56,6 +56,37 @@ spec:
             k8s:io.kubernetes.pod.namespace: corekeeper
       toPorts:
         - ports: [{ port: "27015", protocol: UDP }]
+    # the makoto group's second instance of each game, on its own port
+    - toEndpoints:
+        - matchLabels:
+            app: minecraft-makoto
+            k8s:io.kubernetes.pod.namespace: minecraft
+      toPorts:
+        - ports: [{ port: "25566", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: factorio-makoto
+            k8s:io.kubernetes.pod.namespace: factorio
+      toPorts:
+        - ports: [{ port: "34198", protocol: UDP }]
+    - toEndpoints:
+        - matchLabels:
+            app: palworld-makoto
+            k8s:io.kubernetes.pod.namespace: palworld
+      toPorts:
+        - ports: [{ port: "8213", protocol: UDP }]
+    - toEndpoints:
+        - matchLabels:
+            app: terraria-makoto
+            k8s:io.kubernetes.pod.namespace: terraria
+      toPorts:
+        - ports: [{ port: "7779", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app: corekeeper-makoto
+            k8s:io.kubernetes.pod.namespace: corekeeper
+      toPorts:
+        - ports: [{ port: "27016", protocol: UDP }]
     # tailnet data path: publish Headscale's embedded DERP/STUN and the
     # subnet router's WireGuard endpoint
     - toEndpoints:

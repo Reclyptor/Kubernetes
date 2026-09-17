@@ -22,3 +22,28 @@ spec:
     - toEntities: [world]
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: terraria-makoto
+  namespace: terraria
+spec:
+  endpointSelector:
+    matchLabels:
+      app: terraria-makoto
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "7779", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "7779", protocol: TCP }]
+  # terraria.org (update check and server downloads) and Discord.
+  egress:
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

@@ -21,3 +21,27 @@ spec:
     - toEntities: [world]
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: minecraft-makoto
+  namespace: minecraft
+spec:
+  endpointSelector:
+    matchLabels:
+      app: minecraft-makoto
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "25566", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "25566", protocol: TCP }]
+  egress:
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

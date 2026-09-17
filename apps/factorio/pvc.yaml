@@ -10,3 +10,15 @@ spec:
   resources:
     requests:
       storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: factorio-makoto-backups
+  namespace: factorio
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: iscsi-persistent-fs6712x
+  resources:
+    requests:
+      storage: 20Gi

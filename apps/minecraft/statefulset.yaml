@@ -27,7 +27,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - fluxeon
+                      - bytheon
       # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
@@ -174,6 +174,202 @@ spec:
         - name: backups
           persistentVolumeClaim:
             claimName: minecraft-backups
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 20Gi
+---
+# Second instance for the makoto group. Identical to the server above apart
+# from its name, port, secret and volumes; both track the same image policy.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minecraft-makoto
+  namespace: minecraft
+spec:
+  serviceName: minecraft-makoto-server
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft-makoto
+  template:
+    metadata:
+      labels:
+        app: minecraft-makoto
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - bytheon
+      # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: minecraft-makoto
+          # ghcr.io/reclyptor/minecraft: the GameOps toolkit (backups, in-place
+          # updates, Discord, player events) around the vanilla server, which
+          # the image resolves and downloads itself on first start.
+          image: ghcr.io/reclyptor/minecraft:20260915185003-4ad539b # {"$imagepolicy": "flux-system:minecraft"}
+          ports:
+            - name: game
+              containerPort: 25566
+              protocol: TCP
+            # The toolkit's read-only /metrics and /healthz (no scraper yet).
+            - name: metrics
+              containerPort: 9110
+              protocol: TCP
+          # RCON_PASSWORD, DISCORD_WEBHOOK_URL, SERVER_ADDRESS
+          envFrom:
+            - secretRef:
+                name: minecraft-makoto-secret
+          env:
+            # ── GameOps: nightly backups kept 14 days; hourly update check; players warned in-game
+            #    where the game can broadcast, otherwise the update waits for an empty server ──
+            - name: TZ
+              value: "America/Chicago"
+            - name: SERVER_NAME
+              value: "Minecraft Makoto"
+            - name: BACKUP_CRON
+              value: "0 4 * * *"
+            - name: BACKUP_RETAIN_DAYS
+              value: "14"
+            - name: UPDATE_CRON
+              value: "0 * * * *"
+            - name: UPDATE_WARN_MINUTES
+              value: "15"
+            - name: UPDATE_FORCE_AFTER_MINUTES
+              value: "30"
+            - name: STOP_TIMEOUT
+              value: "120"
+            # ── Minecraft ──
+            # The first server keeps the image default (25565); this one shifts
+            # by one so both can share the LAN load balancer IP. The adapter
+            # also writes it into server.properties as server-port.
+            - name: PORT
+              value: "25566"
+            - name: EULA
+              value: "TRUE"
+            - name: SERVER_TYPE
+              value: "vanilla"
+            - name: VERSION
+              value: "latest"
+            - name: MEMORY
+              value: "2G"
+            # Operators and whitelist: comma-separated player names, applied
+            # over RCON at every start. A non-empty whitelist turns it on.
+            - name: ADMINS
+              value: ""
+            - name: WHITELIST
+              value: ""
+            - name: MOTD
+              value: "A Minecraft Server"
+            - name: DIFFICULTY
+              value: "easy"
+            - name: MAX_PLAYERS
+              value: "20"
+            - name: WORLD_NAME
+              value: "world"
+            - name: WORLD_SEED
+              value: ""
+            # ── server.properties (PROP_<KEY>, _ → -) ──
+            - name: PROP_GAMEMODE
+              value: "survival"
+            - name: PROP_HARDCORE
+              value: "false"
+            - name: PROP_FORCE_GAMEMODE
+              value: "false"
+            - name: PROP_VIEW_DISTANCE
+              value: "10"
+            - name: PROP_SIMULATION_DISTANCE
+              value: "10"
+            - name: PROP_SPAWN_PROTECTION
+              value: "16"
+            - name: PROP_PLAYER_IDLE_TIMEOUT
+              value: "0"
+            - name: PROP_PAUSE_WHEN_EMPTY_SECONDS
+              value: "60"
+            - name: PROP_ALLOW_FLIGHT
+              value: "false"
+            - name: PROP_ONLINE_MODE
+              value: "true"
+            - name: PROP_ENFORCE_SECURE_PROFILE
+              value: "true"
+            - name: PROP_LEVEL_TYPE
+              value: "minecraft:normal"
+            - name: PROP_GENERATE_STRUCTURES
+              value: "true"
+            - name: PROP_OP_PERMISSION_LEVEL
+              value: "4"
+            - name: PROP_FUNCTION_PERMISSION_LEVEL
+              value: "2"
+            - name: PROP_ENABLE_QUERY
+              value: "false"
+            - name: PROP_ENABLE_STATUS
+              value: "true"
+            - name: PROP_BROADCAST_CONSOLE_TO_OPS
+              value: "true"
+            - name: PROP_BROADCAST_RCON_TO_OPS
+              value: "true"
+            - name: PROP_LOG_IPS
+              value: "true"
+            - name: PROP_SYNC_CHUNK_WRITES
+              value: "true"
+            - name: PROP_USE_NATIVE_TRANSPORT
+              value: "true"
+            - name: PROP_NETWORK_COMPRESSION_THRESHOLD
+              value: "256"
+            - name: PROP_MAX_TICK_TIME
+              value: "60000"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: backups
+              mountPath: /backups
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "3Gi"
+          # gameops health = process alive + ready flag + TCP 25566. The first start
+          # downloads the server jar and generates the world, hence the gate.
+          startupProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: backups
+          persistentVolumeClaim:
+            claimName: minecraft-makoto-backups
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
