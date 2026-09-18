@@ -113,6 +113,12 @@ spec:
             periodSeconds: 15
             timeoutSeconds: 10
             failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              memory: "256Mi"
 
         # qBittorrent container - uses Gluetun's network
         - name: qbittorrent
@@ -148,6 +154,16 @@ spec:
             periodSeconds: 15
             timeoutSeconds: 10
             failureThreshold: 3
+          # Observed steady state is ~9.5Gi, most of it reclaimable disk cache
+          # that grows with the active torrent set. Requesting the full figure
+          # would reserve cache the kernel hands back under pressure, so this
+          # requests the working set and caps the tail.
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "4Gi"
+            limits:
+              memory: "12Gi"
 
       dnsPolicy: None
       dnsConfig:
