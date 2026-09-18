@@ -15,15 +15,20 @@ spec:
         app: jellyfin
     spec:
       automountServiceAccountToken: false
+      # Needs an AMD render node: the container mounts /dev/dri/renderD128 and
+      # drives it with radeonsi. All four AMD nodes expose one; bytheon's
+      # renderD128 is an RTX 3090, which radeonsi cannot drive — so match the
+      # capability rather than a hostname, and bytheon is excluded for the real
+      # reason instead of by omission.
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: kubernetes.io/hostname
+                  - key: hardware.reclyptor.com/vaapi
                     operator: In
                     values:
-                      - styxeon
+                      - "true"
       securityContext:
         runAsUser: 0
         runAsGroup: 0
