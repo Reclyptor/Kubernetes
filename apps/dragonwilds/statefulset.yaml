@@ -242,9 +242,12 @@ spec:
               value: "30"
             - name: STOP_TIMEOUT
               value: "120"
-            # Only players arriving and leaving ping the channel; ALL covers
-            # every other event, including any a future adapter invents.
-            - name: DISCORD_SILENT_EVENTS
+            # This group asked for a quiet channel, so every event but players
+            # arriving and leaving is omitted outright rather than posted
+            # unpinged. ALL covers any event a future adapter invents, so one
+            # can never arrive here by accident. JOIN and LEAVE ping: nothing
+            # silences them, which is the whole point of the channel.
+            - name: DISCORD_DISABLED_EVENTS
               value: "ALL,!JOIN,!LEAVE"
             # ── Dragonwilds ──
             # The world name is what players type in the game's Public tab, and
