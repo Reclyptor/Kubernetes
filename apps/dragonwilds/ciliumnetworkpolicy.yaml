@@ -29,3 +29,35 @@ spec:
             - { port: "27015", endPort: 27050, protocol: TCP }
             - { port: "27000", endPort: 27100, protocol: UDP }
             - { port: "4380", protocol: UDP }
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: dragonwilds-makoto
+  namespace: dragonwilds
+spec:
+  endpointSelector:
+    matchLabels:
+      app: dragonwilds-makoto
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "7781", protocol: UDP }]
+    - fromEndpoints:
+        - matchLabels:
+            app: playit
+            k8s:io.kubernetes.pod.namespace: playit
+      toPorts:
+        - ports: [{ port: "7781", protocol: UDP }]
+  egress:
+    # SteamCMD installs/updates the server; the game itself talks to Epic Online
+    # Services and to Jagex over HTTPS for matchmaking and telemetry. No stable
+    # IP allowlist exists for any of them. Same shape as Core Keeper's.
+    - toEntities: [world]
+      toPorts:
+        - ports:
+            - { port: "80", protocol: TCP }
+            - { port: "443", protocol: TCP }
+            - { port: "27015", endPort: 27050, protocol: TCP }
+            - { port: "27000", endPort: 27100, protocol: UDP }
+            - { port: "4380", protocol: UDP }
