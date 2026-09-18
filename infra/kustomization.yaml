@@ -13,6 +13,7 @@ resources:
   - nats
   - playit
   - postgres
+  - qdrant
   - redis
   - tailscale
   - temporal
