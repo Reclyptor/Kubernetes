@@ -18,15 +18,14 @@ spec:
       runtimeClassName: nvidia
       securityContext:
         fsGroup: 1000
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - bytheon
+      # nvidia.com/gpu in the container resources already constrains this to a
+      # GPU node — bytheon is the only one advertising the resource — so the
+      # hostname pin bought nothing and would have blocked a second GPU node.
+      # The toleration is what gets it past the taint reserving that box.
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
       containers:
         - name: invokeai
           image: ghcr.io/invoke-ai/invokeai:latest
@@ -49,7 +48,12 @@ spec:
             - name: data
               mountPath: /invokeai
           resources:
+            requests:
+              cpu: "2000m"
+              memory: "4Gi"
+              nvidia.com/gpu: "1"
             limits:
+              memory: "16Gi"
               nvidia.com/gpu: "1"
           livenessProbe:
             httpGet:
