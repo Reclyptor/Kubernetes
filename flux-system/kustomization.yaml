@@ -13,6 +13,7 @@ resources:
 - minecraft-image.yaml
 - terraria-image.yaml
 - corekeeper-image.yaml
+- dragonwilds-image.yaml
 - ../secrets/ghcr-secret.yaml
 patches:
   - patch: |

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - comfyui
   - corekeeper
+  - dragonwilds
   - emby
   - factorio
   - gotify
