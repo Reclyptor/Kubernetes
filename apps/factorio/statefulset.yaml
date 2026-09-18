@@ -20,15 +20,6 @@ spec:
         runAsUser: 845
         runAsGroup: 845
         fsGroup: 845
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - bytheon
       # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
@@ -158,15 +149,6 @@ spec:
         runAsUser: 845
         runAsGroup: 845
         fsGroup: 845
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - bytheon
       # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
