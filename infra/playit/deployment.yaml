@@ -16,15 +16,6 @@ spec:
         app: playit
     spec:
       automountServiceAccountToken: false
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - fluxeon
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532

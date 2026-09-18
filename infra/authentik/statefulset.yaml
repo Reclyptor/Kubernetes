@@ -66,15 +66,6 @@ spec:
         - name: templates
           persistentVolumeClaim:
             claimName: authentik-templates
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - voideon
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -137,14 +128,5 @@ spec:
         - name: templates
           persistentVolumeClaim:
             claimName: authentik-templates
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - voideon
 
 
