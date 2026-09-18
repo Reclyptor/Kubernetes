@@ -33,6 +33,14 @@ spec:
       name: "org.democratic-csi.iscsi-fs6712x"
     node:
       hostPID: true
+      # The node plugin must reach every node that mounts a volume, including
+      # bytheon, which carries nvidia.com/gpu=true:NoSchedule to reserve the GPU
+      # box. Without this the DaemonSet silently stops being scheduled there on
+      # the next reboot or chart upgrade and volumes fail to mount.
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
     storageClasses:
       - name: iscsi-ephemeral-fs6712x
         defaultClass: false
