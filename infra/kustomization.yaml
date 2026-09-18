@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - agentmemory
   - authentik
+  - cerbos
   - cloudflare
   - headscale
   - kafka
