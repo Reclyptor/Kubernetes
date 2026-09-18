@@ -56,6 +56,12 @@ spec:
             k8s:io.kubernetes.pod.namespace: corekeeper
       toPorts:
         - ports: [{ port: "27015", protocol: UDP }]
+    - toEndpoints:
+        - matchLabels:
+            app: dragonwilds
+            k8s:io.kubernetes.pod.namespace: dragonwilds
+      toPorts:
+        - ports: [{ port: "7780", protocol: UDP }]
     # the makoto group's second instance of each game, on its own port
     - toEndpoints:
         - matchLabels:
