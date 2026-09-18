@@ -21,15 +21,6 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - bytheon
       # STOP_TIMEOUT (120s) plus the REST save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
@@ -161,15 +152,6 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - bytheon
       # STOP_TIMEOUT (120s) plus the REST save that precedes it must fit in here.
       terminationGracePeriodSeconds: 180
       containers:
