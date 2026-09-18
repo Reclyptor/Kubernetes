@@ -41,7 +41,7 @@ spec:
           # Services detects, which behind the tunnel is not reachable; players
           # join through the client's Direct tab with the address the START
           # message announces.
-          image: ghcr.io/reclyptor/dragonwilds:20260918110251-e83e112 # {"$imagepolicy": "flux-system:dragonwilds"}
+          image: ghcr.io/reclyptor/dragonwilds:20260918122148-ba747ec # {"$imagepolicy": "flux-system:dragonwilds"}
           ports:
             - name: game
               containerPort: 7780
@@ -201,7 +201,7 @@ spec:
           # Services detects, which behind the tunnel is not reachable; players
           # join through the client's Direct tab with the address the START
           # message announces.
-          image: ghcr.io/reclyptor/dragonwilds:20260918110251-e83e112 # {"$imagepolicy": "flux-system:dragonwilds"}
+          image: ghcr.io/reclyptor/dragonwilds:20260918122148-ba747ec # {"$imagepolicy": "flux-system:dragonwilds"}
           ports:
             - name: game
               containerPort: 7781
