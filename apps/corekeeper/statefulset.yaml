@@ -68,6 +68,10 @@ spec:
               value: "30"
             - name: STOP_TIMEOUT
               value: "120"
+            # Only players arriving and leaving ping the channel; ALL covers
+            # every other event, including any a future adapter invents.
+            - name: DISCORD_SILENT_EVENTS
+              value: "ALL,!JOIN,!LEAVE"
             # ── Core Keeper ──
             - name: WORLD_NAME
               value: "Core Keeper Server"
@@ -199,6 +203,10 @@ spec:
               value: "30"
             - name: STOP_TIMEOUT
               value: "120"
+            # Only players arriving and leaving ping the channel; ALL covers
+            # every other event, including any a future adapter invents.
+            - name: DISCORD_SILENT_EVENTS
+              value: "ALL,!JOIN,!LEAVE"
             # ── Core Keeper ──
             - name: WORLD_NAME
               value: "Core Keeper Server"
