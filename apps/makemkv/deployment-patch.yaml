@@ -65,6 +65,14 @@ spec:
               mountPath: /config
             - name: output
               mountPath: /output
+          # ~400Mi each at idle across all eight drives; the ceiling covers
+          # the buffering of an active rip.
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              memory: "2Gi"
           livenessProbe:
             httpGet:
               path: /
