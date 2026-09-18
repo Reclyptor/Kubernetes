@@ -15,15 +15,6 @@ spec:
         app: tautulli
     spec:
       automountServiceAccountToken: false
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                - fluxeon
       securityContext:
         fsGroup: 1000
       containers:

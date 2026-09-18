@@ -128,15 +128,6 @@ spec:
             limits:
               memory: 2Gi
               cpu: "2"
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - voideon
       volumes:
         - name: engine-config
           configMap:

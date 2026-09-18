@@ -54,15 +54,6 @@ spec:
             requests:
               memory: "512Mi"
               cpu: "200m"
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - voideon
 
 ---
 apiVersion: apps/v1
@@ -114,12 +105,3 @@ spec:
             requests:
               memory: "128Mi"
               cpu: "100m"
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - voideon

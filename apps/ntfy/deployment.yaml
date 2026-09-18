@@ -14,15 +14,6 @@ spec:
         app: ntfy-proxy
     spec:
       automountServiceAccountToken: false
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                - fluxeon
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
