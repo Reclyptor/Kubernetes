@@ -3,6 +3,14 @@ kind: PersistentVolumeClaim
 metadata:
   name: data-agentmemory-0
   namespace: agentmemory
+  annotations:
+    # This claim has two declared owners: this file, and the statefulset's
+    # volumeClaimTemplate named `data`, which generates this exact name for
+    # replica 0. Removing this file from the kustomization would make Flux
+    # prune the claim and the statefulset would bind a fresh empty volume in
+    # its place. This annotation must be applied and confirmed BEFORE that
+    # removal, never in the same commit.
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   accessModes:
     - ReadWriteOnce
