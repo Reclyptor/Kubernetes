@@ -87,6 +87,13 @@ spec:
             k8s:io.kubernetes.pod.namespace: corekeeper
       toPorts:
         - ports: [{ port: "27016", protocol: UDP }]
+    # the challenge group, which runs Factorio and nothing else
+    - toEndpoints:
+        - matchLabels:
+            app: factorio-challenge
+            k8s:io.kubernetes.pod.namespace: factorio
+      toPorts:
+        - ports: [{ port: "34199", protocol: UDP }]
     # tailnet data path: publish Headscale's embedded DERP/STUN and the
     # subnet router's WireGuard endpoint
     - toEndpoints:

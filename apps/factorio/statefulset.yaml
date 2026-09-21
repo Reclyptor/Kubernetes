@@ -127,8 +127,9 @@ spec:
           requests:
             storage: 10Gi
 ---
-# Second instance for the makoto group. Identical to the server above apart
-# from its name, port, secret and volumes; both track the same image policy.
+# Second instance, for the makoto group. Identical to the server above apart
+# from its name, port, secret and volumes; every instance tracks one image
+# policy.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -194,7 +195,8 @@ spec:
             - name: DISCORD_DISABLED_EVENTS
               value: "ALL,!JOIN,!LEAVE"
             # ── Factorio ──
-            # One port apart so both servers can share the LAN load balancer IP.
+            # One port apart from the first server so every Factorio instance
+            # can share the LAN load balancer IP.
             - name: PORT
               value: "34198"
             - name: SERVER_DESCRIPTION
@@ -246,6 +248,140 @@ spec:
         - name: backups
           persistentVolumeClaim:
             claimName: factorio-makoto-backups
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 10Gi
+---
+# Third instance, for the challenge group. Factorio is the only game this
+# group runs; the server is otherwise identical to the two above apart from
+# its name, port, secret and volumes.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: factorio-challenge
+  namespace: factorio
+spec:
+  serviceName: factorio-challenge-server
+  replicas: 1
+  selector:
+    matchLabels:
+      app: factorio-challenge
+  template:
+    metadata:
+      labels:
+        app: factorio-challenge
+    spec:
+      automountServiceAccountToken: false
+      # The image runs as uid/gid 845, matching the existing data volume.
+      securityContext:
+        runAsUser: 845
+        runAsGroup: 845
+        fsGroup: 845
+      # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: factorio
+          image: ghcr.io/reclyptor/factorio:20260918120754-a67207d # {"$imagepolicy": "flux-system:factorio"}
+          ports:
+            - name: game
+              containerPort: 34199
+              protocol: UDP
+            # The toolkit's read-only /metrics and /healthz (no scraper yet).
+            - name: metrics
+              containerPort: 9110
+              protocol: TCP
+          # RCON_PASSWORD, DISCORD_WEBHOOK_URL, SERVER_ADDRESS
+          envFrom:
+            - secretRef:
+                name: factorio-challenge-secret
+          env:
+            # ── GameOps: nightly backups kept 14 days; hourly update check; players warned in-game
+            #    where the game can broadcast, otherwise the update waits for an empty server ──
+            - name: TZ
+              value: "America/Chicago"
+            - name: SERVER_NAME
+              value: "Factorio"
+            - name: BACKUP_CRON
+              value: "0 4 * * *"
+            - name: BACKUP_RETAIN_DAYS
+              value: "14"
+            - name: UPDATE_CRON
+              value: "0 * * * *"
+            - name: UPDATE_WARN_MINUTES
+              value: "15"
+            - name: UPDATE_FORCE_AFTER_MINUTES
+              value: "30"
+            - name: STOP_TIMEOUT
+              value: "120"
+            # Only players arriving and leaving reach the channel; every other
+            # event is omitted outright rather than posted unpinged. ALL covers
+            # any event a future adapter invents, so one can never arrive here
+            # by accident. Nothing silences JOIN and LEAVE.
+            - name: DISCORD_DISABLED_EVENTS
+              value: "ALL,!JOIN,!LEAVE"
+            # ── Factorio ──
+            # One port apart from the makoto server so every Factorio instance
+            # can share the LAN load balancer IP.
+            - name: PORT
+              value: "34199"
+            - name: SERVER_DESCRIPTION
+              value: "Space Age"
+            # factorio.com usernames. Both empty = an open server: no admins and
+            # no whitelist gate (players are still verified by the auth server).
+            - name: ADMINS
+              value: ""
+            - name: WHITELIST
+              value: ""
+            - name: MAX_PLAYERS
+              value: "0"
+            - name: AUTOSAVE_INTERVAL
+              value: "5"
+            - name: DLC_SPACE_AGE
+              value: "true"
+            - name: CHANNEL
+              value: "stable"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: backups
+              mountPath: /backups
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+          # gameops health = process alive + ready flag; the game port is UDP and is
+          # not probed, and no RCON connection is opened, so the log stays quiet.
+          startupProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["gameops", "health"]
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: backups
+          persistentVolumeClaim:
+            claimName: factorio-challenge-backups
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
