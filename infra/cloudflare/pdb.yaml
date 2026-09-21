@@ -1,0 +1,14 @@
+# Keeps one tunnel connection serving through a drain. Only meaningful now that
+# cloudflared runs two replicas; at one replica a budget blocks drains without
+# keeping anything up.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cloudflare
+  namespace: cloudflare
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: cloudflare
+  unhealthyPodEvictionPolicy: AlwaysAllow

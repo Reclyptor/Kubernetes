@@ -4,7 +4,11 @@ metadata:
   name: cloudflare
   namespace: cloudflare
 spec:
-  replicas: 1
+  # cloudflared registers each replica as its own connection to the same
+  # tunnel and Cloudflare load-balances across them, so a second replica is
+  # real redundancy rather than contention. Default RollingUpdate at 2 replicas
+  # gives maxUnavailable 0 / maxSurge 1 — the tunnel never drops during a roll.
+  replicas: 2
   selector:
     matchLabels:
       app: cloudflare
@@ -20,6 +24,18 @@ spec:
         runAsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
+      # Two replicas on one node would survive a pod failure but not a node
+      # failure, which is most of the point. Preferred, not required: one
+      # replica running beats two Pending.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: cloudflare
+                topologyKey: kubernetes.io/hostname
       containers:
       - name: cloudflared
         image: cloudflare/cloudflared:latest
@@ -34,11 +50,22 @@ spec:
             secretKeyRef:
               name: tunnel-token
               key: token
+        # /ready reports whether the tunnel has live edge connections. As a
+        # readiness gate it keeps a replica out of rotation until it is really
+        # serving; as a liveness check one missed poll is not evidence of a
+        # wedged process, so it takes three.
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 2000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 2
         livenessProbe:
           httpGet:
             path: /ready
             port: 2000
-          failureThreshold: 1
+          failureThreshold: 3
           initialDelaySeconds: 10
           periodSeconds: 10
         ports:

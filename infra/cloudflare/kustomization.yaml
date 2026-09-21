@@ -6,4 +6,5 @@ resources:
   - secrets
   - configmap.yaml
   - deployment.yaml
+  - pdb.yaml
   - ciliumnetworkpolicy.yaml
