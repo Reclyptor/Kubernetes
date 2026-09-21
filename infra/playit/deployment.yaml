@@ -41,6 +41,24 @@ spec:
             readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]
+          # playitd exposes no health endpoint and no status subcommand — the
+          # image is one binary — so the IPC socket it binds is the only
+          # observable signal. This catches a daemon that died or never bound;
+          # it does NOT catch a live process whose tunnel session is dead.
+          readinessProbe:
+            exec:
+              command: ["test", "-S", "/tmp/playit.sock"]
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["test", "-S", "/tmp/playit.sock"]
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: tmp
               mountPath: /tmp
