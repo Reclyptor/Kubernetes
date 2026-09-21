@@ -40,6 +40,22 @@ spec:
           value: "America/Chicago"
         - name: MEDIA_ROOT
           value: /mnt/media
+        # Superseded files go to one tree on the box that is not being worked,
+        # rather than to a sibling of each share, so the archive stops consuming
+        # space on the box that is actually being read. No default exists in
+        # code on purpose: a guessed archive path resolves to the pod's overlay,
+        # accepts the write, reports success, and is discarded at the next image
+        # roll.
+        #
+        # The value comes from a Secret rather than sitting here, because this
+        # repository is public and the rule for it is to name dataset roots and
+        # never enumerate what lives beneath them. The set of names is itself
+        # the thing worth not publishing; this one would be a hole in that.
+        - name: ARCHIVE_ROOT
+          valueFrom:
+            secretKeyRef:
+              name: mediaops-secret
+              key: ARCHIVE_ROOT
         # The image gives `media` no home directory, so fontconfig has nowhere to
         # cache and floods every drawtext call with "No writable cache
         # directories". The labels still render, which is the danger: pages of

@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: mediaops
 resources:
   - namespace.yaml
+  - secrets
   - pv.yaml
   - pvc.yaml
   - deployment.yaml
