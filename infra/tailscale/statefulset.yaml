@@ -67,6 +67,17 @@ spec:
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3
+          # Deliberately slacker than readiness: this pod advertises the LAN
+          # load-balancer VIP as a subnet route, so restarting it on a transient
+          # control-plane blip costs more than waiting. Three minutes of
+          # sustained failure before a restart.
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "tailscale status --peers=false >/dev/null 2>&1"]
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 6
       volumes:
         - name: tun
           hostPath:
