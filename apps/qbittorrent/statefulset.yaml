@@ -17,6 +17,9 @@ spec:
       automountServiceAccountToken: false
       securityContext:
         fsGroup: 1000
+      # A hard kill mid-write costs a full recheck of the downloads tree on the
+      # next start — hours of I/O. The 30s default is nowhere near enough.
+      terminationGracePeriodSeconds: 300
       containers:
         # Gluetun VPN container - handles all network traffic
         - name: gluetun
