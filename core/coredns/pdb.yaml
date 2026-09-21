@@ -1,0 +1,18 @@
+# coredns runs two replicas with required hostname anti-affinity, so an evicted
+# pod cannot land beside its peer — it stays Pending until another node frees
+# up. Without this budget nothing stops the eviction API taking the second pod
+# while the first is still Pending, and a two-node drain leaves the cluster with
+# no DNS. node-local-dns caches per node but forwards every miss here.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: coredns
+  namespace: kube-system
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      k8s-app: kube-dns
+  # A pod that is already unhealthy is not serving DNS, and protecting it would
+  # block the drain that replaces it.
+  unhealthyPodEvictionPolicy: AlwaysAllow
