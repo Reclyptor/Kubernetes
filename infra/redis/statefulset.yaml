@@ -19,6 +19,7 @@ spec:
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 999
+      terminationGracePeriodSeconds: 120
       containers:
         - name: redis
           image: redis:8.10.1@sha256:8a1efc5f479551822b47424ccae982026b633f28818eab0387348120a61e10e2
