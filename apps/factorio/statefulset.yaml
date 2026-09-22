@@ -24,7 +24,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: factorio
-          image: ghcr.io/reclyptor/factorio:20260918120754-a67207d # {"$imagepolicy": "flux-system:factorio"}
+          image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
           ports:
             - name: game
               containerPort: 34197
@@ -156,7 +156,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: factorio
-          image: ghcr.io/reclyptor/factorio:20260918120754-a67207d # {"$imagepolicy": "flux-system:factorio"}
+          image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
           ports:
             - name: game
               containerPort: 34198
@@ -290,7 +290,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: factorio
-          image: ghcr.io/reclyptor/factorio:20260918120754-a67207d # {"$imagepolicy": "flux-system:factorio"}
+          image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
           ports:
             - name: game
               containerPort: 34199
