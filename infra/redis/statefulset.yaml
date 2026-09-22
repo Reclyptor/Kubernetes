@@ -21,8 +21,8 @@ spec:
         fsGroup: 999
       containers:
         - name: redis
-          image: redis:latest
-          imagePullPolicy: Always
+          image: redis:8.10.1@sha256:8a1efc5f479551822b47424ccae982026b633f28818eab0387348120a61e10e2
+          imagePullPolicy: IfNotPresent
           command:
             - redis-server
             - --requirepass
