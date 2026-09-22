@@ -20,8 +20,10 @@ spec:
         runAsUser: 845
         runAsGroup: 845
         fsGroup: 845
-      # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
-      terminationGracePeriodSeconds: 180
+      # 300s of drain, then STOP_TIMEOUT (120s) and the save it precedes, plus
+      # margin. `gameops drain --required-grace` derives this number; a grace
+      # period below it means the drain is SIGKILLed mid-save.
+      terminationGracePeriodSeconds: 480
       containers:
         - name: factorio
           image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
@@ -110,6 +112,16 @@ spec:
             periodSeconds: 60
             timeoutSeconds: 10
             failureThreshold: 3
+          # An orchestrator restart — a new image, a node drain, a rescheduled
+          # pod — otherwise SIGTERMs the server with no warning, bypassing the
+          # countdown the toolkit gives its own in-place updates. drain runs
+          # that same countdown first, and returns early the moment the server
+          # empties. 300s is deliberately less patient than the update path:
+          # an eviction means something wants this node back.
+          lifecycle:
+            preStop:
+              exec:
+                command: ["gameops", "drain", "--deadline", "300"]
       volumes:
         - name: backups
           persistentVolumeClaim:
@@ -152,8 +164,10 @@ spec:
         runAsUser: 845
         runAsGroup: 845
         fsGroup: 845
-      # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
-      terminationGracePeriodSeconds: 180
+      # 300s of drain, then STOP_TIMEOUT (120s) and the save it precedes, plus
+      # margin. `gameops drain --required-grace` derives this number; a grace
+      # period below it means the drain is SIGKILLed mid-save.
+      terminationGracePeriodSeconds: 480
       containers:
         - name: factorio
           image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
@@ -244,6 +258,16 @@ spec:
             periodSeconds: 60
             timeoutSeconds: 10
             failureThreshold: 3
+          # An orchestrator restart — a new image, a node drain, a rescheduled
+          # pod — otherwise SIGTERMs the server with no warning, bypassing the
+          # countdown the toolkit gives its own in-place updates. drain runs
+          # that same countdown first, and returns early the moment the server
+          # empties. 300s is deliberately less patient than the update path:
+          # an eviction means something wants this node back.
+          lifecycle:
+            preStop:
+              exec:
+                command: ["gameops", "drain", "--deadline", "300"]
       volumes:
         - name: backups
           persistentVolumeClaim:
@@ -286,8 +310,10 @@ spec:
         runAsUser: 845
         runAsGroup: 845
         fsGroup: 845
-      # STOP_TIMEOUT (120s) plus the save that precedes it must fit in here.
-      terminationGracePeriodSeconds: 180
+      # 300s of drain, then STOP_TIMEOUT (120s) and the save it precedes, plus
+      # margin. `gameops drain --required-grace` derives this number; a grace
+      # period below it means the drain is SIGKILLed mid-save.
+      terminationGracePeriodSeconds: 480
       containers:
         - name: factorio
           image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
@@ -378,6 +404,16 @@ spec:
             periodSeconds: 60
             timeoutSeconds: 10
             failureThreshold: 3
+          # An orchestrator restart — a new image, a node drain, a rescheduled
+          # pod — otherwise SIGTERMs the server with no warning, bypassing the
+          # countdown the toolkit gives its own in-place updates. drain runs
+          # that same countdown first, and returns early the moment the server
+          # empties. 300s is deliberately less patient than the update path:
+          # an eviction means something wants this node back.
+          lifecycle:
+            preStop:
+              exec:
+                command: ["gameops", "drain", "--deadline", "300"]
       volumes:
         - name: backups
           persistentVolumeClaim:
