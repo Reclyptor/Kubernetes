@@ -1,6 +1,9 @@
 # Specs are working documents, not configuration. This is a configuration-only
-# repo, so SPEC.md stays local and is never checked in.
+# repo, so specs stay local and are never checked in. One file per branch under
+# SPEC/, because concurrent sessions sharing a single SPEC.md overwrite each
+# other. SPEC.md is the older flat layout, still ignored so existing ones stay.
 SPEC.md
+SPEC/
 
 # Agent working directories — per-session local state, not configuration.
 .claude/
