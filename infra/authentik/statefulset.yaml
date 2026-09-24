@@ -23,8 +23,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:latest
-          imagePullPolicy: Always
+          image: docker.io/beryju/authentik:2025.2.4@sha256:36233579415aa2e2e52a6b0c45736cb871fe71460bfe0cf95d83f67528fb1182
+          imagePullPolicy: IfNotPresent
           args: ["server"]
           resources:
             requests:
@@ -92,8 +92,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: authentik-worker
-          image: ghcr.io/goauthentik/server:latest
-          imagePullPolicy: Always
+          image: docker.io/beryju/authentik:2025.2.4@sha256:36233579415aa2e2e52a6b0c45736cb871fe71460bfe0cf95d83f67528fb1182
+          imagePullPolicy: IfNotPresent
           args: ["worker"]
           resources:
             requests:
