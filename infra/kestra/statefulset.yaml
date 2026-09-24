@@ -27,8 +27,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: kestra
-          image: kestra/kestra:latest
-          imagePullPolicy: Always
+          image: docker.io/kestra/kestra:v2.0.3@sha256:22c8576717517102fc7e5824d5867b33dc3e3a1c4483ffb2f1a74f883cc3476f
+          imagePullPolicy: IfNotPresent
           command:
             - /bin/bash
             - -c

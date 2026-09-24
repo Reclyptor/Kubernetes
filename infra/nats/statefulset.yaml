@@ -21,8 +21,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: nats
-          image: nats:alpine
-          imagePullPolicy: Always
+          image: nats:2.15.0-alpine@sha256:ac8f88a6494bffc2c2a5289a0ca61cb28a9145c11ba5677cf24265d07f46d8d4
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4222
               name: client

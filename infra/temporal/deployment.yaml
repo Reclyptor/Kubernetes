@@ -22,8 +22,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: temporal
-          image: temporalio/auto-setup:latest
-          imagePullPolicy: Always
+          image: docker.io/temporalio/auto-setup:1.29.1@sha256:5b3502a3b685f9eff1b925af90c57c9e3dbeccbef367cc28a2a9712c63379312
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 7233
               name: frontend
@@ -77,8 +77,8 @@ spec:
         runAsGroup: 1000
       containers:
         - name: temporal-web
-          image: temporalio/ui:latest
-          imagePullPolicy: Always
+          image: docker.io/temporalio/ui:2.42.1@sha256:64e8d7d3cb24072373034186cd2be41338b75c02cdaba8fec68de9d76ed3b60a
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
               name: http

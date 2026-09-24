@@ -23,7 +23,8 @@ spec:
           type: RuntimeDefault
       containers:
       - name: cerbos
-        image: ghcr.io/cerbos/cerbos:latest
+        image: ghcr.io/cerbos/cerbos:0.55.0@sha256:4b9d3b58c4f11c1b8953bc798d8d086e64f276882253ab169625fddc7f432515
+        imagePullPolicy: IfNotPresent
         args:
           - server
           - --config=/etc/cerbos/config.yaml
