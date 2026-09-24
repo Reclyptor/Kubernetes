@@ -62,10 +62,10 @@ spec:
       volumes:
         - name: media
           persistentVolumeClaim:
-            claimName: authentik-media
+            claimName: media-authentik-server-0
         - name: templates
           persistentVolumeClaim:
-            claimName: authentik-templates
+            claimName: templates-authentik-server-0
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -86,19 +86,6 @@ spec:
         component: worker
     spec:
       automountServiceAccountToken: false
-      # The worker mounts the same ReadWriteOnce authentik-media and
-      # authentik-templates claims as the server, so the two can only run on one
-      # node. This was previously left to the scheduler and held by luck until
-      # the worker was rescheduled apart and hung on Multi-Attach. Required, not
-      # preferred: a worker on another node cannot start at all.
-      affinity:
-        podAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app: authentik
-                  component: server
-              topologyKey: kubernetes.io/hostname
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
@@ -137,9 +124,9 @@ spec:
       volumes:
         - name: media
           persistentVolumeClaim:
-            claimName: authentik-media
+            claimName: media-authentik-worker-0
         - name: templates
           persistentVolumeClaim:
-            claimName: authentik-templates
+            claimName: templates-authentik-worker-0
 
 
