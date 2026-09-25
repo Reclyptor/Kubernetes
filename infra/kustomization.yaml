@@ -16,5 +16,6 @@ resources:
   - postgres
   - qdrant
   - redis
+  - seaweedfs
   - tailscale
   - temporal

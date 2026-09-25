@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs
+  namespace: seaweedfs
+spec:
+  clusterIP: None
+  selector:
+    app: seaweedfs
+  ports:
+    - name: s3
+      port: 8333
+      protocol: TCP
+    - name: filer
+      port: 8888
+      protocol: TCP
+    - name: master
+      port: 9333
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-s3
+  namespace: seaweedfs
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+    lbipam.cilium.io/ips: "192.168.1.120"
+spec:
+  type: LoadBalancer
+  selector:
+    app: seaweedfs
+  ports:
+    - name: s3
+      port: 8333
+      protocol: TCP

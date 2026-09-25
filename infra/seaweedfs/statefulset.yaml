@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs
+  namespace: seaweedfs
+spec:
+  serviceName: seaweedfs
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seaweedfs
+  template:
+    metadata:
+      labels:
+        app: seaweedfs
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: seaweedfs
+          image: chrislusf/seaweedfs:4.47@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882
+          imagePullPolicy: IfNotPresent
+          args:
+            - server
+            - -dir=/data
+            - -ip.bind=0.0.0.0
+            - -filer
+            - -s3
+            - -s3.port=8333
+            - -s3.config=/etc/seaweedfs/s3.json
+            - -metricsPort=9327
+            - -master.telemetry=false
+            - -master.volumeSizeLimitMB=2048
+            - -volume.max=0
+            - -volume.index=leveldb
+            - -volume.minFreeSpace=10
+          ports:
+            - containerPort: 8333
+              name: s3
+            - containerPort: 8888
+              name: filer
+            - containerPort: 9333
+              name: master
+            - containerPort: 9327
+              name: metrics
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: s3-config
+              mountPath: /etc/seaweedfs
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              port: 8333
+              path: /readyz
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              port: 8333
+              path: /healthz
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+      volumes:
+        - name: s3-config
+          secret:
+            secretName: seaweedfs-secret
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 100Gi
