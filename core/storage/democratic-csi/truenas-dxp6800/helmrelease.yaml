@@ -31,6 +31,24 @@ spec:
   values:
     csiDriver:
       name: "org.democratic-csi.iscsi-dxp6800"
+    # Two replicas because the controller sits on the critical path for every
+    # volume it owns: a drained node's pods cannot detach and re-attach their
+    # iSCSI volumes without it. At one replica the controller can be scheduled
+    # on the very node being drained, which deadlocks the drain against itself.
+    # The four CSI sidecars already run --leader-election, so the second replica
+    # is a warm standby and only the leader issues TrueNAS API calls.
+    controller:
+      replicaCount: 2
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: democratic-csi
+                  app.kubernetes.io/instance: democratic-csi-dxp6800
+                  app.kubernetes.io/csi-role: controller
+                  app.kubernetes.io/component: controller-linux
+              topologyKey: kubernetes.io/hostname
     node:
       hostPID: true
       # The node plugin must reach every node that mounts a volume, including

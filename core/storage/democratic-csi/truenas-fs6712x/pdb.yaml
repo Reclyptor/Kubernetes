@@ -1,0 +1,22 @@
+# The democratic-csi chart ships no PodDisruptionBudget, so this is hand-written.
+# The controller runs two replicas under required hostname anti-affinity, so an
+# evicted pod cannot land beside its peer — it stays Pending until another node
+# frees up. Without this budget nothing stops the eviction API taking the second
+# replica while the first is still Pending, which strands every iSCSI volume
+# this driver owns mid-drain with no controller to re-attach it.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: democratic-csi-fs6712x-controller
+  namespace: democratic-csi
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: democratic-csi
+      app.kubernetes.io/instance: democratic-csi-fs6712x
+      app.kubernetes.io/csi-role: controller
+      app.kubernetes.io/component: controller-linux
+  # A replica that is already unhealthy is not serving attach or detach calls,
+  # and protecting it would block the drain that replaces it.
+  unhealthyPodEvictionPolicy: AlwaysAllow

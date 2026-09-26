@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - secrets
   - helmrelease.yaml
-
+  - pdb.yaml
