@@ -35,8 +35,14 @@ spec:
     # volume it owns: a drained node's pods cannot detach and re-attach their
     # iSCSI volumes without it. At one replica the controller can be scheduled
     # on the very node being drained, which deadlocks the drain against itself.
-    # The four CSI sidecars already run --leader-election, so the second replica
-    # is a warm standby and only the leader issues TrueNAS API calls.
+    #
+    # Each of the four CSI sidecars runs its own --leader-election, so leadership
+    # is per sidecar rather than per pod: both replicas hold leases and share the
+    # work, and neither is an idle standby. Both csi-driver containers also keep
+    # their own SSH session to the NAS for liveness probes. That means a rollout
+    # opens every replica's session at once, and the NAS sometimes drops one —
+    # a burst of ssh2 protocol errors and sidecar restarts that clears itself
+    # within ~20s once the connections settle. Expected; not a misconfiguration.
     controller:
       replicaCount: 2
       affinity:
