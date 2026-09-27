@@ -66,8 +66,18 @@ spec:
           operator: Exists
           effect: NoSchedule
     storageClasses:
+      # The cluster default. Ephemeral (Delete) rather than persistent (Retain) on
+      # purpose: a PVC created without an explicit class is almost always a mistake
+      # or a throwaway, and Delete means it leaves no orphaned zvol on the flashstor
+      # to reap by hand. Every deliberate workload names a class explicitly, and the
+      # ones holding real state name iscsi-persistent-fs6712x.
+      #
+      # Exactly one StorageClass may be the cluster default. k3s ships local-path as
+      # default via its local-storage addon, so this must not land before that addon
+      # is disabled (--disable=local-storage in nixos modules/server/k3s.nix) or the
+      # cluster has two defaults and which one wins depends on creation order.
       - name: iscsi-ephemeral-fs6712x
-        defaultClass: false
+        defaultClass: true
         reclaimPolicy: Delete
         volumeBindingMode: Immediate
         allowVolumeExpansion: true
