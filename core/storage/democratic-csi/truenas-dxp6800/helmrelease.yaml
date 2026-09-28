@@ -46,23 +46,27 @@ spec:
     controller:
       replicaCount: 2
       # Pinned by tag AND digest. The chart defaults this image to a bare :latest,
-      # which is the actual defect — every pod restart is free to land on different
+      # which was the original defect — every pod restart free to land on different
       # bits than its peers, and controller/node skew during a volume operation is
       # a far worse failure than any app-tier drift.
       #
-      # The tag reads "latest" because that is genuinely the only tag resolving to
-      # this digest: upstream ships a rolling build here and no released version
-      # matches it (v1.9.0 is cc0b51dd…, v1.9.3 is 8ce65ce5…, v1.9.5 is fc3b7d7e…).
-      # A version label would be a lie; the digest is what gets pulled either way.
+      # v1.9.5 is a real upstream release, chosen over freezing the untagged rolling
+      # build that was running before: that build matched no version tag at all, so
+      # it could not be mapped to a changelog or a CVE list. The chart renders image
+      # as "registry:tag" with no digest field, so the digest rides in the tag value;
+      # the digest is what actually gets pulled and the tag is the honest label.
       #
-      # Deliberately freezing the bits already running rather than upgrading. Moving
-      # to v1.9.5@sha256:fc3b7d7e… is the eventual goal, but it must be gated: create
-      # a throwaway PVC on iscsi-ephemeral-fs6712x, confirm the zvol comes back at
-      # volblocksize=16384, and roll back immediately if not. That check needs read
-      # access to the NAS, so whoever has it owns the upgrade.
+      # GATE — this must have passed before this pin is considered good: create a
+      # throwaway PVC on iscsi-ephemeral-fs6712x, confirm the new zvol comes back at
+      # volblocksize=16384, destroy it. 16K provisioning is a measured property of
+      # the old build, not a documented guarantee, so a version change invalidates
+      # the evidence until it is re-measured. Anything but 16384 means roll back at
+      # once, not investigate — the fleet is 16K and new volumes must not diverge.
+      # Rollback is a plain revert of this commit, which restores
+      # latest@sha256:944d0e65… — the bits that ran for weeks.
       driver:
         image:
-          tag: "latest@sha256:944d0e65077efbd9c1fdf23997eec8fac4b4bfb7c3de400f63e33a0a849c5ced"
+          tag: "v1.9.5@sha256:fc3b7d7ed3a616714139525075312758e23a5d425ffb539ad12c9bd20fb6001f"
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -79,7 +83,7 @@ spec:
       # iSCSI mounting, so controller/node skew is the failure this pin prevents.
       driver:
         image:
-          tag: "latest@sha256:944d0e65077efbd9c1fdf23997eec8fac4b4bfb7c3de400f63e33a0a849c5ced"
+          tag: "v1.9.5@sha256:fc3b7d7ed3a616714139525075312758e23a5d425ffb539ad12c9bd20fb6001f"
       # The node plugin must reach every node that mounts a volume, including
       # bytheon, which carries nvidia.com/gpu=true:NoSchedule to reserve the GPU
       # box. Without this the DaemonSet silently stops being scheduled there on
