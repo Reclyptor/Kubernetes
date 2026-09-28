@@ -45,6 +45,24 @@ spec:
     # within ~20s once the connections settle. Expected; not a misconfiguration.
     controller:
       replicaCount: 2
+      # Pinned by tag AND digest. The chart defaults this image to a bare :latest,
+      # which is the actual defect — every pod restart is free to land on different
+      # bits than its peers, and controller/node skew during a volume operation is
+      # a far worse failure than any app-tier drift.
+      #
+      # The tag reads "latest" because that is genuinely the only tag resolving to
+      # this digest: upstream ships a rolling build here and no released version
+      # matches it (v1.9.0 is cc0b51dd…, v1.9.3 is 8ce65ce5…, v1.9.5 is fc3b7d7e…).
+      # A version label would be a lie; the digest is what gets pulled either way.
+      #
+      # Deliberately freezing the bits already running rather than upgrading. Moving
+      # to v1.9.5@sha256:fc3b7d7e… is the eventual goal, but it must be gated: create
+      # a throwaway PVC on iscsi-ephemeral-fs6712x, confirm the zvol comes back at
+      # volblocksize=16384, and roll back immediately if not. That check needs read
+      # access to the NAS, so whoever has it owns the upgrade.
+      driver:
+        image:
+          tag: "latest@sha256:944d0e65077efbd9c1fdf23997eec8fac4b4bfb7c3de400f63e33a0a849c5ced"
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -57,6 +75,11 @@ spec:
               topologyKey: kubernetes.io/hostname
     node:
       hostPID: true
+      # Must match the controller digest exactly. The node plugin does the actual
+      # iSCSI mounting, so controller/node skew is the failure this pin prevents.
+      driver:
+        image:
+          tag: "latest@sha256:944d0e65077efbd9c1fdf23997eec8fac4b4bfb7c3de400f63e33a0a849c5ced"
       # The node plugin must reach every node that mounts a volume, including
       # bytheon, which carries nvidia.com/gpu=true:NoSchedule to reserve the GPU
       # box. Without this the DaemonSet silently stops being scheduled there on
