@@ -37,6 +37,11 @@ spec:
       operator:
         # No Prometheus Operator CRDs on this cluster; every scrape is a VM-native CR.
         disable_prometheus_converter: true
+      env:
+        # The config-reloader sidecar the operator injects into every VM pod;
+        # its default is tag-only.
+        - name: VM_CONFIG_RELOADER_IMAGE
+          value: victoriametrics/operator:config-reloader-v0.75.0@sha256:11c5d33b2112571e72cdc020b63c8045f2cd523fec4768b67a91f96e36b05c59
 
     # Post-install hook that fetches the bundled dashboards from GitHub. The
     # network policy grants that one pod raw.githubusercontent.com and nothing else.
