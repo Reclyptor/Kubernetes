@@ -106,3 +106,27 @@ spec:
       enabled: false
     kubeEtcd:
       enabled: false
+
+    # Scrape objects for things in `core` live here rather than beside them:
+    # Flux dry-runs a Kustomization as a whole, so a VM custom resource in the
+    # tree fails until this release has installed its CRDs. Helm orders them.
+    extraObjects:
+      # The scrape the chart would have generated for its bundled node-exporter,
+      # pointed at core/monitoring/node-exporter instead.
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMServiceScrape
+        metadata:
+          name: node-exporter
+          namespace: node-exporter
+        spec:
+          jobLabel: jobLabel
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus-node-exporter
+              app.kubernetes.io/instance: node-exporter
+          endpoints:
+            - port: metrics
+              metricRelabelConfigs:
+                - action: drop
+                  source_labels: [mountpoint]
+                  regex: /var/lib/kubelet/pods.+
