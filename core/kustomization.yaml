@@ -6,5 +6,6 @@ resources:
   - coredns
   - gpu
   - gvisor
+  - monitoring
   - node-local-dns
   - storage
