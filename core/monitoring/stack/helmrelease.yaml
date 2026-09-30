@@ -27,8 +27,10 @@ spec:
       image:
         tag: v0.75.0@sha256:78da26b41a819093707be2ab6a65a5dc19f43d58ec52f30b49a545c2c6b7bd55
       crds:
-        # Templated CRDs upgrade with the release; the plain variant is immutable.
-        plain: false
+        # Ship the CRDs through Helm's crds/ path so they exist before the
+        # release manifest is validated; templated CRDs fail that check. Flux's
+        # CreateReplace policy above is what keeps this path upgradable.
+        plain: true
         cleanup:
           # The uninstall hook would delete every VM custom resource with the CRDs.
           enabled: false
