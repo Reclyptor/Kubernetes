@@ -82,6 +82,15 @@ spec:
         enabled: false
       admin:
         existingSecret: grafana-admin
+      # No internet from this pod; stop the update and telemetry calls that
+      # would otherwise show up as policy drops in Hubble.
+      grafana.ini:
+        analytics:
+          check_for_updates: false
+          check_for_plugin_updates: false
+          reporting_enabled: false
+        news:
+          news_feed_enabled: false
       service:
         type: LoadBalancer
         port: 3000
