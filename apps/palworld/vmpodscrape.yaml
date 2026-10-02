@@ -1,0 +1,12 @@
+# Every pod in this namespace is a game server carrying the GameOps toolkit's
+# `metrics` port, so no label selector is needed.
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: gameops
+  namespace: palworld
+spec:
+  selector: {}
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
