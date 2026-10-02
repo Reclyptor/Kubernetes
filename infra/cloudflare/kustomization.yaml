@@ -8,3 +8,4 @@ resources:
   - deployment.yaml
   - pdb.yaml
   - ciliumnetworkpolicy.yaml
+  - vmpodscrape.yaml

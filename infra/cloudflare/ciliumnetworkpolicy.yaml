@@ -7,6 +7,14 @@ spec:
   endpointSelector:
     matchLabels:
       app: cloudflare
+  ingress:
+    # vmagent scrapes cloudflared's metrics (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "2000", protocol: TCP }]
   egress:
     - toEntities: [world]
       toPorts:
