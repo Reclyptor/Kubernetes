@@ -146,3 +146,27 @@ spec:
                 - action: drop
                   source_labels: [mountpoint]
                   regex: /var/lib/kubelet/pods.+
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMPodScrape
+        metadata:
+          name: cert-manager
+          namespace: cert-manager
+        spec:
+          selector:
+            matchLabels:
+              app.kubernetes.io/instance: cert-manager
+          podMetricsEndpoints:
+            - port: http-metrics
+      # flux-system's stock allow-scraping NetworkPolicy already admits any
+      # namespace on 8080, so no policy change is needed there.
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMPodScrape
+        metadata:
+          name: flux
+          namespace: flux-system
+        spec:
+          selector:
+            matchLabels:
+              app.kubernetes.io/part-of: flux
+          podMetricsEndpoints:
+            - port: http-prom
