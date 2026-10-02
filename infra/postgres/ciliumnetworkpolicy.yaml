@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: postgres
   ingress:
+    # vmagent scrapes the postgres exporter sidecar (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9187", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "5432", protocol: TCP }]
