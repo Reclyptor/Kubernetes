@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: cert-manager
   ingress:
+    # vmagent scrapes the controller, cainjector and webhook metrics (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9402", protocol: TCP }]
     # kube-apiserver calls the admission webhook.
     - fromEntities: [kube-apiserver]
       toPorts:
