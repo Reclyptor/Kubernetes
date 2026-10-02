@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: mysql
   ingress:
+    # vmagent scrapes the mysql exporter sidecar (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9104", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "3306", protocol: TCP }]

@@ -64,6 +64,25 @@ spec:
             periodSeconds: 10
             failureThreshold: 6
             timeoutSeconds: 3
+        - name: mysqld-exporter
+          image: quay.io/prometheus/mysqld-exporter:v0.20.0@sha256:abed8dac117b4ae5b70757f988e44795935b9a72c3b58d720c67ba688f8cb79e
+          imagePullPolicy: IfNotPresent
+          args:
+            - --mysqld.address=localhost:3306
+            - --mysqld.username=root
+          ports:
+            - containerPort: 9104
+              name: metrics
+          env:
+            - name: MYSQLD_EXPORTER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-root-secret
+                  key: MYSQL_ROOT_PASSWORD
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "20m"
       volumes:
         - name: mysql-init-configmap
           configMap:
