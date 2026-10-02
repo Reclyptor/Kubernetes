@@ -1,5 +1,4 @@
-# authentik serves /metrics on 9300, which the StatefulSet does not declare as a
-# named port; only the server listens, hence the component label.
+# Only the server listens on the metrics port; the worker shares the app label.
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMPodScrape
 metadata:
@@ -11,4 +10,4 @@ spec:
       app: authentik
       component: server
   podMetricsEndpoints:
-    - targetPort: 9300
+    - port: metrics

@@ -35,6 +35,8 @@ spec:
               name: http
             - containerPort: 9443
               name: https
+            - containerPort: 9300
+              name: metrics
           volumeMounts:
             - name: media
               mountPath: /media
