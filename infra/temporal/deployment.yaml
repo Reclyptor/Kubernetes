@@ -33,6 +33,10 @@ spec:
               name: matching
             - containerPort: 7239
               name: metrics
+          env:
+            # The declared metrics port is dead until auto-setup is told to serve it.
+            - name: PROMETHEUS_ENDPOINT
+              value: 0.0.0.0:7239
           envFrom:
             - secretRef:
                 name: temporal-secret

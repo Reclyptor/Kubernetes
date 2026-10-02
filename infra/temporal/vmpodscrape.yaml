@@ -1,0 +1,11 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: temporal
+  namespace: temporal
+spec:
+  selector:
+    matchLabels:
+      app: temporal
+  podMetricsEndpoints:
+    - port: metrics

@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: temporal
   ingress:
+    # vmagent scrapes the server's metrics (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "7239", protocol: TCP }]
     - fromEndpoints:
         - matchLabels:
             app: temporal-web
