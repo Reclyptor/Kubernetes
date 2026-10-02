@@ -1,0 +1,11 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: mongodb
+  namespace: mongodb
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+  podMetricsEndpoints:
+    - port: metrics

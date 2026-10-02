@@ -56,6 +56,31 @@ spec:
             periodSeconds: 10
             failureThreshold: 6
             timeoutSeconds: 3
+        - name: mongodb-exporter
+          image: docker.io/percona/mongodb_exporter:0.53.0@sha256:0214e482b2cd4b1849f9f4dcef90d328a99ba3727dd1103e7da48b42060bcec1
+          imagePullPolicy: IfNotPresent
+          args:
+            - --mongodb.uri=mongodb://localhost:27017
+            - --collect-all
+            - --compatible-mode
+          ports:
+            - containerPort: 9216
+              name: metrics
+          env:
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-root-secret
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-root-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "20m"
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
