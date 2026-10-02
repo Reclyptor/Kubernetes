@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: headscale
   ingress:
+    # vmagent scrapes headscale's metrics (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9090", protocol: TCP }]
     # LAN clients register/coordinate directly over the shared VIP (TLS).
     - fromEntities: [world, remote-node]
       toPorts:
