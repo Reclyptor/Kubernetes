@@ -1,0 +1,14 @@
+# Micrometer exposes /prometheus on the management port, which the StatefulSet
+# does not declare as a named port.
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: kestra
+  namespace: kestra
+spec:
+  selector:
+    matchLabels:
+      app: kestra
+  podMetricsEndpoints:
+    - targetPort: 8081
+      path: /prometheus

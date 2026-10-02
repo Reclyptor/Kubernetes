@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: kestra
   ingress:
+    # vmagent scrapes the management port's /prometheus (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "8081", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "8080", protocol: TCP }]
