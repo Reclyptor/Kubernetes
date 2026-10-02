@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: redis
   ingress:
+    # vmagent scrapes the redis exporter sidecar (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9121", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "6379", protocol: TCP }]

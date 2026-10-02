@@ -7,3 +7,4 @@ resources:
   - statefulset.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
+  - vmpodscrape.yaml
