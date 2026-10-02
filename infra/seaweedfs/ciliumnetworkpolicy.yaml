@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: seaweedfs
   ingress:
+    # vmagent scrapes seaweedfs's metrics (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9327", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports:

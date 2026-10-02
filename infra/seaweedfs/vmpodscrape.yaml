@@ -1,0 +1,11 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: seaweedfs
+  namespace: seaweedfs
+spec:
+  selector:
+    matchLabels:
+      app: seaweedfs
+  podMetricsEndpoints:
+    - port: metrics
