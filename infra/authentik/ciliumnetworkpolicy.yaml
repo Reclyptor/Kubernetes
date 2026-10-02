@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: authentik
   ingress:
+    # vmagent scrapes the server's metrics; the worker shares the label but does not listen (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9300", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports:
