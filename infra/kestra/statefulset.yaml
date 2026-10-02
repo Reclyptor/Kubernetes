@@ -36,6 +36,8 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+            - containerPort: 8081
+              name: management
           volumeMounts:
             - name: data
               mountPath: /app/storage
