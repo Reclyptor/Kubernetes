@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: minecraft
   ingress:
+    # vmagent scrapes the GameOps toolkit's /metrics (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9110", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "25565", protocol: TCP }]
@@ -32,6 +39,13 @@ spec:
     matchLabels:
       app: minecraft-makoto
   ingress:
+    # vmagent scrapes the GameOps toolkit's /metrics (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9110", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "25566", protocol: TCP }]
