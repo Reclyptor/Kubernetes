@@ -138,7 +138,10 @@ spec:
     - toEntities: [kube-apiserver]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
-    # Egress to ntfy is added with the receiver in monitoring phase 3.
+    - toEndpoints:
+        - matchLabels: { app: ntfy, k8s:io.kubernetes.pod.namespace: ntfy }
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

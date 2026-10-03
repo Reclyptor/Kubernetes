@@ -74,6 +74,9 @@ spec:
       spec:
         image:
           tag: v0.34.0@sha256:690c7b525f4367aa91f73e2f91c632206d32e97c6384bdbf2fb7a861b420340d
+        # Routing lives in a SOPS secret (it carries the ntfy token); the chart
+        # renders no config of its own when this is set.
+        configSecret: alertmanager-config
 
     grafana:
       image:
@@ -108,7 +111,6 @@ spec:
       image:
         tag: v2.20.0
         sha: sha256:42cfe3723a5f058171c627537fb57a3ea0f26e4380fa18555a95cb1a1b4cfc5b
-
     # node-exporter needs hostPID and hostPath, so it lives in its own privileged
     # namespace (core/monitoring/node-exporter) instead of this baseline one.
     prometheus-node-exporter:
