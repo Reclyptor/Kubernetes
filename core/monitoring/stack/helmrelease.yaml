@@ -43,6 +43,17 @@ spec:
         - name: VM_CONFIG_RELOADER_IMAGE
           value: victoriametrics/operator:config-reloader-v0.75.0@sha256:11c5d33b2112571e72cdc020b63c8045f2cd523fec4768b67a91f96e36b05c59
 
+    # Cilium's own dashboards, pinned to the running release's tag; the sync
+    # job below fetches them like the bundled ones.
+    defaultDashboards:
+      sources:
+        cilium-agent:
+          url: https://raw.githubusercontent.com/cilium/cilium/v1.19.8/install/kubernetes/cilium/files/cilium-agent/dashboards/cilium-dashboard.json
+        cilium-operator:
+          url: https://raw.githubusercontent.com/cilium/cilium/v1.19.8/install/kubernetes/cilium/files/cilium-operator/dashboards/cilium-operator-dashboard.json
+        hubble:
+          url: https://raw.githubusercontent.com/cilium/cilium/v1.19.8/install/kubernetes/cilium/files/hubble/dashboards/hubble-dashboard.json
+
     # Post-install hook that fetches the bundled dashboards from GitHub. The
     # network policy grants that one pod raw.githubusercontent.com and nothing else.
     syncJob:
@@ -231,6 +242,32 @@ spec:
               app.kubernetes.io/instance: cert-manager
           podMetricsEndpoints:
             - port: http-metrics
+      # Cilium, its operator and Hubble serve metrics on the host network; the
+      # node firewall opens 9962/9963/9965 (nixos SPEC/cilium-metrics.md) and
+      # kube-system sits outside the default-deny baseline.
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMPodScrape
+        metadata:
+          name: cilium-agent
+          namespace: kube-system
+        spec:
+          selector:
+            matchLabels:
+              k8s-app: cilium
+          podMetricsEndpoints:
+            - port: prometheus
+            - port: hubble-metrics
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMPodScrape
+        metadata:
+          name: cilium-operator
+          namespace: kube-system
+        spec:
+          selector:
+            matchLabels:
+              io.cilium/app: operator
+          podMetricsEndpoints:
+            - port: prometheus
       # flux-system's stock allow-scraping NetworkPolicy already admits any
       # namespace on 8080, so no policy change is needed there.
       - apiVersion: operator.victoriametrics.com/v1beta1
