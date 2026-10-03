@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: authentik
   ingress:
+    # blackbox probes /-/health/ready/ (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "9000", protocol: TCP }]
     # vmagent scrapes the server's metrics; the worker shares the label but does not listen (SPEC/monitoring-stack.md).
     - fromEndpoints:
         - matchLabels:

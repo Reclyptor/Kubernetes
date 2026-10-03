@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: terraria
   ingress:
+    # blackbox probes the game port (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "7777", protocol: TCP }]
     # vmagent scrapes the GameOps toolkit's /metrics (SPEC/monitoring-stack.md).
     - fromEndpoints:
         - matchLabels:
@@ -40,6 +47,13 @@ spec:
     matchLabels:
       app: terraria-makoto
   ingress:
+    # blackbox probes the game port (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "7779", protocol: TCP }]
     # vmagent scrapes the GameOps toolkit's /metrics (SPEC/monitoring-stack.md).
     - fromEndpoints:
         - matchLabels:

@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: minecraft
   ingress:
+    # blackbox probes the game port (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "25565", protocol: TCP }]
     # vmagent scrapes the GameOps toolkit's /metrics (SPEC/monitoring-stack.md).
     - fromEndpoints:
         - matchLabels:
@@ -39,6 +46,13 @@ spec:
     matchLabels:
       app: minecraft-makoto
   ingress:
+    # blackbox probes the game port (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "25566", protocol: TCP }]
     # vmagent scrapes the GameOps toolkit's /metrics (SPEC/monitoring-stack.md).
     - fromEndpoints:
         - matchLabels:

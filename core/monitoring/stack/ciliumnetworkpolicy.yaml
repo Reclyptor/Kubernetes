@@ -150,6 +150,13 @@ spec:
     matchLabels:
       app.kubernetes.io/name: grafana
   ingress:
+    # blackbox probes /api/health (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "3000", protocol: TCP }]
     # LAN clients arrive through the shared LoadBalancer VIP, SNATed to the
     # node that answered the ARP when it is not the one hosting the pod.
     - fromEntities: [world, remote-node]

@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: headscale
   ingress:
+    # blackbox probes /health (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "8443", protocol: TCP }]
     # vmagent scrapes headscale's metrics (SPEC/monitoring-stack.md).
     - fromEndpoints:
         - matchLabels:
