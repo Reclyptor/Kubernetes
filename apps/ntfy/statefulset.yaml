@@ -64,6 +64,9 @@ spec:
         envFrom:
         - secretRef:
             name: ntfy-secret
+        # Accounts provisioned declaratively: the Alertmanager publisher.
+        - secretRef:
+            name: ntfy-auth-secret
         volumeMounts:
         - name: data
           mountPath: /var/cache/ntfy

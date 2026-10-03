@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: ntfy
   ingress:
+    # Alertmanager publishes to the alerts topic (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmalertmanager
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
     # blackbox probes /v1/health (SPEC/monitoring-stack.md).
     - fromEndpoints:
         - matchLabels:
