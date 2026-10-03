@@ -1,0 +1,37 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: gameops
+  namespace: monitoring
+spec:
+  groups:
+    - name: gameops
+      rules:
+        - alert: GameServerDown
+          expr: gameops_server_up == 0
+          for: 10m
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.pod }} has been down for 10 minutes"
+            description: "The GameOps toolkit reports the server process is not up. Restarts and updates finish well inside this window."
+        - alert: GameServerRestartLoop
+          expr: increase(gameops_server_restarts_total[1h]) > 3
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.pod }} restarted {{ $value | printf \"%.0f\" }} times in the last hour"
+        - alert: GameBackupFailing
+          expr: increase(gameops_backup_failures_total[6h]) > 0
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "Backups are failing on {{ $labels.namespace }}/{{ $labels.pod }}"
+            description: "This is the Palworld incident: a server that plays fine while its saves stop being archived."
+        - alert: GameBackupStale
+          expr: gameops_backup_last_timestamp_seconds > 0 and (time() - gameops_backup_last_timestamp_seconds) > 36 * 3600
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "No backup on {{ $labels.namespace }}/{{ $labels.pod }} for over 36 hours"
+        - alert: GameNotifyFailing
+          expr: increase(gameops_notify_failures_total[6h]) > 0
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.pod }} cannot deliver its player notifications"

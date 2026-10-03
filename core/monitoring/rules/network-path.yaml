@@ -1,0 +1,27 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: network-path
+  namespace: monitoring
+spec:
+  groups:
+    - name: network-path
+      rules:
+        - alert: CloudflaredTunnelDown
+          expr: sum(cloudflared_tunnel_ha_connections) == 0
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "No cloudflared tunnel connection is up; nothing public is reachable"
+        - alert: CloudflaredTunnelDegraded
+          expr: sum(cloudflared_tunnel_ha_connections) < 4
+          for: 15m
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "Only {{ $value }} cloudflared tunnel connections are up"
+        - alert: HeadscaleDown
+          expr: up{job="headscale/headscale"} == 0
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "headscale is not answering; tailnet clients cannot coordinate"

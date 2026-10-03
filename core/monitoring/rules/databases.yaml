@@ -1,0 +1,29 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: databases
+  namespace: monitoring
+spec:
+  groups:
+    - name: databases
+      rules:
+        - alert: PostgresDown
+          expr: pg_up == 0
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations: { summary: "postgres is not accepting connections from its exporter" }
+        - alert: MysqlDown
+          expr: mysql_up == 0
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations: { summary: "mysql is not accepting connections from its exporter" }
+        - alert: MongodbDown
+          expr: mongodb_up == 0
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations: { summary: "mongodb is not accepting connections from its exporter" }
+        - alert: RedisDown
+          expr: redis_up == 0
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations: { summary: "redis is not accepting connections from its exporter" }

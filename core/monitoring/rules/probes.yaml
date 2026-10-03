@@ -1,0 +1,29 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: probes
+  namespace: monitoring
+spec:
+  groups:
+    - name: probes
+      rules:
+        - alert: ServiceProbeFailing
+          expr: probe_success{job=~"blackbox-http.*|blackbox-tcp"} == 0
+          for: 5m
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.instance }} is not answering its health probe"
+            description: "The pod may be Running while the service behind it is not serving."
+        - alert: NASUnreachable
+          expr: probe_success{job="blackbox-icmp"} == 0
+          for: 3m
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.nas }} ({{ $labels.instance }}) does not answer ping"
+            description: "Every PVC on the cluster lives on these boxes; iSCSI sessions will stall."
+        - alert: DNSResolutionFailing
+          expr: probe_success{job="blackbox-dns"} == 0
+          for: 3m
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "node-local-dns cannot resolve github.com"
