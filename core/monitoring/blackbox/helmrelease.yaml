@@ -1,0 +1,199 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: blackbox
+  namespace: monitoring
+spec:
+  interval: 10m
+  # The VMProbe objects below need the stack's CRDs to exist before Helm
+  # validates this release.
+  dependsOn:
+    - name: victoria-metrics-k8s-stack
+  chart:
+    spec:
+      chart: prometheus-blackbox-exporter
+      version: 11.19.1
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    fullnameOverride: blackbox
+    image:
+      tag: v0.28.0
+      digest: sha256:e753ff9f3fc458d02cca5eddab5a77e1c175eee484a8925ac7d524f04366c2fc
+    # ICMP without NET_RAW: the kernel lets this gid open ping sockets. The
+    # sysctl is namespaced and on the safe list, so PSA baseline admits it.
+    podSecurityContext:
+      sysctls:
+        - name: net.ipv4.ping_group_range
+          value: "1000 1000"
+    config:
+      modules:
+        http_2xx:
+          prober: http
+          timeout: 5s
+          http:
+            valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+            follow_redirects: true
+            preferred_ip_protocol: ip4
+        # headscale presents its public certificate on the in-cluster Service.
+        http_2xx_insecure:
+          prober: http
+          timeout: 5s
+          http:
+            valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+            preferred_ip_protocol: ip4
+            tls_config:
+              insecure_skip_verify: true
+        tcp_connect:
+          prober: tcp
+          timeout: 5s
+          tcp:
+            preferred_ip_protocol: ip4
+        icmp:
+          prober: icmp
+          timeout: 5s
+          icmp:
+            preferred_ip_protocol: ip4
+        dns_github:
+          prober: dns
+          timeout: 5s
+          dns:
+            query_name: github.com
+            query_type: A
+            transport_protocol: udp
+            preferred_ip_protocol: ip4
+            valid_rcodes: [NOERROR]
+
+    # The probes ride this release so they are never applied before their CRDs.
+    extraManifests:
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMProbe
+        metadata:
+          name: blackbox-http
+          namespace: monitoring
+        spec:
+          jobName: blackbox-http
+          module: http_2xx
+          interval: 30s
+          vmProberSpec:
+            url: blackbox.monitoring.svc:9115
+            path: /probe
+          targets:
+            staticConfig:
+              targets:
+                - http://plex.plex.svc:32400/identity
+                - http://jellyfin.jellyfin.svc:8097/health
+                - http://emby.emby.svc:8098/emby/System/Ping
+                - http://authentik.authentik.svc:9000/-/health/ready/
+                - http://ntfy.ntfy.svc:8095/v1/health
+                - http://gotify.gotify.svc:8090/health
+                - http://victoria-metrics-k8s-stack-grafana.monitoring.svc:3000/api/health
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMProbe
+        metadata:
+          name: blackbox-http-insecure
+          namespace: monitoring
+        spec:
+          jobName: blackbox-http-insecure
+          module: http_2xx_insecure
+          interval: 30s
+          vmProberSpec:
+            url: blackbox.monitoring.svc:9115
+            path: /probe
+          targets:
+            staticConfig:
+              targets:
+                - https://headscale.headscale.svc:8443/health
+      # blackbox cannot probe UDP, so Factorio, Palworld and Core Keeper rely on
+      # gameops_server_up instead.
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMProbe
+        metadata:
+          name: blackbox-tcp
+          namespace: monitoring
+        spec:
+          jobName: blackbox-tcp
+          module: tcp_connect
+          interval: 30s
+          vmProberSpec:
+            url: blackbox.monitoring.svc:9115
+            path: /probe
+          targets:
+            staticConfig:
+              targets:
+                - minecraft-server.minecraft.svc:25565
+                - minecraft-makoto-server.minecraft.svc:25566
+                - terraria-server.terraria.svc:7777
+                - terraria-makoto-server.terraria.svc:7779
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMProbe
+        metadata:
+          name: blackbox-icmp-fs6712x
+          namespace: monitoring
+        spec:
+          jobName: blackbox-icmp
+          module: icmp
+          interval: 30s
+          vmProberSpec:
+            url: blackbox.monitoring.svc:9115
+            path: /probe
+          targets:
+            staticConfig:
+              targets: ["192.168.1.4"]
+              labels: { nas: fs6712x }
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMProbe
+        metadata:
+          name: blackbox-icmp-dxp4800
+          namespace: monitoring
+        spec:
+          jobName: blackbox-icmp
+          module: icmp
+          interval: 30s
+          vmProberSpec:
+            url: blackbox.monitoring.svc:9115
+            path: /probe
+          targets:
+            staticConfig:
+              targets: ["192.168.1.3"]
+              labels: { nas: dxp4800 }
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMProbe
+        metadata:
+          name: blackbox-icmp-dxp6800
+          namespace: monitoring
+        spec:
+          jobName: blackbox-icmp
+          module: icmp
+          interval: 30s
+          vmProberSpec:
+            url: blackbox.monitoring.svc:9115
+            path: /probe
+          targets:
+            staticConfig:
+              targets: ["192.168.1.2"]
+              labels: { nas: dxp6800 }
+      # Resolves through node-local-dns on the host, the path every pod uses.
+      - apiVersion: operator.victoriametrics.com/v1beta1
+        kind: VMProbe
+        metadata:
+          name: blackbox-dns
+          namespace: monitoring
+        spec:
+          jobName: blackbox-dns
+          module: dns_github
+          interval: 30s
+          vmProberSpec:
+            url: blackbox.monitoring.svc:9115
+            path: /probe
+          targets:
+            staticConfig:
+              targets: ["169.254.20.10"]
