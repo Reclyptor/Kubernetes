@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: gotify
   ingress:
+    # blackbox probes /health (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "80", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "80", protocol: TCP }]

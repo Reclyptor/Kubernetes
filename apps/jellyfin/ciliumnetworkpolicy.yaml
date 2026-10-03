@@ -8,6 +8,13 @@ spec:
     matchLabels:
       app: jellyfin
   ingress:
+    # blackbox probes /health (SPEC/monitoring-stack.md).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "8096", protocol: TCP }]
     - fromEntities: [world, remote-node]
       toPorts:
         - ports:
