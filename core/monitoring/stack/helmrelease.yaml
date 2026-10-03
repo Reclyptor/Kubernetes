@@ -199,6 +199,24 @@ spec:
     prometheus-node-exporter:
       enabled: false
 
+    # The apiserver's /metrics re-exports kubelet_volume_stats_* under
+    # namespace=default, doubling every PVC series; the kubelet scrape is the
+    # real source. Lists do not merge, so the endpoint is restated whole.
+    kubeApiServer:
+      vmScrape:
+        spec:
+          endpoints:
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: https
+              scheme: https
+              tlsConfig:
+                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                serverName: kubernetes
+              metricRelabelConfigs:
+                - action: drop
+                  source_labels: [__name__]
+                  regex: kubelet_volume_stats_.*
+
     # k3s binds the scheduler, controller-manager and etcd metrics to localhost
     # on the server nodes; scraping them would be three permanently-down targets.
     kubeControllerManager:
