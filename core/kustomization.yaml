@@ -9,3 +9,4 @@ resources:
   - monitoring
   - node-local-dns
   - storage
+  - trivy
