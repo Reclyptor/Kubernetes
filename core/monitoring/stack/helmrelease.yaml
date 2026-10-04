@@ -71,6 +71,29 @@ spec:
             requests:
               storage: 20Gi
 
+    # Logs: VictoriaLogs and the per-node collector, both from this chart and
+    # managed by the same operator (decision 2026-10-03, supersedes the separate
+    # victoria-logs-single chart named in the spec).
+    vlsingle:
+      enabled: true
+      spec:
+        retentionPeriod: "30d"
+        image:
+          tag: v1.52.0@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
+        storage:
+          storageClassName: iscsi-persistent-fs6712x
+          resources:
+            requests:
+              storage: 20Gi
+    vlagent:
+      enabled: true
+      # Reads /var/log/pods on every node through a hostPath mount, which PSA
+      # baseline forbids; the node-exporter namespace is the privileged one.
+      namespaceOverride: node-exporter
+      spec:
+        image:
+          tag: v1.52.0@sha256:5f8bb5cfde9745c02c3301426cad6fab4ef1d382161af577d284cccc9136b99c
+
     vmagent:
       spec:
         image:

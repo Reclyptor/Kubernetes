@@ -76,6 +76,34 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: vlsingle
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: vlsingle
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vlagent
+            k8s:io.kubernetes.pod.namespace: node-exporter
+        - matchLabels:
+            app.kubernetes.io/name: grafana
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+      toPorts:
+        - ports: [{ port: "9428", protocol: TCP }]
+  egress:
+    # vlsingle proxies its /vmalert UI pages to vmalert, like vmsingle.
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmalert
+      toPorts:
+        - ports: [{ port: "8080", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: vmalert
   namespace: monitoring
 spec:
@@ -185,6 +213,11 @@ spec:
             app.kubernetes.io/name: vmalertmanager
       toPorts:
         - ports: [{ port: "9093", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vlsingle
+      toPorts:
+        - ports: [{ port: "9428", protocol: TCP }]
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
