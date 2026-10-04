@@ -1,5 +1,10 @@
 # One policy per pod, so each grant sits next to the pod it applies to. The
 # baseline CCNP already allows kubelet/health probes in and L4 DNS out.
+#
+# Apiserver egress names both entities on purpose: the kubernetes Service
+# balances across the three servers, and when a pod on a control-plane node
+# is sent to its own node's apiserver, Cilium classifies that peer as `host`,
+# not `kube-apiserver`. With only the latter, one connection in three fails.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -20,7 +25,7 @@ spec:
       toPorts:
         - ports: [{ port: "8080", protocol: TCP }]
   egress:
-    - toEntities: [kube-apiserver]
+    - toEntities: [kube-apiserver, host]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
 ---
@@ -208,7 +213,7 @@ spec:
         - ports: [{ port: "8435", protocol: TCP }]
   egress:
     # The config-reloader init container fetches the Alertmanager config Secret.
-    - toEntities: [kube-apiserver]
+    - toEntities: [kube-apiserver, host]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
     - toEndpoints:
@@ -245,7 +250,7 @@ spec:
         - ports: [{ port: "3000", protocol: TCP }]
   egress:
     # The dashboard and datasource sidecars watch ConfigMaps.
-    - toEntities: [kube-apiserver]
+    - toEntities: [kube-apiserver, host]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
     - toEndpoints:
@@ -292,7 +297,7 @@ spec:
       toPorts:
         - ports: [{ port: "8080", protocol: TCP }]
   egress:
-    - toEntities: [kube-apiserver]
+    - toEntities: [kube-apiserver, host]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
 ---
@@ -307,7 +312,7 @@ spec:
       app.kubernetes.io/component: syncJob
   egress:
     # Writes the fetched dashboards into ConfigMaps.
-    - toEntities: [kube-apiserver]
+    - toEntities: [kube-apiserver, host]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
     - toEntities: [host]

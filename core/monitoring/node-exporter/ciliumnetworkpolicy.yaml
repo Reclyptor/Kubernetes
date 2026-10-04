@@ -18,7 +18,7 @@ spec:
         - ports: [{ port: "9429", protocol: TCP }]
   egress:
     # Pod metadata for the log streams it tails.
-    - toEntities: [kube-apiserver]
+    - toEntities: [kube-apiserver, host]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
     - toEndpoints:
