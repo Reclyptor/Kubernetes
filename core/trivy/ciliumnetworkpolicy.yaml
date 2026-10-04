@@ -1,0 +1,85 @@
+# One policy per pod shape. The baseline CCNP already allows kubelet/health
+# probes in and L4 DNS out.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: trivy-operator
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "8080", protocol: TCP }]
+  egress:
+    - toEntities: [kube-apiserver, host]
+      toPorts:
+        - ports: [{ port: "6443", protocol: TCP }]
+    # Health-checks the trivy server it hands scan jobs to.
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: trivy-server
+      toPorts:
+        - ports: [{ port: "4954", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: trivy-server
+  namespace: trivy-system
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: trivy-server
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: trivy-operator
+        - matchLabels:
+            app.kubernetes.io/managed-by: trivy-operator
+            vulnerabilityReport.scanner: Trivy
+      toPorts:
+        - ports: [{ port: "4954", protocol: TCP }]
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # The vulnerability databases. mirror.gcr.io serves the layers itself with
+    # no redirect (verified 2026-09-29), so one name is enough.
+    - toFQDNs:
+        - matchName: "mirror.gcr.io"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
+---
+# Scan jobs pull image layers themselves. Registries redirect layer downloads
+# to CDNs whose names change (ghcr → pkg-containers.githubusercontent.com,
+# Docker Hub → cloudfront, quay → cdn01.quay.io), so this is world:443 on the
+# plex/jellyfin precedent, bounded by: no service-account token, read-only
+# root, all capabilities dropped, a 10 minute deadline, and the operator
+# choosing the image reference.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: trivy-scan-jobs
+  namespace: trivy-system
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: trivy-operator
+      vulnerabilityReport.scanner: Trivy
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: trivy-server
+      toPorts:
+        - ports: [{ port: "4954", protocol: TCP }]
+    - toEntities: [world]
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

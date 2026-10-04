@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: trivy-operator
+      version: 0.36.0
+      sourceRef:
+        kind: HelmRepository
+        name: aquasecurity
+        namespace: flux-system
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  values:
+    image:
+      tag: "0.34.0@sha256:0e4f11e9632f34097f259f3a59d34bab4eea8cee9aef510d15cdfc7481d5e49c"
+    trivy:
+      image:
+        tag: "0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969"
+      ignoreUnfixed: true
+      severity: HIGH,CRITICAL
+      # The CUDA images are 5-10 GiB; the defaults (5m, 500M) time out or OOM
+      # on exactly the images most worth scanning.
+      timeout: 10m0s
+      # A re-downloadable DB cache: the ephemeral class is the right one.
+      storageClassName: iscsi-ephemeral-fs6712x
+      resources:
+        limits:
+          memory: 1Gi
+    operator:
+      # One DB download shared by every scan instead of one per job.
+      builtInTrivyServer: true
+      # One series per CVE per image, so the alert can name the CVE and fix.
+      metricsVulnIdEnabled: true
+      # The first sweep is ~85 workloads pulling layers from the internet
+      # through one uplink; three at a time finishes within the hour.
+      scanJobsConcurrentLimit: 3
+      scanJobTimeout: 10m
+      # Vulnerability scans only (decision 2026-09-29).
+      sbomGenerationEnabled: false
+      configAuditScannerEnabled: false
+      rbacAssessmentScannerEnabled: false
+      infraAssessmentScannerEnabled: false
+      exposedSecretScannerEnabled: false
+      clusterComplianceEnabled: false
+    # The four compliance reports are gated here, not on the flag above.
+    compliance:
+      specs: []
