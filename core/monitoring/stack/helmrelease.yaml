@@ -111,6 +111,10 @@ spec:
       spec:
         image:
           tag: v1.52.0@sha256:5f8bb5cfde9745c02c3301426cad6fab4ef1d382161af577d284cccc9136b99c
+        # bytheon carries the nvidia.com/gpu taint; logs come from there too.
+        tolerations:
+          - operator: Exists
+            effect: NoSchedule
 
     # Created by the chart once metrics and logs both exist: vmalert queries
     # through it so logs rules work. Pinned like everything else.
