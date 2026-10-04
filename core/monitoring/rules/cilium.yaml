@@ -1,0 +1,39 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: cilium
+  namespace: monitoring
+spec:
+  groups:
+    - name: cilium
+      rules:
+        # Baseline measured 2026-10-03: 0.5 to 2 policy drops per second per node
+        # in steady state (Terraria's LAN discovery broadcasts, tailscale's DERP
+        # attempts). A sustained order of magnitude above that is a policy that
+        # no longer matches a workload, or a workload that changed shape.
+        - alert: CiliumPolicyDropsHigh
+          expr: sum by (instance) (rate(cilium_drop_count_total{reason="Policy denied"}[10m])) > 10
+          for: 15m
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.instance }} is dropping {{ $value | printf \"%.0f\" }} packets/s on policy"
+            description: "Find the flows with `hubble observe --verdict DROPPED` on that node."
+        - alert: CiliumPolicyDropsStorm
+          expr: sum by (instance) (rate(cilium_drop_count_total{reason="Policy denied"}[10m])) > 100
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.instance }} is dropping {{ $value | printf \"%.0f\" }} packets/s on policy"
+        - alert: CiliumAgentUnhealthy
+          expr: up{job="kube-system/cilium-agent", endpoint="prometheus"} == 0
+          for: 5m
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "The Cilium agent on {{ $labels.instance }} is not serving metrics"
+            description: "Every pod on that node loses policy enforcement and routing updates while the agent is down."
+        - alert: HubbleLosingEvents
+          expr: rate(hubble_lost_events_total[10m]) > 0
+          for: 15m
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "Hubble on {{ $labels.instance }} is dropping flow events; drop counts here undercount"
