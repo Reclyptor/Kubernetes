@@ -31,8 +31,10 @@ spec:
           annotations:
             summary: "The Cilium agent on {{ $labels.instance }} is not serving metrics"
             description: "Every pod on that node loses policy enforcement and routing updates while the agent is down."
+        # Hubble's ring buffer loses a few hundredths of an event per second on
+        # the busier nodes in steady state; only a real overrun matters.
         - alert: HubbleLosingEvents
-          expr: rate(hubble_lost_events_total[10m]) > 0
+          expr: rate(hubble_lost_events_total[10m]) > 1
           for: 15m
           labels: { severity: warning, notify: ntfy }
           annotations:
