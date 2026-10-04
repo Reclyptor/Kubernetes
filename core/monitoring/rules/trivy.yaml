@@ -17,7 +17,7 @@ spec:
             summary: "{{ $labels.image_repository }}:{{ $labels.image_tag }} runs {{ $labels.vuln_id }} ({{ $labels.resource }}), fixed in {{ $labels.fixed_version }}"
             description: "Running in {{ $labels.namespace }}. A pinned image needs a bump."
         - alert: TrivyScannerDown
-          expr: up{job="trivy-system/trivy-operator"} == 0
+          expr: up{job="trivy-operator", namespace="trivy-system"} == 0
           for: 15m
           labels: { severity: warning, notify: ntfy }
           annotations:

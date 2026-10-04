@@ -357,6 +357,9 @@ spec:
               app.kubernetes.io/name: trivy-operator
           endpoints:
             - port: metrics
+              # The reports carry the scanned workload's namespace; without
+              # this every finding would be relabelled to trivy-system.
+              honorLabels: true
       # flux-system's stock allow-scraping NetworkPolicy already admits any
       # namespace on 8080, so no policy change is needed there.
       - apiVersion: operator.victoriametrics.com/v1beta1
