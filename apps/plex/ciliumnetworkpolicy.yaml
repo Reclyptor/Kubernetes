@@ -30,6 +30,10 @@ spec:
         - matchLabels:
             app: cloudflare
             k8s:io.kubernetes.pod.namespace: cloudflare
+        # Tautulli polls the server API and holds its websocket open.
+        - matchLabels:
+            app: tautulli
+            k8s:io.kubernetes.pod.namespace: tautulli
       toPorts:
         - ports: [{ port: "32400", protocol: TCP }]
   egress:
