@@ -69,6 +69,11 @@ spec:
               value: "0"
             - name: PLEX_GID
               value: "0"
+            # What Plex tells plex.tv its reachable addresses are. Clients and
+            # Tautulli pick from this list, so it must name the LAN VIP, never a
+            # node address: those stopped serving Plex when it moved behind the VIP.
+            - name: ADVERTISE_IP
+              value: "https://plex.reclyptor.com:443,http://192.168.1.120:32400"
             - name: LIBVA_DRIVER_NAME
               value: "radeonsi"
             - name: AMD_VULKAN_ICD
