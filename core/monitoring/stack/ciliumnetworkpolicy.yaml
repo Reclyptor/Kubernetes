@@ -218,6 +218,18 @@ spec:
             app.kubernetes.io/name: vlsingle
       toPorts:
         - ports: [{ port: "9428", protocol: TCP }]
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # The VictoriaLogs datasource plugin, fetched at start: grafana.com answers
+    # the API call and redirects the download to its bucket.
+    - toFQDNs:
+        - matchName: "grafana.com"
+        - matchName: "storage.googleapis.com"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

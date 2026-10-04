@@ -124,6 +124,11 @@ spec:
         enabled: false
       admin:
         existingSecret: grafana-admin
+      # The VictoriaLogs datasource is a plugin Grafana fetches at start
+      # (GF_PLUGINS_PREINSTALL_SYNC); the network policy grants this pod
+      # grafana.com and its download bucket for exactly that.
+      plugins:
+        - victoriametrics-logs-datasource@0.32.0@https://grafana.com/api/plugins/victoriametrics-logs-datasource/versions/0.32.0/download
       # No internet from this pod; stop the update and telemetry calls that
       # would otherwise show up as policy drops in Hubble.
       grafana.ini:
