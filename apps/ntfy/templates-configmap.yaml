@@ -1,0 +1,19 @@
+# Named message templates (ntfy's template-dir). The built-in `alertmanager`
+# template lists every alert in full and blows past ntfy's 4K message limit
+# as soon as a group carries more than a handful; this one is a digest.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy-templates
+  namespace: ntfy
+data:
+  trivy.yml: |
+    title: |
+      {{- if eq .status "firing" }}{{ len .alerts }} fixable critical CVEs in running images{{ else }}Fixable critical CVEs cleared{{ end }}
+    message: |
+      {{- range $i, $a := .alerts }}{{ if lt $i 10 }}
+      {{ $a.labels.namespace }} {{ $a.labels.image_repository }}: {{ $a.labels.vuln_id }} fixed in {{ $a.labels.fixed_version }}
+      {{- end }}{{ end }}
+      {{- if gt (len .alerts) 10 }}
+      and {{ sub (len .alerts) 10 }} more; the full list is in Grafana.
+      {{- end }}

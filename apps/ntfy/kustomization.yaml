@@ -4,6 +4,7 @@ namespace: ntfy
 resources:
   - namespace.yaml
   - secrets
+  - templates-configmap.yaml
   - statefulset.yaml
   - deployment.yaml
   - service.yaml
