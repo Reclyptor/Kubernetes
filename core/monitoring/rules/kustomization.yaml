@@ -7,3 +7,4 @@ resources:
   - network-path.yaml
   - flux.yaml
   - cilium.yaml
+  - trivy.yaml

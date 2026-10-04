@@ -1,0 +1,30 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: trivy
+  namespace: monitoring
+spec:
+  groups:
+    - name: trivy
+      rules:
+        # Only vulnerabilities with a published fix are scanned at all
+        # (ignoreUnfixed), so every series here is actionable: bump the image.
+        - alert: CriticalFixableVulnerability
+          expr: max by (namespace, image_repository, image_tag, vuln_id, fixed_version, resource) (trivy_vulnerability_id{severity="Critical", fixed_version!=""}) == 1
+          for: 1h
+          labels: { severity: critical, notify: ntfy }
+          annotations:
+            summary: "{{ $labels.image_repository }}:{{ $labels.image_tag }} runs {{ $labels.vuln_id }} ({{ $labels.resource }}), fixed in {{ $labels.fixed_version }}"
+            description: "Running in {{ $labels.namespace }}. A pinned image needs a bump."
+        - alert: TrivyScannerDown
+          expr: up{job="trivy-system/trivy-operator"} == 0
+          for: 15m
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "The Trivy operator is not serving metrics; vulnerability reports are going stale"
+        - alert: TrivyScansFailing
+          expr: increase(kube_job_status_failed{namespace="trivy-system"}[1h]) > 3
+          labels: { severity: warning, notify: ntfy }
+          annotations:
+            summary: "{{ $value | printf \"%.0f\" }} scan jobs failed in the last hour"
+            description: "A registry or the vulnerability database is unreachable; reports silently age out otherwise."
