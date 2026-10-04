@@ -8,6 +8,8 @@ spec:
     matchLabels:
       app.kubernetes.io/name: volsync
   egress:
-    - toEntities: [kube-apiserver]
+    # host too: a pod balanced to its own control-plane node's apiserver sees
+    # it as host, not kube-apiserver, and would fail one connection in three.
+    - toEntities: [kube-apiserver, host]
       toPorts:
         - ports: [{ port: "6443", protocol: TCP }]
