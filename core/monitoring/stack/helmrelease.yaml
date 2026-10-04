@@ -112,6 +112,14 @@ spec:
         image:
           tag: v1.52.0@sha256:5f8bb5cfde9745c02c3301426cad6fab4ef1d382161af577d284cccc9136b99c
 
+    # Created by the chart once metrics and logs both exist: vmalert queries
+    # through it so logs rules work. Pinned like everything else.
+    internal:
+      vmauth:
+        spec:
+          image:
+            tag: v1.153.0@sha256:4ebf2f21490df3e8837302b85d9db6ac45765442dfa28db77ffacd3577035a74
+
     vmagent:
       spec:
         image:

@@ -63,6 +63,8 @@ spec:
             app.kubernetes.io/name: vmalert
         - matchLabels:
             app.kubernetes.io/name: grafana
+        - matchLabels:
+            app.kubernetes.io/name: vmauth
       toPorts:
         - ports: [{ port: "8428", protocol: TCP }]
   egress:
@@ -91,6 +93,8 @@ spec:
             app.kubernetes.io/name: grafana
         - matchLabels:
             app.kubernetes.io/name: vmagent
+        - matchLabels:
+            app.kubernetes.io/name: vmauth
       toPorts:
         - ports: [{ port: "9428", protocol: TCP }]
   egress:
@@ -100,6 +104,42 @@ spec:
             app.kubernetes.io/name: vmalert
       toPorts:
         - ports: [{ port: "8080", protocol: TCP }]
+---
+# The chart routes vmalert's queries through this internal vmauth once both
+# metrics and logs exist, so logs rules can be evaluated too.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: vmauth
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: vmauth
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmalert
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+      toPorts:
+        - ports: [{ port: "8427", protocol: TCP }]
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmagent
+      toPorts:
+        - ports: [{ port: "8435", protocol: TCP }]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmsingle
+      toPorts:
+        - ports: [{ port: "8428", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vlsingle
+      toPorts:
+        - ports: [{ port: "9428", protocol: TCP }]
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -130,6 +170,11 @@ spec:
             app.kubernetes.io/name: vmsingle
       toPorts:
         - ports: [{ port: "8428", protocol: TCP }]
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: vmauth
+      toPorts:
+        - ports: [{ port: "8427", protocol: TCP }]
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/name: vmalertmanager
