@@ -22,6 +22,24 @@ spec:
     crds: CreateReplace
     remediation:
       retries: 3
+  # The chart copies the VictoriaLogs image tag into app.kubernetes.io/version,
+  # and a tag@digest pin is not a valid label value (the metrics templates do
+  # not do this). Keep the digest on the image and the plain version on the label.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: VLSingle
+            patch: |
+              - op: replace
+                path: /metadata/labels/app.kubernetes.io~1version
+                value: v1.52.0
+          - target:
+              kind: VLAgent
+            patch: |
+              - op: replace
+                path: /metadata/labels/app.kubernetes.io~1version
+                value: v1.52.0
   values:
     victoria-metrics-operator:
       image:
