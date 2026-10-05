@@ -33,6 +33,40 @@ spec:
         runAsUser: 0
         runAsGroup: 0
         fsGroup: 0
+      # PublishServerOnPlexOnlineKey lives only in Preferences.xml on the config
+      # PVC, and pms-docker exposes no env var for it, so it cannot be declared
+      # like ADVERTISE_IP. It was found "0" on 2026-10-04: Plex stayed signed in
+      # but never re-announced, so plex.tv served a stale record and clients
+      # rejected the server as outdated. That also makes ADVERTISE_IP inert --
+      # nothing is advertised while publishing is off. Re-assert it every start.
+      initContainers:
+        - name: ensure-publish
+          image: plexinc/pms-docker:latest
+          imagePullPolicy: Always
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              pref="/config/Library/Application Support/Plex Media Server/Preferences.xml"
+              key="PublishServerOnPlexOnlineKey"
+              if [ ! -f "$pref" ]; then
+                echo "no Preferences.xml yet (first run) - nothing to assert"
+                exit 0
+              fi
+              cur="$(xmlstarlet sel -T -t -m /Preferences -v "@${key}" -n "$pref" || true)"
+              if [ "$cur" = "1" ]; then
+                echo "${key} already 1"
+                exit 0
+              fi
+              if [ "$(xmlstarlet sel -t -v "count(/Preferences/@${key})" "$pref")" -gt 0 ]; then
+                xmlstarlet ed --inplace --update "/Preferences/@${key}" -v 1 "$pref"
+              else
+                xmlstarlet ed --inplace --insert /Preferences --type attr -n "${key}" -v 1 "$pref"
+              fi
+              echo "DRIFT CORRECTED: ${key} was '${cur:-unset}', now 1"
+          volumeMounts:
+            - name: config
+              mountPath: /config
       containers:
         - name: plex
           image: plexinc/pms-docker:latest
