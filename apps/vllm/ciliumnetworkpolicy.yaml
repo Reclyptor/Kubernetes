@@ -1,0 +1,30 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: vllm
+  namespace: vllm
+spec:
+  endpointSelector:
+    matchLabels:
+      app: vllm
+  ingress:
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    - toFQDNs:
+        - matchName: "huggingface.co"
+        - matchPattern: "*.huggingface.co"
+        # Model downloads redirect to Xet CDN hosts several labels deep
+        # (us.aws.cdn.hf.co, cas-bridge.xethub.hf.co). Cilium wildcards do not
+        # span dots, so each depth needs its own pattern.
+        - matchPattern: "*.hf.co"
+        - matchPattern: "*.*.hf.co"
+        - matchPattern: "*.*.*.hf.co"
+      toPorts:
+        - ports: [{ port: "443", protocol: TCP }]

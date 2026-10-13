@@ -1,0 +1,152 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vllm
+  namespace: vllm
+spec:
+  serviceName: vllm-api
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      automountServiceAccountToken: false
+      runtimeClassName: nvidia
+      # nvidia.com/gpu in the container resources already constrains this to a
+      # GPU node — bytheon is the only one advertising the resource — so the
+      # hostname pin bought nothing and would have blocked a second GPU node.
+      # The toleration is what gets it past the taint reserving that box.
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        # The model cache is tens of GB; a recursive chown on every start
+        # would stall it for nothing once ownership is right.
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.31.0@sha256:c1c9f6fd5c109ba7f0546a59f5b2f15fb87f64c77782e90a27b648b42a8e67c3
+          # A repo id rather than a path: vLLM downloads it into HF_HOME on
+          # first start and serves from that cache afterwards. FP8 has no
+          # tensor cores on Ampere; vLLM runs it as weight-only FP8 (Marlin).
+          args:
+            - "--model"
+            - "Qwen/Qwen3.8-27B-FP8"
+            - "--served-model-name"
+            - "Qwen3.8-27B-FP8"
+            - "--tensor-parallel-size"
+            - "2"
+            - "--port"
+            - "8000"
+            - "--max-model-len"
+            - "262144"
+            - "--gpu-memory-utilization"
+            - "0.95"
+            - "--kv-cache-dtype"
+            - "fp8"
+            - "--enable-chunked-prefill"
+            - "--max-num-batched-tokens"
+            - "10240"
+            - "--max-num-seqs"
+            - "8"
+            - "--enable-prefix-caching"
+            - "--speculative-config"
+            - '{"method":"mtp","num_speculative_tokens":3}'
+            - "--mm-encoder-tp-mode"
+            - "data"
+            - "--enable-auto-tool-choice"
+            - "--tool-call-parser"
+            - "qwen3_coder"
+            - "--reasoning-parser"
+            - "qwen3"
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: TZ
+              value: "America/Chicago"
+            # Everything vLLM, torch, Triton and FlashInfer cache lands on the
+            # PVC so compiled kernels survive restarts. USER is set because
+            # uid 1000 has no passwd entry and torch's inductor cache asks
+            # getpass for a name.
+            - name: HOME
+              value: "/data"
+            - name: USER
+              value: "vllm"
+            - name: HF_HOME
+              value: "/data/huggingface"
+            - name: XDG_CACHE_HOME
+              value: "/data/cache"
+            - name: VLLM_CACHE_ROOT
+              value: "/data/cache/vllm"
+            - name: TORCHINDUCTOR_CACHE_DIR
+              value: "/data/cache/torchinductor"
+            - name: VLLM_NO_USAGE_STATS
+              value: "1"
+            - name: DO_NOT_TRACK
+              value: "1"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            # The container runtime's 64Mi /dev/shm is too small for the
+            # NCCL and broadcast buffers shared between the TP workers.
+            - name: dshm
+              mountPath: /dev/shm
+          resources:
+            requests:
+              cpu: "4000m"
+              memory: "16Gi"
+              nvidia.com/gpu: "2"
+            limits:
+              memory: "40Gi"
+              nvidia.com/gpu: "2"
+          # The first start downloads ~30 GB of weights before the server
+          # listens, and every start compiles and captures CUDA graphs; give
+          # it an hour before liveness takes over.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 120
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 100Gi
