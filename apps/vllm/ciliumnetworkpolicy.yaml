@@ -11,6 +11,13 @@ spec:
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "8000", protocol: TCP }]
+    # vllm.reclyptor.com, behind Cloudflare Access (SPEC/vllm-cloudflare-route.md).
+    - fromEndpoints:
+        - matchLabels:
+            app: cloudflare
+            k8s:io.kubernetes.pod.namespace: cloudflare
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]
   egress:
     - toEntities: [host]
       toPorts:
