@@ -111,6 +111,11 @@ spec:
             # short answer instead of a reasoning trace eating MAX_TOKENS.
             - name: OPENAI_REASONING_EFFORT
               value: none
+            # The 60s default is shorter than a compression takes while vLLM's
+            # slots are all busy; timeouts then trip agentmemory's circuit
+            # breaker. Stays under the backfill Job's 300s trigger timeout.
+            - name: AGENTMEMORY_LLM_TIMEOUT_MS
+              value: "240000"
             # vLLM runs keyless, but agentmemory only picks the OpenAI provider
             # when this is non-empty. Not a secret.
             - name: OPENAI_API_KEY
