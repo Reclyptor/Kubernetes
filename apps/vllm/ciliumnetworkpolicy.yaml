@@ -18,6 +18,13 @@ spec:
             k8s:io.kubernetes.pod.namespace: cloudflare
       toPorts:
         - ports: [{ port: "8000", protocol: TCP }]
+    # agentmemory's compression (SPEC/agentmemory-vllm.md).
+    - fromEndpoints:
+        - matchLabels:
+            app: agentmemory
+            k8s:io.kubernetes.pod.namespace: agentmemory
+      toPorts:
+        - ports: [{ port: "8000", protocol: TCP }]
   egress:
     - toEntities: [host]
       toPorts:

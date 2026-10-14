@@ -92,11 +92,20 @@ spec:
               value: "true"
             - name: EMBEDDING_PROVIDER
               value: local
-            - name: ANTHROPIC_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: agentmemory-secret
-                  key: ANTHROPIC_API_KEY
+            # Compression and summaries run on the in-cluster Qwen. agentmemory
+            # appends /v1/chat/completions to the base URL itself.
+            - name: OPENAI_BASE_URL
+              value: http://vllm-api.vllm.svc.cluster.local:8000
+            - name: OPENAI_MODEL
+              value: Qwen3.8-27B-FP8
+            # vLLM turns this into thinking off for Qwen, so a compression is a
+            # short answer instead of a reasoning trace eating MAX_TOKENS.
+            - name: OPENAI_REASONING_EFFORT
+              value: none
+            # vLLM runs keyless, but agentmemory only picks the OpenAI provider
+            # when this is non-empty. Not a secret.
+            - name: OPENAI_API_KEY
+              value: unused-vllm-checks-no-key
             - name: AGENTMEMORY_SECRET
               valueFrom:
                 secretKeyRef:
