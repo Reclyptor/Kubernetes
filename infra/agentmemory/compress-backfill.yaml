@@ -103,7 +103,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: agentmemory-compress-backfill-trial
+  name: agentmemory-compress-backfill
   namespace: agentmemory
 spec:
   # Idempotent, so a retry only picks up what is still raw.
@@ -137,11 +137,10 @@ spec:
               value: http://agentmemory.agentmemory.svc.cluster.local:3111/agentmemory
             - name: III_ENGINE_URL
               value: ws://agentmemory-engine.agentmemory.svc.cluster.local:49134
-            # vLLM serves 8 sequences; this leaves 5 for interactive use.
+            # All 8 of vLLM's sequences, by the user's choice: interactive
+            # sessions queue behind the backfill until it finishes.
             - name: CONCURRENCY
-              value: "3"
-            - name: LIMIT
-              value: "25"
+              value: "8"
             - name: AGENTMEMORY_SECRET
               valueFrom:
                 secretKeyRef:
