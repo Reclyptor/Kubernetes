@@ -11,17 +11,6 @@ spec:
     - fromEntities: [world, remote-node]
       toPorts:
         - ports: [{ port: "3111", protocol: TCP }]
-    # TEMPORARY: the compression backfill Job (compress-backfill.yaml) reads
-    # the REST API and triggers mem::compress over the worker socket. Remove
-    # with that file.
-    - fromEndpoints:
-        - matchLabels:
-            app: agentmemory-compress-backfill
-            k8s:io.kubernetes.pod.namespace: agentmemory
-      toPorts:
-        - ports:
-            - { port: "3111", protocol: TCP }
-            - { port: "49134", protocol: TCP }
   egress:
     - toEntities: [host]
       toPorts:
