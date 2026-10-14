@@ -116,6 +116,16 @@ spec:
             # breaker. Stays under the backfill Job's 300s trigger timeout.
             - name: AGENTMEMORY_LLM_TIMEOUT_MS
               value: "240000"
+            # Session summaries re-run on every Stop hook over the whole
+            # session. The default 400 observations per chunk is a 100k–200k
+            # token prompt, which stalls every other request on the two 3090s
+            # for minutes. Small chunks prefill in seconds and stay
+            # prefix-cache hits on the next re-run, since earlier chunks don't
+            # change.
+            - name: SUMMARIZE_CHUNK_SIZE
+              value: "50"
+            - name: SUMMARIZE_CHUNK_CONCURRENCY
+              value: "2"
             # vLLM runs keyless, but agentmemory only picks the OpenAI provider
             # when this is non-empty. Not a secret.
             - name: OPENAI_API_KEY
