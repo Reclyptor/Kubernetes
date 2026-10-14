@@ -50,10 +50,10 @@ spec:
             failureThreshold: 3
           resources:
             requests:
-              memory: 128Mi
+              memory: 1Gi
               cpu: 100m
             limits:
-              memory: 1Gi
+              memory: 3Gi
               cpu: "1"
         - name: app
           image: node:22-slim
