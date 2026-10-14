@@ -30,6 +30,18 @@ spec:
             dns: [{ matchPattern: "*" }]
     - toFQDNs:
         - matchName: "registry.npmjs.org"
+        # sharp's install script fetches its libvips binary from GitHub
+        # releases, which redirect to the asset hosts.
+        - matchName: "github.com"
+        - matchName: "release-assets.githubusercontent.com"
+        - matchName: "objects.githubusercontent.com"
+        # The local embedding model downloads from Hugging Face on first use.
+        # Its files redirect to CDN hosts several labels deep
+        # (us.aws.cdn.hf.co); Cilium wildcards do not span dots.
+        - matchName: "huggingface.co"
+        - matchPattern: "*.hf.co"
+        - matchPattern: "*.*.hf.co"
+        - matchPattern: "*.*.*.hf.co"
       toPorts:
         - ports: [{ port: "443", protocol: TCP }]
     - toEndpoints:

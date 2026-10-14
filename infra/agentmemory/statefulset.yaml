@@ -67,8 +67,17 @@ spec:
                 sleep 2
               done
               mkdir -p "$HOME" "$NPM_CONFIG_PREFIX"
-              if ! command -v agentmemory >/dev/null 2>&1; then
+              # Local embeddings (EMBEDDING_PROVIDER=local) come from an optional
+              # dependency, which npm silently drops when an install script
+              # cannot fetch its binaries. Reinstall when it is missing, and
+              # refuse to start without it rather than run without vector search.
+              transformers="$NPM_CONFIG_PREFIX/lib/node_modules/@agentmemory/agentmemory/node_modules/@xenova/transformers/package.json"
+              if ! command -v agentmemory >/dev/null 2>&1 || [ ! -f "$transformers" ]; then
                 npm install -g @agentmemory/agentmemory@0.9.26 --no-fund --no-audit
+              fi
+              if [ ! -f "$transformers" ]; then
+                echo "@xenova/transformers is missing after install; local embeddings cannot work" >&2
+                exit 1
               fi
               exec agentmemory --no-engine
           env:
