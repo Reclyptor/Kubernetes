@@ -99,7 +99,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: agentmemory-recovery-backfill
+  name: agentmemory-recovery-backfill-low
   namespace: agentmemory
 spec:
   # Idempotent, so a retry only picks up what is still raw.
@@ -135,10 +135,11 @@ spec:
               value: /tmp
             - name: III_ENGINE_URL
               value: ws://agentmemory-engine.agentmemory.svc.cluster.local:49134
-            # 5 of vLLM's 8 sequences, by the user's choice, so interactive
-            # sessions keep 3.
+            # 2 of vLLM's 8 sequences. At 5 the backfill competed with the
+            # user's long-context agent sessions for KV cache and evicted
+            # their prefixes; the user chose to keep interactive use first.
             - name: CONCURRENCY
-              value: "5"
+              value: "2"
           resources:
             requests:
               cpu: 100m
