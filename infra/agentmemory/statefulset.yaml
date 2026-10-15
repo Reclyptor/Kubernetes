@@ -124,6 +124,11 @@ spec:
               value: "50"
             - name: SUMMARIZE_CHUNK_CONCURRENCY
               value: "2"
+            # The default caps a session at 500 observations and refuses the
+            # rest, which loses the tail of every long working session. 0
+            # turns the cap off.
+            - name: MAX_OBS_PER_SESSION
+              value: "0"
             # vLLM runs keyless, but agentmemory only picks the OpenAI provider
             # when this is non-empty. Not a secret.
             - name: OPENAI_API_KEY
