@@ -1,0 +1,177 @@
+# One-off: compresses the 14,689 observations of the 126 recovered sessions,
+# which were never compressed while their session records were missing
+# (SPEC/agentmemory-orphan-recovery.md). Everything here is temporary and goes
+# away with this file once the Job has finished, along with the matching
+# ingress rule in ciliumnetworkpolicy.yaml.
+apiVersion: v1
+kind: Service
+metadata:
+  name: agentmemory-engine
+  namespace: agentmemory
+spec:
+  selector:
+    app: agentmemory
+  ports:
+    - name: worker
+      port: 49134
+      targetPort: worker
+      protocol: TCP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agentmemory-compress-backfill
+  namespace: agentmemory
+data:
+  backfill.mjs: |
+    // mem::compress is only reachable over the engine's worker socket, so the
+    // backfill joins as a worker and triggers it per raw observation — the
+    // same function, payload and provider that capture uses. Raw means no
+    // title and narrative yet; a rerun skips whatever is already compressed.
+    // Sessions and observations are read straight from the state store over
+    // the same socket: the REST listings page their results.
+    import { registerWorker } from "iii-sdk";
+
+    const concurrency = Number(process.env.CONCURRENCY);
+    const limit = process.env.LIMIT ? Number(process.env.LIMIT) : Infinity;
+    const timeoutMs = 300_000;
+
+    const iii = registerWorker(process.env.III_ENGINE_URL, { invocationTimeoutMs: timeoutMs });
+    const list = async (scope) => (await iii.trigger({ function_id: "state::list", payload: { scope } })).filter(Boolean);
+    const isCompressed = (o) => typeof o.title === "string" && "narrative" in o;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    const sessions = await list("mem:sessions");
+    const raw = [];
+    for (const s of sessions) {
+      for (const o of await list(`mem:obs:${s.id}`)) if (!isCompressed(o)) raw.push({ sessionId: s.id, obs: o });
+    }
+    // Newest first: if the run is cut short, the most useful history is done.
+    raw.sort((a, b) => String(b.obs.timestamp).localeCompare(String(a.obs.timestamp)));
+    const queue = raw.slice(0, limit);
+    console.log(`raw observations: ${raw.length} across ${sessions.length} sessions; processing ${queue.length} at concurrency ${concurrency}`);
+
+    const started = Date.now();
+    const errors = {};
+    let next = 0, ok = 0, failed = 0, consecutive = 0;
+
+    const work = async () => {
+      while (next < queue.length) {
+        const { sessionId, obs } = queue[next++];
+        let error;
+        try {
+          const res = await iii.trigger({
+            function_id: "mem::compress",
+            payload: { observationId: obs.id, sessionId, raw: obs },
+            timeoutMs,
+          });
+          if (!res?.success) error = res?.error ?? "unknown";
+        } catch (err) {
+          error = err instanceof Error ? err.message : String(err);
+        }
+        if (error === undefined) {
+          ok++;
+          consecutive = 0;
+        } else {
+          failed++;
+          errors[error] = (errors[error] ?? 0) + 1;
+          // A run of failures means the provider is down or agentmemory's
+          // circuit breaker has opened; hammering it only extends the outage.
+          if (++consecutive >= 10) {
+            console.log(`${consecutive} failures in a row (last: ${error}); pausing 120s`);
+            await sleep(120_000);
+            consecutive = 0;
+          }
+        }
+        const done = ok + failed;
+        if (done % 100 === 0 || done === queue.length) {
+          const rate = done / ((Date.now() - started) / 1000);
+          const eta = Math.round((queue.length - done) / rate / 60);
+          console.log(`${done}/${queue.length} ok=${ok} failed=${failed} ${rate.toFixed(2)}/s eta=${eta}m`);
+        }
+      }
+    };
+
+    await Promise.all(Array.from({ length: concurrency }, work));
+    console.log(`done: ok=${ok} failed=${failed} in ${Math.round((Date.now() - started) / 60000)}m`, JSON.stringify(errors));
+    process.exit(failed === 0 ? 0 : 1);
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: agentmemory-recovery-backfill
+  namespace: agentmemory
+spec:
+  # Idempotent, so a retry only picks up what is still raw.
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: agentmemory-compress-backfill
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+      containers:
+        - name: backfill
+          # The agentmemory image carries the iii-sdk that matches the engine,
+          # so nothing is installed; the script resolves it through a
+          # node_modules link next to its copy.
+          image: ghcr.io/reclyptor/agentmemory:0.9.30-df3d4a8
+          imagePullPolicy: IfNotPresent
+          command: ["bash", "-euc"]
+          args:
+            - |
+              cd /tmp
+              mkdir -p node_modules
+              ln -s /usr/local/lib/node_modules/@agentmemory/agentmemory/node_modules/iii-sdk node_modules/iii-sdk
+              cp /script/backfill.mjs .
+              exec node backfill.mjs
+          env:
+            - name: HOME
+              value: /tmp
+            - name: III_ENGINE_URL
+              value: ws://agentmemory-engine.agentmemory.svc.cluster.local:49134
+            # 5 of vLLM's 8 sequences, by the user's choice, so interactive
+            # sessions keep 3.
+            - name: CONCURRENCY
+              value: "5"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: script
+              mountPath: /script
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: agentmemory-compress-backfill
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: agentmemory-compress-backfill
+  namespace: agentmemory
+spec:
+  endpointSelector:
+    matchLabels:
+      app: agentmemory-compress-backfill
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    - toEndpoints:
+        - matchLabels:
+            app: agentmemory
+            k8s:io.kubernetes.pod.namespace: agentmemory
+      toPorts:
+        - ports: [{ port: "49134", protocol: TCP }]
