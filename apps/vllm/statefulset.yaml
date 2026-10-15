@@ -41,8 +41,17 @@ spec:
           # A full 262144-token sequence needs ~4.6 GiB of KV cache per GPU,
           # and that is about all two 24 GB cards leave after ~15.5 GiB of
           # weights. So the vision encoder stays sharded (the default) rather
-          # than replicated per GPU, the prefill chunk stays at 8192, and the
-          # utilization is 0.96 because vLLM now counts CUDA graphs inside it.
+          # than replicated per GPU, and the utilization is 0.96 because vLLM
+          # now counts CUDA graphs inside it.
+          #
+          # The prefill chunk is 2048 tokens. Every running request advances
+          # one decode step per engine step, and on 3090s an 8192-token chunk
+          # makes a step take seconds, so one long agent prompt froze every
+          # other request at a few tok/s until its prefill finished. Smaller
+          # chunks keep decodes flowing at a slightly longer first token for
+          # long prompts, and they need less activation memory than 8192 did.
+          # Responses report cached prompt tokens, which is how prefix-cache
+          # reuse is measured per client.
           args:
             - "--model"
             - "Qwen/Qwen3.8-27B-FP8"
@@ -60,14 +69,11 @@ spec:
             - "fp8"
             - "--enable-chunked-prefill"
             - "--max-num-batched-tokens"
-            - "8192"
+            - "2048"
             - "--max-num-seqs"
             - "8"
             - "--enable-prefix-caching"
-            # TEMPORARY: logs each request's id, prompt length and sampling
-            # params to identify the requests behind the periodic stalls
-            # (SPEC/vllm-stall-diagnosis.md). Revert once they are known.
-            - "--enable-log-requests"
+            - "--enable-prompt-tokens-details"
             - "--speculative-config"
             - '{"method":"mtp","num_speculative_tokens":3}'
             - "--enable-auto-tool-choice"
