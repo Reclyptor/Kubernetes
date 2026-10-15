@@ -73,6 +73,15 @@ spec:
             - "--max-num-seqs"
             - "8"
             - "--enable-prefix-caching"
+            # A CPU tier for the prefix cache: 24 GiB of pinned host RAM in
+            # /dev/shm (summed across both TP ranks, about 740k tokens). The
+            # GPUs hold about 320k tokens, so long agent contexts were evicted
+            # between turns and every turn re-prefilled its whole history for
+            # 15-50 s; from RAM it reloads over PCIe in well under a second.
+            # Leave block_size and blocks_per_chunk at their defaults: larger
+            # offload chunks hit an open hybrid + MTP bug (vllm#58413).
+            - "--kv-offloading-size"
+            - "24"
             - "--enable-prompt-tokens-details"
             - "--speculative-config"
             - '{"method":"mtp","num_speculative_tokens":3}'
@@ -112,16 +121,19 @@ spec:
             - name: data
               mountPath: /data
             # The container runtime's 64Mi /dev/shm is too small for the
-            # NCCL and broadcast buffers shared between the TP workers.
+            # NCCL and broadcast buffers shared between the TP workers, and
+            # the 24 GiB prefix-cache CPU tier lives here too.
             - name: dshm
               mountPath: /dev/shm
+          # The request reserves the pinned 24 GiB CPU tier plus the process
+          # itself; the limit leaves headroom for page cache over the weights.
           resources:
             requests:
               cpu: "4000m"
-              memory: "16Gi"
+              memory: "36Gi"
               nvidia.com/gpu: "2"
             limits:
-              memory: "40Gi"
+              memory: "48Gi"
               nvidia.com/gpu: "2"
           # The first start downloads ~30 GB of weights before the server
           # listens, and every start compiles and captures CUDA graphs; give
@@ -151,7 +163,7 @@ spec:
         - name: dshm
           emptyDir:
             medium: Memory
-            sizeLimit: 8Gi
+            sizeLimit: 28Gi
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
