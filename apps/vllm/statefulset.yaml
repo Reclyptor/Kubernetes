@@ -64,6 +64,10 @@ spec:
             - "--max-num-seqs"
             - "8"
             - "--enable-prefix-caching"
+            # TEMPORARY: logs each request's id, prompt length and sampling
+            # params to identify the requests behind the periodic stalls
+            # (SPEC/vllm-stall-diagnosis.md). Revert once they are known.
+            - "--enable-log-requests"
             - "--speculative-config"
             - '{"method":"mtp","num_speculative_tokens":3}'
             - "--enable-auto-tool-choice"
