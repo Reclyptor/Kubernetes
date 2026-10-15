@@ -34,7 +34,9 @@ data:
 
     const concurrency = Number(process.env.CONCURRENCY);
     const limit = process.env.LIMIT ? Number(process.env.LIMIT) : Infinity;
-    const timeoutMs = 300_000;
+    // Outlasts agentmemory's 15-minute LLM timeout, so a compression queued
+    // behind agent requests fails on agentmemory's side rather than here.
+    const timeoutMs = 960_000;
 
     const iii = registerWorker(process.env.III_ENGINE_URL, { invocationTimeoutMs: timeoutMs });
     const list = async (scope) => (await iii.trigger({ function_id: "state::list", payload: { scope } })).filter(Boolean);

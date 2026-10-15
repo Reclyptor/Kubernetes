@@ -83,6 +83,12 @@ spec:
             - "--kv-offloading-size"
             - "24"
             - "--enable-prompt-tokens-details"
+            # Lower priority values run first. Interactive agents send none and
+            # get 0; agentmemory sends 10. When the GPU KV fills, waiting agent
+            # requests are scheduled ahead of agentmemory's, and agentmemory's
+            # running requests are preempted before an agent's.
+            - "--scheduling-policy"
+            - "priority"
             - "--speculative-config"
             - '{"method":"mtp","num_speculative_tokens":3}'
             - "--enable-auto-tool-choice"

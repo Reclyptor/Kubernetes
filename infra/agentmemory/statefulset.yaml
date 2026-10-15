@@ -63,9 +63,9 @@ spec:
               cpu: "1"
         - name: app
           # Built by Reclyptor/AgentMemory from upstream commit df3d4a8
-          # (v0.9.30 plus the #745 session-finalize fix), with the local
-          # embedding model baked in.
-          image: ghcr.io/reclyptor/agentmemory:0.9.30-df3d4a8
+          # (v0.9.30 plus the #745 session-finalize fix) and upstream PR #1496
+          # (OPENAI_EXTRA_BODY), with the local embedding model baked in.
+          image: ghcr.io/reclyptor/agentmemory:0.9.30-df3d4a8-pr1496
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -109,11 +109,16 @@ spec:
             # short answer instead of a reasoning trace eating MAX_TOKENS.
             - name: OPENAI_REASONING_EFFORT
               value: none
-            # The 60s default is shorter than a compression takes while vLLM's
-            # slots are all busy; timeouts then trip agentmemory's circuit
-            # breaker.
+            # vLLM serves by priority, lower first. Interactive agents send none
+            # and get 0, so agentmemory's background work yields to them.
+            - name: OPENAI_EXTRA_BODY
+              value: '{"priority":10}'
+            # Yielding to agents means waiting in vLLM's queue while long agent
+            # contexts hold the GPU. Waiting is expected, so the timeout only
+            # has to catch a hung vLLM; a short one turns queueing into failures
+            # that trip agentmemory's circuit breaker.
             - name: AGENTMEMORY_LLM_TIMEOUT_MS
-              value: "240000"
+              value: "900000"
             # Session summaries re-run on every Stop hook over the whole
             # session. The default 400 observations per chunk is a 100k–200k
             # token prompt, which stalls every other request on the two 3090s
