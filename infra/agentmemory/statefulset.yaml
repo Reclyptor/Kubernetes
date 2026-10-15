@@ -133,13 +133,6 @@ spec:
                 secretKeyRef:
                   name: agentmemory-secret
                   key: AGENTMEMORY_SECRET
-            # One boot only: embed every stored document, not just those newer
-            # than the last index save (SPEC/agentmemory-upgrade.md). Remove
-            # once /agentmemory/status reports the backfill done.
-            - name: AGENTMEMORY_VECTOR_BACKFILL
-              value: all
-            - name: AGENTMEMORY_VECTOR_BACKFILL_MAX
-              value: "50000"
           volumeMounts:
             - name: data
               mountPath: /data
