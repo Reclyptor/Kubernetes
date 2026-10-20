@@ -70,7 +70,7 @@ spec:
         - name: media-dxp4800
           mountPath: /mnt/media/dxp4800
         - name: asustor
-          mountPath: /mnt/asustor
+          mountPath: /mnt/media/asustor
         - name: work
           mountPath: /work
         # Idles cheap -- it is asleep most of the time -- but bursts wide when a
