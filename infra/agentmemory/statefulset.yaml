@@ -65,7 +65,7 @@ spec:
           # Built by Reclyptor/AgentMemory from upstream commit df3d4a8
           # (v0.9.30 plus the #745 session-finalize fix) and upstream PR #1496
           # (OPENAI_EXTRA_BODY), with the local embedding model baked in.
-          image: ghcr.io/reclyptor/agentmemory:0.9.30-df3d4a8-pr1496
+          image: ghcr.io/reclyptor/agentmemory:0.9.30-df3d4a8-pr1496-20261024085514-a1d04e5
           imagePullPolicy: IfNotPresent
           command:
             - bash
