@@ -19,9 +19,3 @@ spec:
           labels: { severity: warning, notify: ntfy }
           annotations:
             summary: "Only {{ $value }} cloudflared tunnel connections are up"
-        - alert: HeadscaleDown
-          expr: up{job="headscale/headscale"} == 0
-          for: 5m
-          labels: { severity: critical, notify: ntfy }
-          annotations:
-            summary: "headscale is not answering; tailnet clients cannot coordinate"

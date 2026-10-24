@@ -8,9 +8,9 @@ spec:
     - name: cilium
       rules:
         # Baseline measured 2026-10-03: 0.5 to 2 policy drops per second per node
-        # in steady state (Terraria's LAN discovery broadcasts, tailscale's DERP
-        # attempts). A sustained order of magnitude above that is a policy that
-        # no longer matches a workload, or a workload that changed shape.
+        # in steady state (Terraria's LAN discovery broadcasts). A sustained
+        # order of magnitude above that is a policy that no longer matches a
+        # workload, or a workload that changed shape.
         - alert: CiliumPolicyDropsHigh
           expr: sum by (instance) (rate(cilium_drop_count_total{reason="Policy denied"}[10m])) > 10
           for: 15m
