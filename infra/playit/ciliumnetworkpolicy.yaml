@@ -19,7 +19,7 @@ spec:
     # server-chosen TCP/UDP port across several netblocks (e.g. 69.9.176.0/20,
     # 209.25.140.0/24). There is no stable allowlist to pin, so this relay gets
     # broad egress to the internet. Containment lives below — it may only
-    # FORWARD into the cluster to the explicit game/tailnet services.
+    # FORWARD into the cluster to the explicit game services.
     - toEntities: [world]
       toPorts:
         - ports:
@@ -94,19 +94,3 @@ spec:
             k8s:io.kubernetes.pod.namespace: factorio
       toPorts:
         - ports: [{ port: "34199", protocol: UDP }]
-    # tailnet data path: publish Headscale's embedded DERP/STUN and the
-    # subnet router's WireGuard endpoint
-    - toEndpoints:
-        - matchLabels:
-            app: headscale
-            k8s:io.kubernetes.pod.namespace: headscale
-      toPorts:
-        - ports:
-            - { port: "8443", protocol: TCP }
-            - { port: "3478", protocol: UDP }
-    - toEndpoints:
-        - matchLabels:
-            app: tailscale
-            k8s:io.kubernetes.pod.namespace: tailscale
-      toPorts:
-        - ports: [{ port: "41641", protocol: UDP }]
