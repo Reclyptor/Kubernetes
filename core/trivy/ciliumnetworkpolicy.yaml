@@ -61,7 +61,7 @@ spec:
 # Scan jobs pull image layers themselves. Registries redirect layer downloads
 # to CDNs whose names change (ghcr → pkg-containers.githubusercontent.com,
 # Docker Hub → cloudfront, quay → cdn01.quay.io), so this is world:443 on the
-# plex/jellyfin precedent, bounded by: no service-account token, read-only
+# plex precedent, bounded by: no service-account token, read-only
 # root, all capabilities dropped, a 10 minute deadline, and the operator
 # choosing the image reference.
 apiVersion: cilium.io/v2
