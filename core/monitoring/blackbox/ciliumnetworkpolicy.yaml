@@ -21,18 +21,9 @@ spec:
       toPorts:
         - ports: [{ port: "32400", protocol: TCP }]
     - toEndpoints:
-        - matchLabels: { app: jellyfin, k8s:io.kubernetes.pod.namespace: jellyfin }
-        - matchLabels: { app: emby, k8s:io.kubernetes.pod.namespace: emby }
-      toPorts:
-        - ports: [{ port: "8096", protocol: TCP }]
-    - toEndpoints:
         - matchLabels: { app: authentik, component: server, k8s:io.kubernetes.pod.namespace: authentik }
       toPorts:
         - ports: [{ port: "9000", protocol: TCP }]
-    - toEndpoints:
-        - matchLabels: { app: headscale, k8s:io.kubernetes.pod.namespace: headscale }
-      toPorts:
-        - ports: [{ port: "8443", protocol: TCP }]
     - toEndpoints:
         - matchLabels: { app: ntfy, k8s:io.kubernetes.pod.namespace: ntfy }
         - matchLabels: { app: gotify, k8s:io.kubernetes.pod.namespace: gotify }

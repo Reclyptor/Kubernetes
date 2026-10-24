@@ -43,15 +43,6 @@ spec:
             valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
             follow_redirects: true
             preferred_ip_protocol: ip4
-        # headscale presents its public certificate on the in-cluster Service.
-        http_2xx_insecure:
-          prober: http
-          timeout: 5s
-          http:
-            valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
-            preferred_ip_protocol: ip4
-            tls_config:
-              insecure_skip_verify: true
         tcp_connect:
           prober: tcp
           timeout: 5s
@@ -90,28 +81,10 @@ spec:
             staticConfig:
               targets:
                 - http://plex.plex.svc:32400/identity
-                - http://jellyfin.jellyfin.svc:8097/health
-                - http://emby.emby.svc:8098/emby/System/Ping
                 - http://authentik.authentik.svc:9000/-/health/ready/
                 - http://ntfy.ntfy.svc:8095/v1/health
                 - http://gotify.gotify.svc:8090/health
                 - http://victoria-metrics-k8s-stack-grafana.monitoring.svc:3000/api/health
-      - apiVersion: operator.victoriametrics.com/v1beta1
-        kind: VMProbe
-        metadata:
-          name: blackbox-http-insecure
-          namespace: monitoring
-        spec:
-          jobName: blackbox-http-insecure
-          module: http_2xx_insecure
-          interval: 30s
-          vmProberSpec:
-            url: blackbox.monitoring.svc:9115
-            path: /probe
-          targets:
-            staticConfig:
-              targets:
-                - https://headscale.headscale.svc:8443/health
       # blackbox cannot probe UDP, so Factorio, Palworld and Core Keeper rely on
       # gameops_server_up instead.
       - apiVersion: operator.victoriametrics.com/v1beta1
