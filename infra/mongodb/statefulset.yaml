@@ -57,11 +57,12 @@ spec:
             failureThreshold: 6
             timeoutSeconds: 3
         - name: mongodb-exporter
-          image: docker.io/percona/mongodb_exporter:0.53.0@sha256:0214e482b2cd4b1849f9f4dcef90d328a99ba3727dd1103e7da48b42060bcec1
+          image: docker.io/percona/mongodb_exporter:0.54.0@sha256:934e9db87e85e0fa63654e73c3504845993a254e898783ca905e65a68848b5a4
           imagePullPolicy: IfNotPresent
           args:
             - --mongodb.uri=mongodb://localhost:27017
             - --collect-all
+            - --collector.diagnosticdata-histograms
             - --compatible-mode
           ports:
             - containerPort: 9216
