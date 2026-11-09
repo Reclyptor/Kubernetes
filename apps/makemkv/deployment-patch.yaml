@@ -3,7 +3,12 @@ kind: Deployment
 metadata:
   name: all-drives
 spec:
-  replicas: 1
+  # Parked. Each privileged GUI sees all eight drives, not just its own, and
+  # scans any disc it notices. Eight of them spin discs up in parallel with no
+  # coordination, which is the power spike that knocks drives off the shared
+  # hub. Ripping moves to a single staggered controller. The config claims and
+  # Services stay, so a GUI can be brought back for one-off manual work.
+  replicas: 0
   strategy:
     type: Recreate
   template:
