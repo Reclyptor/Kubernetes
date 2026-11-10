@@ -31,11 +31,44 @@ spec:
         # it the pod can read the staging box and nothing more.
         supplementalGroups:
         - 1000
+        # cdrom. The host gives the optical drives' /dev/sr* and /dev/sg* nodes
+        # to this group, so it is what lets uid 3000 rip. Group 6 (disk) is
+        # deliberately absent: it would open every block device on the node.
+        - 24
+      # The workbench also rips discs, so it has to run where the drives are.
+      # This matches the node by label, the same way the parked makemkv GUIs
+      # did, so moving the drives is a fleet.nix change and nothing here.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: hardware.reclyptor.com/optical
+                operator: In
+                values:
+                - "true"
       containers:
       - name: mediaops
         image: ghcr.io/reclyptor/mediaops:20261110005846-a1420c3 # {"$imagepolicy": "flux-system:mediaops"}
         imagePullPolicy: Always
+        # Privileged only so the optical drives' device nodes exist in the
+        # container. Device access cannot be granted per node without a device
+        # plugin, and the drives' sg numbers change whenever the hub
+        # re-enumerates. The process stays uid 3000 with no capabilities.
+        #
+        # Known, accepted risk: this pod also fetches untrusted web content (see
+        # the network policy), and it can now see every device node on styxeon.
+        # Group membership above is what limits which of them it can open.
+        securityContext:
+          privileged: true
         env:
+        # Read by mkv-rip, which writes it into MakeMKV's settings under /work
+        # and never onto the NAS.
+        - name: MAKEMKV_KEY
+          valueFrom:
+            secretKeyRef:
+              name: makemkv-key
+              key: key
         - name: TZ
           value: "America/Chicago"
         - name: MEDIA_ROOT
