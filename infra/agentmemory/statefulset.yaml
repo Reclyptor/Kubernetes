@@ -60,8 +60,10 @@ spec:
             requests:
               memory: 1Gi
               cpu: 100m
+            # The file-backed state store lives in memory, and serializing a
+            # large scope for a read peaks at several times its size on disk.
             limits:
-              memory: 3Gi
+              memory: 6Gi
               cpu: "1"
         - name: app
           # Built by Reclyptor/AgentMemory from upstream commit df3d4a8
