@@ -46,9 +46,11 @@ spec:
               mountPath: /app/config.yaml
               subPath: config.yaml
               readOnly: true
+          # /agentmemory/livez is served by the app worker, so probing it here
+          # restarted a healthy engine whenever the app was slow to boot or
+          # reconnecting. Check the engine's own listener instead.
           livenessProbe:
-            httpGet:
-              path: /agentmemory/livez
+            tcpSocket:
               port: 3111
             initialDelaySeconds: 15
             periodSeconds: 20
