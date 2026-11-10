@@ -68,11 +68,12 @@ spec:
         - name: app
           # Built by Reclyptor/AgentMemory from upstream commit df3d4a8
           # (v0.9.30 plus the #745 session-finalize fix), upstream PR #1496
-          # (OPENAI_EXTRA_BODY) and the local observation-scope-reads patch
+          # (OPENAI_EXTRA_BODY) and two local patches: observation-scope-reads
           # (observe and compress keep running per-session totals instead of
-          # listing the whole session scope on every write), with the local
-          # embedding model baked in.
-          image: ghcr.io/reclyptor/agentmemory:0.9.30-df3d4a8-pr1496-observation-scope-reads-20261110014410-d0443d4
+          # listing the whole session scope on every write) and reflect-bounds
+          # (upstream #1544's caps on reflection clusters, evidence and
+          # insights), with the local embedding model baked in.
+          image: ghcr.io/reclyptor/agentmemory:0.9.30-df3d4a8-pr1496-observation-scope-reads-reflect-bounds-20261110022857-cf44b26
           imagePullPolicy: IfNotPresent
           command:
             - bash
