@@ -20,6 +20,11 @@ spec:
   nfs:
     server: 192.168.1.2
     path: /mnt/primary/videos
+    # This export squashes every client to 3000:3000, so anything created here
+    # lands group 3000 whatever the pod's runAsGroup says, and chown/chgrp fail
+    # with EPERM. The pod still writes everything because uid 3000 owns it all;
+    # set modes (770) and leave ownership alone. rsync -a fails here (code 23)
+    # trying to keep the source group, so copies in use -rt --chmod=F770.
 ---
 # The second box. shutil.move falls back to copy+unlink across a device
 # boundary, so cross-box promotes work; they just copy instead of renaming.
