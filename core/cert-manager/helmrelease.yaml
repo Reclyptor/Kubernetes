@@ -20,6 +20,22 @@ spec:
     remediation:
       retries: 3
   values:
+    global:
+      priorityClassName: marginal
+    resources:
+      requests:
+        cpu: 10m
+        memory: 80Mi
+    cainjector:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 96Mi
+    webhook:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
     crds:
       enabled: true
       keep: true

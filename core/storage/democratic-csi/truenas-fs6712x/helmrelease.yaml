@@ -67,6 +67,30 @@ spec:
       driver:
         image:
           tag: "v1.9.5@sha256:fc3b7d7ed3a616714139525075312758e23a5d425ffb539ad12c9bd20fb6001f"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 144Mi
+      externalAttacher:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 48Mi
+      externalProvisioner:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 48Mi
+      externalResizer:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 48Mi
+      externalSnapshotter:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 48Mi
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -84,6 +108,20 @@ spec:
       driver:
         image:
           tag: "v1.9.5@sha256:fc3b7d7ed3a616714139525075312758e23a5d425ffb539ad12c9bd20fb6001f"
+        resources:
+          requests:
+            cpu: 20m
+            memory: 176Mi
+      driverRegistrar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+      cleanup:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
       # The node plugin must reach every node that mounts a volume, including
       # bytheon, which carries nvidia.com/gpu=true:NoSchedule to reserve the GPU
       # box. Without this the DaemonSet silently stops being scheduled there on
@@ -92,6 +130,12 @@ spec:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
+    # One key feeds the csi-proxy sidecar in both the controller and the node pods.
+    csiProxy:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
     storageClasses:
       # The cluster default. Ephemeral (Delete) rather than persistent (Retain) on
       # purpose: a PVC created without an explicit class is almost always a mistake

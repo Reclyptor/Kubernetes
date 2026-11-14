@@ -21,3 +21,20 @@ spec:
     crds: CreateReplace
     remediation:
       retries: 3
+  # The chart exposes no priority or resources key.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: snapshot-controller
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: marginal
+              - op: add
+                path: /spec/template/spec/containers/0/resources
+                value:
+                  requests:
+                    cpu: 10m
+                    memory: 48Mi

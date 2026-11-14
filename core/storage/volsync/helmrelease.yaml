@@ -19,3 +19,14 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  # The chart exposes no priority key. Its own resources stay as they are.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: volsync
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: marginal

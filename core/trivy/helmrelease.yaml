@@ -22,9 +22,19 @@ spec:
     remediation:
       retries: 3
   values:
+    priorityClassName: marginal
+    # The operator's own pod. trivy.resources below is the scan-job key.
+    resources:
+      requests:
+        cpu: 10m
+        memory: 224Mi
     image:
       tag: "0.34.0@sha256:0e4f11e9632f34097f259f3a59d34bab4eea8cee9aef510d15cdfc7481d5e49c"
+    trivyOperator:
+      # Preemptionless, so a scan waits instead of evicting a running pod.
+      scanJobPodPriorityClassName: negligible
     trivy:
+      priorityClassName: marginal
       image:
         tag: "0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969"
       ignoreUnfixed: true

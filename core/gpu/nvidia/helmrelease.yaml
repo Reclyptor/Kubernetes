@@ -22,6 +22,12 @@ spec:
       retries: 3
   values:
     runtimeClassName: nvidia
+    # One key feeds the plugin and mps containers and the mps-mounts init; the
+    # config-manager sidecars have none.
+    resources:
+      requests:
+        cpu: 10m
+        memory: 48Mi
     config:
       map:
         default: |-
