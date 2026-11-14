@@ -20,6 +20,11 @@ spec:
     remediation:
       retries: 3
   values:
+    priorityClassName: marginal
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
     image:
       tag: v1.12.1
       digest: sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0

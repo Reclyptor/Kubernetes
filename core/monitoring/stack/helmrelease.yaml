@@ -42,6 +42,11 @@ spec:
                 value: v1.52.0
   values:
     victoria-metrics-operator:
+      priorityClassName: marginal
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
       image:
         tag: v0.75.0@sha256:78da26b41a819093707be2ab6a65a5dc19f43d58ec52f30b49a545c2c6b7bd55
       crds:
@@ -80,14 +85,18 @@ spec:
 
     vmsingle:
       spec:
-        retentionPeriod: "3"
+        priorityClassName: catastrophic
+        # VictoriaMetrics drops data in whole monthly partitions, so the disk
+        # holds about two months at retention 1. The operator grows the PVC in
+        # place when this request grows, but cannot shrink it.
+        retentionPeriod: "1"
         image:
           tag: v1.153.0@sha256:5eff7af5341e401471002f58d106d399e614a62f3d240f2dbc21901e49eed5dd
         storage:
           storageClassName: iscsi-persistent-fs6712x
           resources:
             requests:
-              storage: 20Gi
+              storage: 30Gi
 
     # Logs: VictoriaLogs and the per-node collector, both from this chart and
     # managed by the same operator (decision 2026-10-03, supersedes the separate
@@ -95,6 +104,7 @@ spec:
     vlsingle:
       enabled: true
       spec:
+        priorityClassName: marginal
         retentionPeriod: "30d"
         image:
           tag: v1.52.0@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e
@@ -109,6 +119,7 @@ spec:
       # baseline forbids; the node-exporter namespace is the privileged one.
       namespaceOverride: node-exporter
       spec:
+        priorityClassName: marginal
         image:
           tag: v1.52.0@sha256:5f8bb5cfde9745c02c3301426cad6fab4ef1d382161af577d284cccc9136b99c
         # bytheon carries the nvidia.com/gpu taint; logs come from there too.
@@ -121,32 +132,76 @@ spec:
     internal:
       vmauth:
         spec:
+          priorityClassName: catastrophic
           image:
             tag: v1.153.0@sha256:4ebf2f21490df3e8837302b85d9db6ac45765442dfa28db77ffacd3577035a74
 
     vmagent:
       spec:
+        priorityClassName: catastrophic
         image:
           tag: v1.153.0@sha256:474135388ae700b842007d3e186a8ae60ccf7de3dfd776fb6ed27cf8522d8331
 
     vmalert:
       spec:
+        priorityClassName: catastrophic
         image:
           tag: v1.153.0@sha256:0c1c7718b54b03e8559d0f257f31f1bd79ef7fa32ac6e9ed90d7b92a74a4fe76
+        # vmalert, Alertmanager and ntfy each sit on a different node so a
+        # single node loss cannot take out the alert path that would report it.
+        # Required anti-affinity is enforced in both directions by the
+        # scheduler, so ntfy needs no rule of its own.
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: vmalertmanager
+                    app.kubernetes.io/instance: victoria-metrics-k8s-stack
+              - topologyKey: kubernetes.io/hostname
+                namespaces: [ntfy]
+                labelSelector:
+                  matchLabels:
+                    app: ntfy
 
     alertmanager:
       spec:
+        priorityClassName: catastrophic
         image:
           tag: v0.34.0@sha256:690c7b525f4367aa91f73e2f91c632206d32e97c6384bdbf2fb7a861b420340d
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: vmalert
+                    app.kubernetes.io/instance: victoria-metrics-k8s-stack
+              - topologyKey: kubernetes.io/hostname
+                namespaces: [ntfy]
+                labelSelector:
+                  matchLabels:
+                    app: ntfy
         # Routing lives in a SOPS secret (it carries the ntfy token); the chart
         # renders no config of its own when this is set.
         configSecret: alertmanager-config
 
     grafana:
+      priorityClassName: marginal
+      resources:
+        requests:
+          cpu: 10m
+          memory: 896Mi
       image:
         tag: 13.2.2-distroless
         sha: 69a5d2d957ca0bba434c160dcd4f2d07de9d6c756a0ba10ae7f52b72ced1e4cc
       sidecar:
+        # One key covers both the dashboard and datasource sidecars.
+        resources:
+          requests:
+            cpu: 10m
+            memory: 112Mi
         image:
           tag: 2.11.2
           sha: 2912be006f62f9ea080194cf6d3afcd90daead8d101d0ba686a137a849f6a4f6
@@ -177,6 +232,11 @@ spec:
           lbipam.cilium.io/ips: "192.168.1.120"
 
     kube-state-metrics:
+      priorityClassName: marginal
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
       image:
         tag: v2.20.0
         sha: sha256:42cfe3723a5f058171c627537fb57a3ea0f26e4380fa18555a95cb1a1b4cfc5b
