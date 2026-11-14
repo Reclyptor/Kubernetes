@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - gotk-sync.yaml
+- priorityclasses.yaml
 - layers.yaml
 - ciliumnetworkpolicy.yaml
 - image-update-automation.yaml
@@ -14,3 +15,14 @@ resources:
 - terraria-image.yaml
 - corekeeper-image.yaml
 - ../secrets/ghcr-secret.yaml
+# The three controllers on the deploy pipeline (not the runtime path) give way
+# first. source, kustomize and helm controllers keep system-cluster-critical
+# from gotk-components.yaml. All six already have requests there.
+patches:
+- target:
+    kind: Deployment
+    name: (notification-controller|image-reflector-controller|image-automation-controller)
+  patch: |
+    - op: add
+      path: /spec/template/spec/priorityClassName
+      value: marginal

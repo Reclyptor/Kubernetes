@@ -1,0 +1,42 @@
+# Named after the MIL-STD-882 severity categories. Loss of a catastrophic
+# workload is an incident; negligible workloads give way to everything else.
+# Values are spaced so a class can be added between two without renumbering.
+# No class is the global default: unclassified pods get priority 0, below
+# negligible, so they are preempted first and can never preempt a classed pod.
+# These live in flux-system, not core, so they exist before the Flux
+# controllers' own Recreate rollouts ask for them.
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: catastrophic
+value: 400000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: Loss is an incident. The alert path, identity, ingress tunnel and databases.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: critical
+value: 300000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: User-facing services. Plex, game servers, makotogotchi, agentmemory, vllm, qbittorrent.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: marginal
+value: 200000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: Supporting services. Monitoring outside the alert path, remaining infra, cluster plumbing.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: negligible
+value: 100000
+globalDefault: false
+preemptionPolicy: Never
+description: Batch and parked workloads. Never preempts anything; first to be preempted.
