@@ -3,6 +3,11 @@ kind: StatefulSet
 metadata:
   name: mysql
   namespace: mysql
+  annotations:
+    # Lets Flux delete and recreate the StatefulSet to land the immutable
+    # volumeClaimTemplates change (the PVC is kept: whenDeleted Retain). Remove
+    # in the follow-up commit once applied.
+    kustomize.toolkit.fluxcd.io/force: enabled
 spec:
   serviceName: mysql
   replicas: 1
@@ -15,6 +20,7 @@ spec:
         app: mysql
     spec:
       automountServiceAccountToken: false
+      priorityClassName: catastrophic
       securityContext:
         runAsUser: 999
         runAsGroup: 999
@@ -48,7 +54,7 @@ spec:
                 name: mysql-root-secret
           resources:
             requests:
-              memory: "256Mi"
+              memory: "1536Mi"
               cpu: "250m"
           livenessProbe:
             tcpSocket:
@@ -99,4 +105,4 @@ spec:
         storageClassName: iscsi-persistent-fs6712x
         resources:
           requests:
-            storage: 5Gi
+            storage: 20Gi
