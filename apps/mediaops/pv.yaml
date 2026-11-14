@@ -61,3 +61,22 @@ spec:
   nfs:
     server: 192.168.1.5
     path: /volume1/data
+---
+# The ripper's view of dxp6800: the staging tree and nothing above it. The same
+# export and squash as mediaops-media-dxp6800 (3000:3000; set modes, never
+# chown). A subdirectory mount of this export is proven: makemkv-output mounts
+# the same path.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mediaops-rip-staging-dxp6800
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-mediaops-rip-staging
+  nfs:
+    server: 192.168.1.2
+    path: /mnt/primary/videos/_pending

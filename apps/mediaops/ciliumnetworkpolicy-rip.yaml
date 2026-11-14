@@ -1,0 +1,27 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mediaops-rip
+  namespace: mediaops
+spec:
+  endpointSelector:
+    matchLabels:
+      app: mediaops-rip
+  # No ingress: driven by `kubectl exec`, which arrives through the kubelet.
+  # NFS needs no rule: the kubelet mounts it from the host network namespace.
+  egress:
+    - toEntities: [host]
+      toPorts:
+        - ports: [{ port: "53", protocol: ANY }]
+          rules:
+            dns: [{ matchPattern: "*" }]
+    # makemkvcon talks to its vendor (version check, disc protection data) and
+    # nothing else. The privileged pod gets no general internet, so it never
+    # handles untrusted content.
+    - toFQDNs:
+        - matchName: "makemkv.com"
+        - matchPattern: "*.makemkv.com"
+      toPorts:
+        - ports:
+            - { port: "443", protocol: TCP }
+            - { port: "80", protocol: TCP }

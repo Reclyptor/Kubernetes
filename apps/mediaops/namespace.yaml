@@ -2,9 +2,11 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: mediaops
-  # Privileged because the workbench rips discs and needs the optical drives'
-  # device nodes (see the Deployment). Under baseline the API server would
-  # reject the pod, and with Recreate the old pod would already be gone.
+  # Privileged because mediaops-rip needs the optical drives' device nodes (see
+  # its Deployment). The library workbench asks for no privilege, but PSA is
+  # per namespace, so it cannot be held to baseline separately. Under baseline
+  # the API server would reject the ripper, and with Recreate the old pod would
+  # already be gone.
   labels:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/audit: privileged

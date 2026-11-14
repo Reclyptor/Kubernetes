@@ -19,31 +19,34 @@ spec:
         app: mediaops
     spec:
       automountServiceAccountToken: false
+      priorityClassName: negligible
       securityContext:
         # Matches every file under /mnt/primary/videos (3000:100, mode 770). The
         # image has no root path at runtime, so a root-owned media file cannot
         # be produced even by accident.
         runAsUser: 3000
         runAsGroup: 100
+        runAsNonRoot: true
         fsGroup: 100
         # /mnt/media is 3000:100, but the asustor tree is owned 1000:1000. The
         # supplementary group is what makes the second mount writable; without
         # it the pod can read the staging box and nothing more.
         supplementalGroups:
         - 1000
-        # cdrom. The host gives the optical drives' /dev/sr* and /dev/sg* nodes
-        # to this group, so it is what lets uid 3000 rip. Group 6 (disk) is
-        # deliberately absent: it would open every block device on the node.
-        - 24
-      # The workbench also rips discs, so it has to run where the drives are.
-      # This matches the node by label, the same way the parked makemkv GUIs
-      # did, so moving the drives is a fleet.nix change and nothing here.
+        seccompProfile:
+          type: RuntimeDefault
+      # Ripping lives in mediaops-rip, so nothing here needs the drives. The NAS
+      # path is much faster from the 10G node (the others are 2.5G), and only
+      # that node carries the capability label, which the NixOS fleet declares.
+      # Preferred, not required, so a drain moves the workbench instead of
+      # stopping it. It returns to the 10G node on its next roll, not on uncordon.
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: hardware.reclyptor.com/optical
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: network.reclyptor.com/10g
                 operator: In
                 values:
                 - "true"
@@ -51,24 +54,14 @@ spec:
       - name: mediaops
         image: ghcr.io/reclyptor/mediaops:20261113215123-36079f1 # {"$imagepolicy": "flux-system:mediaops"}
         imagePullPolicy: Always
-        # Privileged only so the optical drives' device nodes exist in the
-        # container. Device access cannot be granted per node without a device
-        # plugin, and the drives' sg numbers change whenever the hub
-        # re-enumerates. The process stays uid 3000 with no capabilities.
-        #
-        # Known, accepted risk: this pod also fetches untrusted web content (see
-        # the network policy), and it can now see every device node on styxeon.
-        # Group membership above is what limits which of them it can open.
+        # This pod fetches untrusted web content (see the network policy), so it
+        # gets no privilege and no capabilities. The disc tools live in
+        # mediaops-rip; the role guard in the image refuses them here.
         securityContext:
-          privileged: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
         env:
-        # Read by mkv-rip, which writes it into MakeMKV's settings under /work
-        # and never onto the NAS.
-        - name: MAKEMKV_KEY
-          valueFrom:
-            secretKeyRef:
-              name: makemkv-key
-              key: key
         - name: TZ
           value: "America/Chicago"
         - name: MEDIA_ROOT
@@ -107,9 +100,8 @@ spec:
         - name: work
           mountPath: /work
         # Idles cheap -- it is asleep most of the time -- but bursts wide when a
-        # split batch runs. Placement is left to the scheduler, so the modest
-        # request is what has to fit; the burst is absorbed by whichever node
-        # takes it.
+        # split batch runs. The modest request is what has to fit wherever the
+        # scheduler lands it; the burst is absorbed by whichever node takes it.
         resources:
           requests:
             cpu: 500m

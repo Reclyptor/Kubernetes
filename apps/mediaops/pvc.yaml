@@ -39,3 +39,17 @@ spec:
   resources:
     requests:
       storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mediaops-rip-staging
+  namespace: mediaops
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-mediaops-rip-staging
+  volumeName: mediaops-rip-staging-dxp6800
+  resources:
+    requests:
+      storage: 1Mi

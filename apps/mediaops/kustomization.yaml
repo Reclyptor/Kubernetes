@@ -7,4 +7,6 @@ resources:
   - pv.yaml
   - pvc.yaml
   - deployment.yaml
+  - deployment-rip.yaml
   - ciliumnetworkpolicy.yaml
+  - ciliumnetworkpolicy-rip.yaml

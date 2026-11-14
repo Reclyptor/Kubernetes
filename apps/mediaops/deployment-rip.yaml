@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediaops-rip
+  namespace: mediaops
+spec:
+  replicas: 1
+  # Exactly one pod may see the drives. The drive lease is a lock in the pod's
+  # own /tmp, so a second pod would hold a second lease and spin discs up
+  # uncoordinated, which is what knocks drives off the hub. Recreate, never
+  # RollingUpdate.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mediaops-rip
+  template:
+    metadata:
+      labels:
+        app: mediaops-rip
+    spec:
+      automountServiceAccountToken: false
+      priorityClassName: negligible
+      # Default grace and no preStop wait, by choice: a restart or a drain is
+      # immediate and kills a running rip, which `mkv-rip status` then records
+      # as "controller died" with its .partial kept. Check before restarting.
+      securityContext:
+        runAsUser: 3000
+        runAsGroup: 100
+        runAsNonRoot: true
+        fsGroup: 100
+        # cdrom. The host gives the optical drives' /dev/sr* and /dev/sg* nodes
+        # to this group, so it is what lets uid 3000 rip. Group 6 (disk) is
+        # deliberately absent: it would open every block device on the node.
+        supplementalGroups:
+        - 24
+      # The drives are physically on one chassis. This matches the node by label,
+      # so moving them is a fleet.nix change and nothing here.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: hardware.reclyptor.com/optical
+                operator: In
+                values:
+                - "true"
+      containers:
+      - name: mediaops-rip
+        image: ghcr.io/reclyptor/mediaops:20261113215123-36079f1 # {"$imagepolicy": "flux-system:mediaops"}
+        imagePullPolicy: Always
+        # Privileged only so the optical drives' device nodes exist in the
+        # container. Device access cannot be granted per node without a device
+        # plugin, and the drives' sg numbers change whenever the hub
+        # re-enumerates. The process stays uid 3000 with no capabilities, and
+        # this pod fetches nothing but makemkv.com (see its network policy).
+        # After a USB re-enumeration it must be restarted to see the new nodes;
+        # that restarts ripping only, never the library workbench.
+        securityContext:
+          privileged: true
+        env:
+        - name: MEDIAOPS_ROLE
+          value: rip
+        # Read by mkv-rip, which writes it into MakeMKV's settings under /work
+        # and never onto the NAS.
+        - name: MAKEMKV_KEY
+          valueFrom:
+            secretKeyRef:
+              name: makemkv-key
+              key: key
+        - name: TZ
+          value: "America/Chicago"
+        - name: MEDIA_ROOT
+          value: /mnt/media
+        # The image gives `media` no home directory, so fontconfig has nowhere to
+        # cache and floods every drawtext call with "No writable cache
+        # directories". The labels still render, which is the danger: pages of
+        # benign noise are exactly what a real error hides in.
+        - name: HOME
+          value: /work
+        - name: XDG_CACHE_HOME
+          value: /work/.cache
+        volumeMounts:
+        # Only the staging tree. Rips land in _pending and run state lives in
+        # _pending/.rips; the privileged pod has no business with the library.
+        - name: staging
+          mountPath: /mnt/media/dxp6800/_pending
+        - name: work
+          mountPath: /work
+        # makemkvcon buffers per drive and max_concurrent is 3 by default; the
+        # controller and ffprobe verification are light.
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
+          limits:
+            cpu: "4"
+            memory: 8Gi
+        # No liveness probe: the container is `sleep infinity`, and a probe
+        # restart would kill a rip for nothing.
+      volumes:
+      - name: staging
+        persistentVolumeClaim:
+          claimName: mediaops-rip-staging
+      - name: work
+        emptyDir: {}
