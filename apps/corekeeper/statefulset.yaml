@@ -23,6 +23,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: corekeeper
           # Direct-connect mode (PORT set): players join by IP:port through
@@ -88,6 +89,8 @@ spec:
             requests:
               cpu: "1000m"
               memory: "3Gi"
+            limits:
+              memory: "5Gi"
           # gameops health = process alive + GameInfo.txt present; the game port is
           # UDP and is not probed. The first start installs ~2 GB via SteamCMD,
           # hence the gate.
@@ -163,6 +166,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: corekeeper
           # Direct-connect mode (PORT set): players join by IP:port through
@@ -229,6 +233,8 @@ spec:
             requests:
               cpu: "1000m"
               memory: "3Gi"
+            limits:
+              memory: "5Gi"
           # gameops health = process alive + GameInfo.txt present; the game port is
           # UDP and is not probed. The first start installs ~2 GB via SteamCMD,
           # hence the gate.

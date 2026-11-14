@@ -23,6 +23,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: terraria
           image: ghcr.io/reclyptor/terraria:20260922054409-80c58ec # {"$imagepolicy": "flux-system:terraria"}
@@ -86,6 +87,8 @@ spec:
             requests:
               cpu: "500m"
               memory: "1Gi"
+            limits:
+              memory: "3Gi"
           # gameops health = process alive + ready flag (from the console log); the
           # game port is never probed: a bare connect-and-close on 7777 can crash
           # Terraria (ObjectDisposedException in Netplay).
@@ -161,6 +164,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: terraria
           image: ghcr.io/reclyptor/terraria:20260922054409-80c58ec # {"$imagepolicy": "flux-system:terraria"}
@@ -227,6 +231,8 @@ spec:
             requests:
               cpu: "500m"
               memory: "1Gi"
+            limits:
+              memory: "3Gi"
           # gameops health = process alive + ready flag (from the console log); the
           # game port is never probed: a bare connect-and-close on 7779 can crash
           # Terraria (ObjectDisposedException in Netplay).

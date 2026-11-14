@@ -24,6 +24,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: factorio
           image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
@@ -92,6 +93,8 @@ spec:
             requests:
               cpu: "1000m"
               memory: "2Gi"
+            limits:
+              memory: "3Gi"
           # gameops health = process alive + ready flag; the game port is UDP and is
           # not probed, and no RCON connection is opened, so the log stays quiet.
           startupProbe:
@@ -168,6 +171,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: factorio
           image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
@@ -238,6 +242,8 @@ spec:
             requests:
               cpu: "1000m"
               memory: "2Gi"
+            limits:
+              memory: "3Gi"
           # gameops health = process alive + ready flag; the game port is UDP and is
           # not probed, and no RCON connection is opened, so the log stays quiet.
           startupProbe:
@@ -314,6 +320,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: factorio
           image: ghcr.io/reclyptor/factorio:20260922054341-ec4d14b # {"$imagepolicy": "flux-system:factorio"}
@@ -384,6 +391,8 @@ spec:
             requests:
               cpu: "1000m"
               memory: "2Gi"
+            limits:
+              memory: "3Gi"
           # gameops health = process alive + ready flag; the game port is UDP and is
           # not probed, and no RCON connection is opened, so the log stays quiet.
           startupProbe:

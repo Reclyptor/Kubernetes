@@ -23,6 +23,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: minecraft
           # ghcr.io/reclyptor/minecraft: the GameOps toolkit (backups, in-place
@@ -151,6 +152,8 @@ spec:
             requests:
               cpu: "1000m"
               memory: "3Gi"
+            limits:
+              memory: "6Gi"
           # gameops health = process alive + ready flag + TCP 25565. The first start
           # downloads the server jar and generates the world, hence the gate.
           startupProbe:
@@ -225,6 +228,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: minecraft
           # ghcr.io/reclyptor/minecraft: the GameOps toolkit (backups, in-place
@@ -355,6 +359,8 @@ spec:
             requests:
               cpu: "1000m"
               memory: "3Gi"
+            limits:
+              memory: "6Gi"
           # gameops health = process alive + ready flag + TCP 25566. The first start
           # downloads the server jar and generates the world, hence the gate.
           startupProbe:

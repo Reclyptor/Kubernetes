@@ -25,6 +25,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: palworld
           image: ghcr.io/reclyptor/palworld:20261024085056-6479510 # {"$imagepolicy": "flux-system:palworld"}
@@ -94,6 +95,8 @@ spec:
             requests:
               cpu: "2000m"
               memory: "8Gi"
+            limits:
+              memory: "12Gi"
           # gameops health = process alive + ready flag; the game port is UDP and is
           # not probed. The first start installs ~7 GB via SteamCMD, hence the gate.
           startupProbe:
@@ -170,6 +173,7 @@ spec:
       # margin. `gameops drain --required-grace` derives this number; a grace
       # period below it means the drain is SIGKILLed mid-save.
       terminationGracePeriodSeconds: 480
+      priorityClassName: critical
       containers:
         - name: palworld
           image: ghcr.io/reclyptor/palworld:20261024085056-6479510 # {"$imagepolicy": "flux-system:palworld"}
@@ -242,6 +246,8 @@ spec:
             requests:
               cpu: "2000m"
               memory: "8Gi"
+            limits:
+              memory: "12Gi"
           # gameops health = process alive + ready flag; the game port is UDP and is
           # not probed. The first start installs ~7 GB via SteamCMD, hence the gate.
           startupProbe:
