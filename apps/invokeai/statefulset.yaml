@@ -15,6 +15,7 @@ spec:
         app: invokeai
     spec:
       automountServiceAccountToken: false
+      priorityClassName: negligible
       runtimeClassName: nvidia
       securityContext:
         fsGroup: 1000

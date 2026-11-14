@@ -26,6 +26,7 @@ spec:
         app: makotogotchi
     spec:
       automountServiceAccountToken: false
+      priorityClassName: critical
       securityContext:
         runAsUser: 1001
         runAsGroup: 1001

@@ -15,6 +15,7 @@ spec:
         app: comfyui
     spec:
       automountServiceAccountToken: false
+      priorityClassName: negligible
       runtimeClassName: nvidia
       securityContext:
         runAsUser: 1000

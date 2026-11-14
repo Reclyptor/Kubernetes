@@ -15,14 +15,17 @@ spec:
         app: ntfy
     spec:
       automountServiceAccountToken: false
+      # vmalert and Alertmanager carry a required anti-affinity against this pod
+      # (core/monitoring/stack/helmrelease.yaml), so none is set here.
+      priorityClassName: catastrophic
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
       initContainers:
       - name: ntfy-init
-        image: binwiederhier/ntfy:latest
-        imagePullPolicy: Always
+        image: binwiederhier/ntfy:v2.37.2@sha256:1875ddcf815c8a3c981d6d78c67a93452d0abba79b1ab9520b1f5f5238902bd7
+        imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "-c"]
         args:
         - printf '%s\n%s\n' "$NTFY_ADMIN_PASSWORD" "$NTFY_ADMIN_PASSWORD" | ntfy user add --role=admin "$NTFY_ADMIN_USER" || true
@@ -44,8 +47,8 @@ spec:
           mountPath: /var/cache/ntfy
       containers:
       - name: ntfy
-        image: binwiederhier/ntfy:latest
-        imagePullPolicy: Always
+        image: binwiederhier/ntfy:v2.37.2@sha256:1875ddcf815c8a3c981d6d78c67a93452d0abba79b1ab9520b1f5f5238902bd7
+        imagePullPolicy: IfNotPresent
         args:
         - serve
         ports:

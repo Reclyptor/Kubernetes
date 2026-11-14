@@ -15,6 +15,7 @@ spec:
         app: ollama
     spec:
       automountServiceAccountToken: false
+      priorityClassName: negligible
       runtimeClassName: nvidia
       # nvidia.com/gpu in the container resources already constrains this to a
       # GPU node — bytheon is the only one advertising the resource — so the

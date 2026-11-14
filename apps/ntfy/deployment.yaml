@@ -14,14 +14,15 @@ spec:
         app: ntfy-proxy
     spec:
       automountServiceAccountToken: false
+      priorityClassName: catastrophic
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
       containers:
       - name: proxy
-        image: quay.io/oauth2-proxy/oauth2-proxy:latest
-        imagePullPolicy: Always
+        image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.6@sha256:c3415e8660af553f5e18f5d90db050614c02493c0ac6260ac59442f6d9b12048
+        imagePullPolicy: IfNotPresent
         args:
         - --provider=oidc
         - --upstream=http://ntfy.ntfy.svc.cluster.local:8095

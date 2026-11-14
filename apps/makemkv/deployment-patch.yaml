@@ -14,6 +14,7 @@ spec:
   template:
     spec:
       automountServiceAccountToken: false
+      priorityClassName: negligible
       # The eight Blu-ray drives are physically attached to one chassis. This
       # matches the node that has them rather than naming it, so moving the
       # drives is a fleet.nix change and not a sweep through these manifests.
