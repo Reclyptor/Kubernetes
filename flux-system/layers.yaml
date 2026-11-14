@@ -22,22 +22,13 @@ spec:
     # it unhealthy whenever any single node is down, which would freeze the
     # entire core -> infra -> apps chain on one node outage. Its readiness is
     # per-node and non-blocking for workloads on healthy nodes.
+    # nvidia-device-plugin (one GPU node) and the dxp4800/dxp6800 drivers (no
+    # volumes) are left out for the same reason: one down node or an unused NAS
+    # must not freeze core -> infra -> apps.
     - apiVersion: apps/v1
       kind: Deployment
       name: coredns
       namespace: kube-system
-    - apiVersion: helm.toolkit.fluxcd.io/v2
-      kind: HelmRelease
-      name: nvidia-device-plugin
-      namespace: kube-system
-    - apiVersion: helm.toolkit.fluxcd.io/v2
-      kind: HelmRelease
-      name: democratic-csi-dxp4800
-      namespace: democratic-csi
-    - apiVersion: helm.toolkit.fluxcd.io/v2
-      kind: HelmRelease
-      name: democratic-csi-dxp6800
-      namespace: democratic-csi
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease
       name: democratic-csi-fs6712x
