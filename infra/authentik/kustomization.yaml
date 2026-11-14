@@ -5,6 +5,8 @@ resources:
   - namespace.yaml
   - secrets
   - statefulset.yaml
+  - deployment.yaml
+  - pdb.yaml
   - service.yaml
   - ciliumnetworkpolicy.yaml
   - vmpodscrape.yaml

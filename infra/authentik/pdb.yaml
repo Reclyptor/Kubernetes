@@ -1,0 +1,13 @@
+# Keeps one authentik server serving through a drain.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: authentik-server
+  namespace: authentik
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: authentik
+      component: server
+  unhealthyPodEvictionPolicy: AlwaysAllow

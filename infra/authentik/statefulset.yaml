@@ -88,6 +88,7 @@ spec:
         component: worker
     spec:
       automountServiceAccountToken: false
+      priorityClassName: catastrophic
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
