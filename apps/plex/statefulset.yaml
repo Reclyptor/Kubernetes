@@ -15,24 +15,10 @@ spec:
         app: plex
     spec:
       automountServiceAccountToken: false
-      # Needs an AMD render node: the container mounts /dev/dri/renderD128 and
-      # drives it with radeonsi. All four AMD nodes expose one; bytheon's
-      # renderD128 is an RTX 3090, which radeonsi cannot drive — so match the
-      # capability rather than a hostname, and bytheon is excluded for the real
-      # reason instead of by omission.
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: hardware.reclyptor.com/vaapi
-                    operator: In
-                    values:
-                      - "true"
+      priorityClassName: critical
       securityContext:
         runAsUser: 0
         runAsGroup: 0
-        fsGroup: 0
       # PublishServerOnPlexOnlineKey lives only in Preferences.xml on the config
       # PVC, and pms-docker exposes no env var for it, so it cannot be declared
       # like ADVERTISE_IP. It was found "0" on 2026-10-04: Plex stayed signed in
@@ -41,8 +27,8 @@ spec:
       # nothing is advertised while publishing is off. Re-assert it every start.
       initContainers:
         - name: ensure-publish
-          image: plexinc/pms-docker:latest
-          imagePullPolicy: Always
+          image: plexinc/pms-docker:1.43.5.11079-b3b13e506@sha256:6d778d41daae68f89115aa87a44ae14a96b23e71a2093da173b5a9aac4091336
+          imagePullPolicy: IfNotPresent
           command: ["/bin/bash", "-c"]
           args:
             - |
@@ -69,8 +55,8 @@ spec:
               mountPath: /config
       containers:
         - name: plex
-          image: plexinc/pms-docker:latest
-          imagePullPolicy: Always
+          image: plexinc/pms-docker:1.43.5.11079-b3b13e506@sha256:6d778d41daae68f89115aa87a44ae14a96b23e71a2093da173b5a9aac4091336
+          imagePullPolicy: IfNotPresent
           ports:
             - name: plex
               protocol: TCP
@@ -108,10 +94,6 @@ spec:
             # node address: those stopped serving Plex when it moved behind the VIP.
             - name: ADVERTISE_IP
               value: "https://plex.reclyptor.com:443,http://192.168.1.120:32400"
-            - name: LIBVA_DRIVER_NAME
-              value: "radeonsi"
-            - name: AMD_VULKAN_ICD
-              value: "RADV"
           volumeMounts:
             - name: config
               mountPath: /config
@@ -123,18 +105,24 @@ spec:
               readOnly: true
             - name: transcode
               mountPath: /transcode
-            - name: render
-              mountPath: /dev/dri/renderD128
           resources:
             requests:
               memory: "2Gi"
               cpu: "1000m"
+          # Allows 5 minutes, enough for a database migration after an image update.
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /identity
+              port: 32400
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 60
           livenessProbe:
             httpGet:
               scheme: HTTPS
               path: /identity
               port: 32400
-            initialDelaySeconds: 120
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 5
@@ -143,7 +131,6 @@ spec:
               scheme: HTTPS
               path: /identity
               port: 32400
-            initialDelaySeconds: 60
             periodSeconds: 15
             timeoutSeconds: 10
             failureThreshold: 5
@@ -161,10 +148,6 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 8Gi
-        - name: render
-          hostPath:
-            path: /dev/dri/renderD128
-            type: CharDevice
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: Retain
     whenScaled: Retain
