@@ -47,7 +47,7 @@ spec:
                 - "true"
       containers:
       - name: mediaops-rip
-        image: ghcr.io/reclyptor/mediaops:20261113215123-36079f1 # {"$imagepolicy": "flux-system:mediaops"}
+        image: ghcr.io/reclyptor/mediaops:20261114031434-bec65b9 # {"$imagepolicy": "flux-system:mediaops"}
         imagePullPolicy: Always
         # Privileged only so the optical drives' device nodes exist in the
         # container. Device access cannot be granted per node without a device
@@ -96,8 +96,8 @@ spec:
           limits:
             cpu: "4"
             memory: 8Gi
-        # No liveness probe: the container is `sleep infinity`, and a probe
-        # restart would kill a rip for nothing.
+            # No liveness probe: the container is `sleep infinity`, and a probe
+            # restart would kill a rip for nothing.
       volumes:
       - name: staging
         persistentVolumeClaim:

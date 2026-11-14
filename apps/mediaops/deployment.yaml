@@ -52,7 +52,7 @@ spec:
                 - "true"
       containers:
       - name: mediaops
-        image: ghcr.io/reclyptor/mediaops:20261113215123-36079f1 # {"$imagepolicy": "flux-system:mediaops"}
+        image: ghcr.io/reclyptor/mediaops:20261114031434-bec65b9 # {"$imagepolicy": "flux-system:mediaops"}
         imagePullPolicy: Always
         # This pod fetches untrusted web content (see the network policy), so it
         # gets no privilege and no capabilities. The disc tools live in
