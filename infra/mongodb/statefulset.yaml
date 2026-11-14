@@ -15,6 +15,7 @@ spec:
         app: mongodb
     spec:
       automountServiceAccountToken: false
+      priorityClassName: catastrophic
       securityContext:
         runAsUser: 999
         runAsGroup: 999
@@ -40,7 +41,7 @@ spec:
                 name: mongodb-root-secret
           resources:
             requests:
-              memory: "256Mi"
+              memory: "640Mi"
               cpu: "250m"
           livenessProbe:
             tcpSocket:

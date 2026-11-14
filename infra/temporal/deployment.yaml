@@ -15,6 +15,7 @@ spec:
       labels:
         app: temporal
     spec:
+      priorityClassName: marginal
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 1000
@@ -75,6 +76,7 @@ spec:
       labels:
         app: temporal-web
     spec:
+      priorityClassName: marginal
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 1000

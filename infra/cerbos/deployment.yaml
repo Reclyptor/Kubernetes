@@ -13,6 +13,7 @@ spec:
       labels:
         app: cerbos
     spec:
+      priorityClassName: marginal
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true

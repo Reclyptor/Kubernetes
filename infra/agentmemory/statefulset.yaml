@@ -15,6 +15,7 @@ spec:
         app: agentmemory
     spec:
       automountServiceAccountToken: false
+      priorityClassName: critical
       securityContext:
         fsGroup: 65532
       containers:
@@ -58,7 +59,7 @@ spec:
             failureThreshold: 3
           resources:
             requests:
-              memory: 1Gi
+              memory: 4Gi
               cpu: 100m
             # The file-backed state store lives in memory, and serializing a
             # large scope for a read peaks at several times its size on disk.
@@ -172,7 +173,7 @@ spec:
             failureThreshold: 6
           resources:
             requests:
-              memory: 512Mi
+              memory: 3Gi
               cpu: 250m
             limits:
               memory: 3Gi

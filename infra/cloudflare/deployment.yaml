@@ -17,6 +17,7 @@ spec:
       labels:
         app: cloudflare
     spec:
+      priorityClassName: catastrophic
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
