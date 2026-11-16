@@ -66,8 +66,8 @@ spec:
         - name: MAKEMKV_KEY
           valueFrom:
             secretKeyRef:
-              name: makemkv-key
-              key: key
+              name: mediaops-secret
+              key: MAKEMKV_KEY
         - name: TZ
           value: "America/Chicago"
         - name: MEDIA_ROOT
