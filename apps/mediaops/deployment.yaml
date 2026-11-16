@@ -82,6 +82,14 @@ spec:
             secretKeyRef:
               name: mediaops-secret
               key: ARCHIVE_ROOT
+        # Where rips land before they are promoted. From the Secret for the same
+        # reason as ARCHIVE_ROOT, and with no default in code for the same
+        # reason too.
+        - name: STAGING_ROOT
+          valueFrom:
+            secretKeyRef:
+              name: mediaops-secret
+              key: STAGING_ROOT
         # The image gives `media` no home directory, so fontconfig has nowhere to
         # cache and floods every drawtext call with "No writable cache
         # directories". The labels still render, which is the danger: pages of

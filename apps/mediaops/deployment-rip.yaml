@@ -70,8 +70,10 @@ spec:
               key: MAKEMKV_KEY
         - name: TZ
           value: "America/Chicago"
-        - name: MEDIA_ROOT
-          value: /mnt/media
+        # The staging tree is mounted on its own at a path that names nothing,
+        # so this value is safe to publish. No rip code reads MEDIA_ROOT.
+        - name: STAGING_ROOT
+          value: /mnt/staging
         # The image gives `media` no home directory, so fontconfig has nowhere to
         # cache and floods every drawtext call with "No writable cache
         # directories". The labels still render, which is the danger: pages of
@@ -81,10 +83,10 @@ spec:
         - name: XDG_CACHE_HOME
           value: /work/.cache
         volumeMounts:
-        # Only the staging tree. Rips land in _pending and run state lives in
-        # _pending/.rips; the privileged pod has no business with the library.
+        # Only the staging tree. Rips land in it and run state lives in its
+        # .rips; the privileged pod has no business with the library.
         - name: staging
-          mountPath: /mnt/media/dxp6800/_pending
+          mountPath: /mnt/staging
         - name: work
           mountPath: /work
         # makemkvcon buffers per drive and max_concurrent is 3 by default; the
