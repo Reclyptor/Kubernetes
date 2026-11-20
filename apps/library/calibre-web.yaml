@@ -22,8 +22,8 @@ spec:
       automountServiceAccountToken: false
       priorityClassName: marginal
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
+        runAsUser: 0
+        runAsGroup: 0
       containers:
       - name: calibre-web
         image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.2@sha256:fac65096c8c69b392dc26e9f0681e928d0580931473e330faa1ab125b8374dd7
