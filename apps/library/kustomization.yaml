@@ -3,12 +3,10 @@ kind: Kustomization
 namespace: library
 resources:
   - namespace.yaml
-  - pv-books.yaml
-  - pv-manga.yaml
-  - pv-bucket3.yaml
-  - pv-config.yaml
-  - pv-import.yaml
+  - pv.yaml
   - pvc.yaml
-  - calibre-web.yaml
-  - komga.yaml
+  - calibre-web-statefulset.yaml
+  - calibre-web-service.yaml
+  - komga-statefulset.yaml
+  - komga-service.yaml
   - ciliumnetworkpolicy.yaml

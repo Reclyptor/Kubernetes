@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: library-books
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-library-share
+    nfs:
+        server: ENC[AES256_GCM,data:mkTSmzbsboFVFuU=,iv:yxqJ7uMgEnbvss6GyvWuTXGna22NNwacO+MeAxxM9hM=,tag:16VmnVruZTjSTZxhgDamMw==,type:str]
+        path: ENC[AES256_GCM,data:yHCB45iOd3kTEmrCiX9kgVJ018c+ETj7XqE5DVY=,iv:0fcHSA7Gw18iIVfTsliMxnoqKxpBC51GtBbfd6Jgnpc=,tag:dRbcVYxC3H7NkIhQpMEfDA==,type:str]
+sops:
+    age:
+        - recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtcjhkK2hneThINkorM0xi
+            MVlzZm5ON250bmxOK3hHajN5aFRIdEg0NFZFCk9WcXZ2aGJXS2c4QWZORUxOc05i
+            MnN1WGZ5NkRPOGFpWG1rblVBNHZVR2cKLS0tIGUxN0pjVjF0bmJVcWM3dlFPZ1B6
+            SHdCTm80ZUk0UkdKYUFCV0w0cVVmL1EK/hE6U3dIEGxsdjUQKvfwZHmMVsb5XngP
+            s+r3LK1r+y5ED/BuEFw+4bfh7yx03eR7krBpkoADfWyWxKvd8GA9Mw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-20T20:51:26Z"
+    mac: ENC[AES256_GCM,data:+HwCUEBzx2AxtyiLqnTRKPcZOTl+fEKVW+mYVlAHwDMvFGO3WSWQmLqXI7v0Q80sM59xdzpzIWYm+kilo1Y2hiC/Kvlh97pUbj2YlhUffAd4iyg131S9nw8tTGKsNGYJ6ZH/FNZ9YxE5KXV8+8loDt5vzcgnn/zfnRqX+SKU/xA=,iv:gMtd2wvLOcALUyiYnbleXNQ1kHV5cDLxkENgYfuA4PA=,tag:5KdZvHsrduEu0Q9SUyZT5Q==,type:str]
+    encrypted_regex: ^(path|server)$
+    version: 3.10.2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: library-manga
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-library-share
+    nfs:
+        server: ENC[AES256_GCM,data:JoQNN7jeZ5xyIao=,iv:TtEoYj2yDIm+eMoX4J5gKBiO0rYmjjb/SGVpFu6khK8=,tag:kN8NxC+B4HUG3t9dEFSiEw==,type:str]
+        path: ENC[AES256_GCM,data:P3BUuB0mezpA9ZpX8nu1JCfRtD9DfPw6IFOaPEA=,iv:8Ze6UCRUzKX28M8YpGvC6z2+3z4fOpL05ox0vD03dCw=,tag:gWIgOmLcwAZLpVgVL+0qkQ==,type:str]
+sops:
+    age:
+        - recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtcjhkK2hneThINkorM0xi
+            MVlzZm5ON250bmxOK3hHajN5aFRIdEg0NFZFCk9WcXZ2aGJXS2c4QWZORUxOc05i
+            MnN1WGZ5NkRPOGFpWG1rblVBNHZVR2cKLS0tIGUxN0pjVjF0bmJVcWM3dlFPZ1B6
+            SHdCTm80ZUk0UkdKYUFCV0w0cVVmL1EK/hE6U3dIEGxsdjUQKvfwZHmMVsb5XngP
+            s+r3LK1r+y5ED/BuEFw+4bfh7yx03eR7krBpkoADfWyWxKvd8GA9Mw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-20T20:51:26Z"
+    mac: ENC[AES256_GCM,data:+HwCUEBzx2AxtyiLqnTRKPcZOTl+fEKVW+mYVlAHwDMvFGO3WSWQmLqXI7v0Q80sM59xdzpzIWYm+kilo1Y2hiC/Kvlh97pUbj2YlhUffAd4iyg131S9nw8tTGKsNGYJ6ZH/FNZ9YxE5KXV8+8loDt5vzcgnn/zfnRqX+SKU/xA=,iv:gMtd2wvLOcALUyiYnbleXNQ1kHV5cDLxkENgYfuA4PA=,tag:5KdZvHsrduEu0Q9SUyZT5Q==,type:str]
+    encrypted_regex: ^(path|server)$
+    version: 3.10.2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: library-bucket3
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-library-share
+    nfs:
+        server: ENC[AES256_GCM,data:6/B+B6ap/lhyK0g=,iv:jAtOPoFBEiKhZXBt5uR2cxbazvFRkm0iUWOJIPHPYfc=,tag:mDy4TbP3WqfNzEz5mtydqQ==,type:str]
+        path: ENC[AES256_GCM,data:cXRUgZJWSfOtPiUQOR63oJgz67MXgcE7p6IPfmRP,iv:n1KKzfYG39prA936ZoFJS4ia9zPnBtD/RkT5lvB46dM=,tag:qmj7nnXqBKs5ztR9WXy4Sg==,type:str]
+sops:
+    age:
+        - recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtcjhkK2hneThINkorM0xi
+            MVlzZm5ON250bmxOK3hHajN5aFRIdEg0NFZFCk9WcXZ2aGJXS2c4QWZORUxOc05i
+            MnN1WGZ5NkRPOGFpWG1rblVBNHZVR2cKLS0tIGUxN0pjVjF0bmJVcWM3dlFPZ1B6
+            SHdCTm80ZUk0UkdKYUFCV0w0cVVmL1EK/hE6U3dIEGxsdjUQKvfwZHmMVsb5XngP
+            s+r3LK1r+y5ED/BuEFw+4bfh7yx03eR7krBpkoADfWyWxKvd8GA9Mw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-20T20:51:26Z"
+    mac: ENC[AES256_GCM,data:+HwCUEBzx2AxtyiLqnTRKPcZOTl+fEKVW+mYVlAHwDMvFGO3WSWQmLqXI7v0Q80sM59xdzpzIWYm+kilo1Y2hiC/Kvlh97pUbj2YlhUffAd4iyg131S9nw8tTGKsNGYJ6ZH/FNZ9YxE5KXV8+8loDt5vzcgnn/zfnRqX+SKU/xA=,iv:gMtd2wvLOcALUyiYnbleXNQ1kHV5cDLxkENgYfuA4PA=,tag:5KdZvHsrduEu0Q9SUyZT5Q==,type:str]
+    encrypted_regex: ^(path|server)$
+    version: 3.10.2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: library-config
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-library-share
+    nfs:
+        server: ENC[AES256_GCM,data:wEc1oOhoduuzm6E=,iv:0+iQZw2Dg/OIMU6Ij40uymzKEwUIX3rK8qRgsUhX3sw=,tag:8NB76G2VBYMxW+aVwt4zbQ==,type:str]
+        path: ENC[AES256_GCM,data:0hB3Y+zGjCXb5yT+WmZRWZInmCpn8IPnF4Ma4AoNfw==,iv:lfrlacZ72RCoTEVLTO9ZQ5ICNN94CokZ/vIhDKGNO8Q=,tag:wQiHdvYmAJ/BACnfYs6xGQ==,type:str]
+sops:
+    age:
+        - recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtcjhkK2hneThINkorM0xi
+            MVlzZm5ON250bmxOK3hHajN5aFRIdEg0NFZFCk9WcXZ2aGJXS2c4QWZORUxOc05i
+            MnN1WGZ5NkRPOGFpWG1rblVBNHZVR2cKLS0tIGUxN0pjVjF0bmJVcWM3dlFPZ1B6
+            SHdCTm80ZUk0UkdKYUFCV0w0cVVmL1EK/hE6U3dIEGxsdjUQKvfwZHmMVsb5XngP
+            s+r3LK1r+y5ED/BuEFw+4bfh7yx03eR7krBpkoADfWyWxKvd8GA9Mw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-20T20:51:26Z"
+    mac: ENC[AES256_GCM,data:+HwCUEBzx2AxtyiLqnTRKPcZOTl+fEKVW+mYVlAHwDMvFGO3WSWQmLqXI7v0Q80sM59xdzpzIWYm+kilo1Y2hiC/Kvlh97pUbj2YlhUffAd4iyg131S9nw8tTGKsNGYJ6ZH/FNZ9YxE5KXV8+8loDt5vzcgnn/zfnRqX+SKU/xA=,iv:gMtd2wvLOcALUyiYnbleXNQ1kHV5cDLxkENgYfuA4PA=,tag:5KdZvHsrduEu0Q9SUyZT5Q==,type:str]
+    encrypted_regex: ^(path|server)$
+    version: 3.10.2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: library-import
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-library-share
+    nfs:
+        server: ENC[AES256_GCM,data:rVycpyF4qxyfJ2o=,iv:9l+2Gkchu1pWwy1wUQWXdTZXvr7sMA7cuRJ2pcjCKTM=,tag:8JMk1gWr5wnyDup/3bxV3g==,type:str]
+        path: ENC[AES256_GCM,data:OYYw1SDYFOkvPO8i36yDfk6ulxZstcPPE/u4EW1R/g==,iv:2D8xbf4EoA3GWvyyx0LCqAWcp3BdDzNJJw0aZKJWdj4=,tag:rXQu8xCEEWLAu0FLwEcOJg==,type:str]
+sops:
+    age:
+        - recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtcjhkK2hneThINkorM0xi
+            MVlzZm5ON250bmxOK3hHajN5aFRIdEg0NFZFCk9WcXZ2aGJXS2c4QWZORUxOc05i
+            MnN1WGZ5NkRPOGFpWG1rblVBNHZVR2cKLS0tIGUxN0pjVjF0bmJVcWM3dlFPZ1B6
+            SHdCTm80ZUk0UkdKYUFCV0w0cVVmL1EK/hE6U3dIEGxsdjUQKvfwZHmMVsb5XngP
+            s+r3LK1r+y5ED/BuEFw+4bfh7yx03eR7krBpkoADfWyWxKvd8GA9Mw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-20T20:51:26Z"
+    mac: ENC[AES256_GCM,data:+HwCUEBzx2AxtyiLqnTRKPcZOTl+fEKVW+mYVlAHwDMvFGO3WSWQmLqXI7v0Q80sM59xdzpzIWYm+kilo1Y2hiC/Kvlh97pUbj2YlhUffAd4iyg131S9nw8tTGKsNGYJ6ZH/FNZ9YxE5KXV8+8loDt5vzcgnn/zfnRqX+SKU/xA=,iv:gMtd2wvLOcALUyiYnbleXNQ1kHV5cDLxkENgYfuA4PA=,tag:5KdZvHsrduEu0Q9SUyZT5Q==,type:str]
+    encrypted_regex: ^(path|server)$
+    version: 3.10.2
