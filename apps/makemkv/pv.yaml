@@ -1,15 +1,39 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: makemkv-output-dxp6800
+    name: makemkv-output-dxp6800
 spec:
-  capacity:
-    storage: 1Mi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-makemkv-output
-  nfs:
-    server: 192.168.1.2
-    path: /mnt/primary/videos/_pending
-
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-makemkv-output
+    nfs:
+        server: 192.168.1.2
+        path: ENC[AES256_GCM,data:3c0Vus6AeSmMZx2xoC5Ngvos44AFmZRUpeJryQ==,iv:SOFliDqqv6/mp/mtnQUUa1pS+ICQKFSaBwJMSJXZKRQ=,tag:wa4gccEcrguXm2UCJF471Q==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBdFRFNEcz
+            bnBRQUdvUUJJWGpUWFh5cVNLdVMzVjNCVHU0Y2c3b1NOdjFidgpVZW80ZjIwU3pB
+            SDI2Z3ZwYWJGQ2t1cG5GWVlBaW51SkZwbks1QVRIcEhrCi0tLSB1b2ZEYjljM1lq
+            NmdZZUE4cTcyR2hnRzdxRXlWZW5nL3ZhR1RxYmNUN0VNCqbNW9EqlZj/yd//ly/V
+            PjmJr5ssmrNcbz+QTtNWlPY5ETAh6gZmWduq7+5quySdV6432P/Bbw6fENaphnXD
+            WMc=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB4NEhGRW5pVWpGeGhNSzJC
+            NUNHWWphbHh4b1pzT21wRkNob1VkV1A5QWlZCnJvcVQ5U0VFelo0SlNlalZCbU9R
+            RytCYWhKbFJucURwRm05SE9DcDBLOVEKLS0tIFU3U2dWeTByOUVHT1RpMEM1d0pM
+            RXp4N1h1V3pTZS9CTndIb1JGWG8yc3MKENKSMtyqYX+NMc1TrqQkxG3VEG5/1oHh
+            8gPTaY47NFMxv0/3vHah+8eiKTthjvDEqHxgxMSQYM3cKaPX00ZneQ==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:37:55Z"
+    mac: ENC[AES256_GCM,data:3oAd4okEf+Aw0x6Xlr5mieae/+pWUluCM+r+Ln24DNWcikwGHaorZaMcsgccbeKh+RfPsRQLBxYhhVAjc7NwIg0Jcju2gH3N2G0KGmVAc6OIkVTETZVOzpwjILhpwWvVhbxLml7vgLH7J/rEXqUtiapWe7OsOUVWD/FNNcQIpxc=,iv:jUBre9bB8lanHBPGpvnxNpc1TNGnz+LIPrGkX/pkVRw=,tag:yRf9C2Rqlsb4DHkyBEsMGA==,type:str]
+    version: 3.13.3

@@ -1,15 +1,39 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: qbittorrent-downloads
+    name: qbittorrent-downloads
 spec:
-  capacity:
-    storage: 1Mi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-downloads
-  nfs:
-    server: 192.168.1.5
-    path: /volume1/data
-
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-downloads
+    nfs:
+        server: 192.168.1.5
+        path: ENC[AES256_GCM,data:P+GPe5GuTfksTfFRpg==,iv:Gd11VYQb1TW7pfLdTMdXBq1JIq9A6bw9jY1pcuNhURg=,tag:/JImpfahbVP0HsbaNIy1OA==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBemV2bHh3
+            Z0tFdkdmaUdRNEhIMVRwdkdHaWlROVQ5UzBVb0RuWjZVWjZiZwpDZDhTOEZNN3Iy
+            bCtOOHdtQ1dUUElHSDR6dzZzWTVENWk5eTE0VzQvOUNvCi0tLSAySTFmcU5UMm9p
+            N1Njb21Wb1BrcmN1UzUyZkVtMVAxZ2I5Wm1sbkwvTTZVCqWBkcTH2lH39GiIcifT
+            rddgdZoKrzGu4tM+zq1fiw3ZOWE6XiPqSX29YuMNUnSxC+Sn7Ci272oYvPIIpW6c
+            Yo8=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB6YytPOE10RzNzT2srS2tT
+            bmpZYU8yalZDTWJlUHE2N0lhNjZJVjVOb1Z3CnVrZ256QmJMWVJiQUljcEZsWEZM
+            Wk9RZVBBR2oxTEYrSEZ2M2wrL0lXdm8KLS0tIHFibGdXTlp3UkU2R1loMWF6Y1ly
+            MlUxUXIzRVBHa3lSYVliRWlyNWZNYkkK0pUNEi65RcVMUzEnx7/lDvAzfgg1TpIo
+            N/fykTUbIoe4LtBK9IxYv4IAI2F0mYHYOgGLPb7b54qtbpurUPHFpg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:37:55Z"
+    mac: ENC[AES256_GCM,data:IHbulFQUbCZlghmQfDVIC2dtMTF/zowWO1PF9MZ2Ofm0dKxQUjP5N9/b1UUJ96OGr0nGytEYBSm0YEffKA9wjehtWo+r8bSuz8Y/SikZCZGBfsY3NCoy2GVDjvvjdtg2NRsk75r+jmnKno2JKSU351Bulwl5Vj5MDYZjhszipx4=,iv:dHjdLLKjGsu9pYNgEiJSoYHJwonbaFukS/lcD71u8XM=,tag:WfEu0sPZnbywkqFRwace2w==,type:str]
+    version: 3.13.3

@@ -9,39 +9,89 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mediaops-media-dxp6800
+    name: mediaops-media-dxp6800
 spec:
-  capacity:
-    storage: 1Mi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-mediaops-media
-  nfs:
-    server: 192.168.1.2
-    path: /mnt/primary/videos
-    # This export squashes every client to 3000:3000, so anything created here
-    # lands group 3000 whatever the pod's runAsGroup says, and chown/chgrp fail
-    # with EPERM. The pod still writes everything because uid 3000 owns it all;
-    # set modes (770) and leave ownership alone. rsync -a fails here (code 23)
-    # trying to keep the source group, so copies in use -rt --chmod=F770.
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-mediaops-media
+    nfs:
+        server: 192.168.1.2
+        path: ENC[AES256_GCM,data:bXeJO1tk9sTMywagKxrIx/Y0BA==,iv:6SW5hNZAAOVGrJXxPs7S+wjUfpkb6wUXm9Djo23+RG0=,tag:T6jhGWLJ6E807nUCMQj6Zw==,type:str]
+        # This export squashes every client to 3000:3000, so anything created here
+        # lands group 3000 whatever the pod's runAsGroup says, and chown/chgrp fail
+        # with EPERM. The pod still writes everything because uid 3000 owns it all;
+        # set modes (770) and leave ownership alone. rsync -a fails here (code 23)
+        # trying to keep the source group, so copies in use -rt --chmod=F770.
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBbzdtRmZt
+            NDdpZ0hucmFSbVdQQ083elJ0Sms4aVQ1TDVNbGVvRXpNQm81bQpwbHE5YlZqRzFG
+            Uy9pMGVCUk80NFdCT3hRL09rT3N2bThGVlF4L3Vuc05vCi0tLSA5T1NnMDB5QVQ5
+            RUI1TmE5MHlCV3ZaMTZSeDFPNjNPeUxGWmp6YUEvS2pvCtZ/ycFAgsNexlSZOP0s
+            DybO7dgPFHrzK8Q1xQvNBAnT4OaMGJ6BZFlrEScHjEJgUpqJrDdx4xmzrVxGabYD
+            ETs=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBvcExIaTcvU0g4QmxuaElm
+            SStXQngzK2tpNS9rcllYSU9CSUNINGtNeFFvCnlBVHVoOEowaDl2aTI0d2VUM2FR
+            RjZZYjllNHdIRExFSzVyWlNRVm9UYWMKLS0tIHExOTYrOWV5SE1Jb3FCeXZiMWZT
+            d3ozMFV3dW9kZFNzM2FBV3FPTmNPUTAK2QYtzKaFg7Mc3ogT2PemCRw69efLj+0a
+            Ssjuza31f9U8TGa4boBr6R6U5abAY+ocJ2DhPIpSq+2tTbwgYXT1dw==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:37:55Z"
+    mac: ENC[AES256_GCM,data:bv5vILzGAwWpHjVNCrXZAQz8b7KN84KX1ObkYcpGBEF+rcNOAF1SVqzK4KObE7GU/yzZ5MOlgx0+mw8xC8FGsqpWSWUkaspmv7VA1J3hcY2teoucjLJXSnWkHIcU/1Ekdeaws/1lzSr5OOD57v2QCrVE1DnipUV9yGCXcQTidxg=,iv:sD835kHwSbadX0GdnnsktxNIyWV6q81gR2LeQz/bnew=,tag:XaLd0yldaPX8Ln41n6kNhQ==,type:str]
+    version: 3.13.3
 ---
 # The second box. shutil.move falls back to copy+unlink across a device
 # boundary, so cross-box promotes work; they just copy instead of renaming.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mediaops-media-dxp4800
+    name: mediaops-media-dxp4800
 spec:
-  capacity:
-    storage: 1Mi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-mediaops-media-dxp4800
-  nfs:
-    server: 192.168.1.3
-    path: /mnt/primary/videos
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-mediaops-media-dxp4800
+    nfs:
+        server: 192.168.1.3
+        path: ENC[AES256_GCM,data:Cgif33ZBHiyG23f65KNQDoj0Hw==,iv:lOTFuPK1Y5xjukFd0EuzR15dd7HIWkjGuaqtRj97CrQ=,tag:T+Jix5hvABSr7Ul/dV/pYA==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBbzdtRmZt
+            NDdpZ0hucmFSbVdQQ083elJ0Sms4aVQ1TDVNbGVvRXpNQm81bQpwbHE5YlZqRzFG
+            Uy9pMGVCUk80NFdCT3hRL09rT3N2bThGVlF4L3Vuc05vCi0tLSA5T1NnMDB5QVQ5
+            RUI1TmE5MHlCV3ZaMTZSeDFPNjNPeUxGWmp6YUEvS2pvCtZ/ycFAgsNexlSZOP0s
+            DybO7dgPFHrzK8Q1xQvNBAnT4OaMGJ6BZFlrEScHjEJgUpqJrDdx4xmzrVxGabYD
+            ETs=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBvcExIaTcvU0g4QmxuaElm
+            SStXQngzK2tpNS9rcllYSU9CSUNINGtNeFFvCnlBVHVoOEowaDl2aTI0d2VUM2FR
+            RjZZYjllNHdIRExFSzVyWlNRVm9UYWMKLS0tIHExOTYrOWV5SE1Jb3FCeXZiMWZT
+            d3ozMFV3dW9kZFNzM2FBV3FPTmNPUTAK2QYtzKaFg7Mc3ogT2PemCRw69efLj+0a
+            Ssjuza31f9U8TGa4boBr6R6U5abAY+ocJ2DhPIpSq+2tTbwgYXT1dw==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:37:55Z"
+    mac: ENC[AES256_GCM,data:bv5vILzGAwWpHjVNCrXZAQz8b7KN84KX1ObkYcpGBEF+rcNOAF1SVqzK4KObE7GU/yzZ5MOlgx0+mw8xC8FGsqpWSWUkaspmv7VA1J3hcY2teoucjLJXSnWkHIcU/1Ekdeaws/1lzSr5OOD57v2QCrVE1DnipUV9yGCXcQTidxg=,iv:sD835kHwSbadX0GdnnsktxNIyWV6q81gR2LeQz/bnew=,tag:XaLd0yldaPX8Ln41n6kNhQ==,type:str]
+    version: 3.13.3
 ---
 # The torrent staging box, read-write. Normalisation runs against files that
 # land here and promotes the finished tree onto the media root above; doing the
@@ -50,17 +100,42 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mediaops-asustor
+    name: mediaops-asustor
 spec:
-  capacity:
-    storage: 1Mi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-mediaops-asustor
-  nfs:
-    server: 192.168.1.5
-    path: /volume1/data
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-mediaops-asustor
+    nfs:
+        server: 192.168.1.5
+        path: ENC[AES256_GCM,data:kuazCBrW+mVCqvBBHA==,iv:Bl8XdKxrLcaFrFC885f5V/0fPb8AeiMERXoLlCCIffg=,tag:NPkaYVltDvyvAcoQ9R4p1A==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBbzdtRmZt
+            NDdpZ0hucmFSbVdQQ083elJ0Sms4aVQ1TDVNbGVvRXpNQm81bQpwbHE5YlZqRzFG
+            Uy9pMGVCUk80NFdCT3hRL09rT3N2bThGVlF4L3Vuc05vCi0tLSA5T1NnMDB5QVQ5
+            RUI1TmE5MHlCV3ZaMTZSeDFPNjNPeUxGWmp6YUEvS2pvCtZ/ycFAgsNexlSZOP0s
+            DybO7dgPFHrzK8Q1xQvNBAnT4OaMGJ6BZFlrEScHjEJgUpqJrDdx4xmzrVxGabYD
+            ETs=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBvcExIaTcvU0g4QmxuaElm
+            SStXQngzK2tpNS9rcllYSU9CSUNINGtNeFFvCnlBVHVoOEowaDl2aTI0d2VUM2FR
+            RjZZYjllNHdIRExFSzVyWlNRVm9UYWMKLS0tIHExOTYrOWV5SE1Jb3FCeXZiMWZT
+            d3ozMFV3dW9kZFNzM2FBV3FPTmNPUTAK2QYtzKaFg7Mc3ogT2PemCRw69efLj+0a
+            Ssjuza31f9U8TGa4boBr6R6U5abAY+ocJ2DhPIpSq+2tTbwgYXT1dw==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:37:55Z"
+    mac: ENC[AES256_GCM,data:bv5vILzGAwWpHjVNCrXZAQz8b7KN84KX1ObkYcpGBEF+rcNOAF1SVqzK4KObE7GU/yzZ5MOlgx0+mw8xC8FGsqpWSWUkaspmv7VA1J3hcY2teoucjLJXSnWkHIcU/1Ekdeaws/1lzSr5OOD57v2QCrVE1DnipUV9yGCXcQTidxg=,iv:sD835kHwSbadX0GdnnsktxNIyWV6q81gR2LeQz/bnew=,tag:XaLd0yldaPX8Ln41n6kNhQ==,type:str]
+    version: 3.13.3
 ---
 # The ripper's view of dxp6800: the staging tree and nothing above it. The same
 # export and squash as mediaops-media-dxp6800 (3000:3000; set modes, never
@@ -69,14 +144,39 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mediaops-rip-staging-dxp6800
+    name: mediaops-rip-staging-dxp6800
 spec:
-  capacity:
-    storage: 1Mi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-mediaops-rip-staging
-  nfs:
-    server: 192.168.1.2
-    path: /mnt/primary/videos/_pending
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-mediaops-rip-staging
+    nfs:
+        server: 192.168.1.2
+        path: ENC[AES256_GCM,data:j+S3P0/NyVdxzI6XBL/t/pcT0BJeU7v+kvHJfg==,iv:xUt7Ec26/8v5YxU0C4w43A1+TE3Tw9iGzTROlgMvGWU=,tag:e2MLu2AJjv+KLVzEFuSawA==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBbzdtRmZt
+            NDdpZ0hucmFSbVdQQ083elJ0Sms4aVQ1TDVNbGVvRXpNQm81bQpwbHE5YlZqRzFG
+            Uy9pMGVCUk80NFdCT3hRL09rT3N2bThGVlF4L3Vuc05vCi0tLSA5T1NnMDB5QVQ5
+            RUI1TmE5MHlCV3ZaMTZSeDFPNjNPeUxGWmp6YUEvS2pvCtZ/ycFAgsNexlSZOP0s
+            DybO7dgPFHrzK8Q1xQvNBAnT4OaMGJ6BZFlrEScHjEJgUpqJrDdx4xmzrVxGabYD
+            ETs=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBvcExIaTcvU0g4QmxuaElm
+            SStXQngzK2tpNS9rcllYSU9CSUNINGtNeFFvCnlBVHVoOEowaDl2aTI0d2VUM2FR
+            RjZZYjllNHdIRExFSzVyWlNRVm9UYWMKLS0tIHExOTYrOWV5SE1Jb3FCeXZiMWZT
+            d3ozMFV3dW9kZFNzM2FBV3FPTmNPUTAK2QYtzKaFg7Mc3ogT2PemCRw69efLj+0a
+            Ssjuza31f9U8TGa4boBr6R6U5abAY+ocJ2DhPIpSq+2tTbwgYXT1dw==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:37:55Z"
+    mac: ENC[AES256_GCM,data:bv5vILzGAwWpHjVNCrXZAQz8b7KN84KX1ObkYcpGBEF+rcNOAF1SVqzK4KObE7GU/yzZ5MOlgx0+mw8xC8FGsqpWSWUkaspmv7VA1J3hcY2teoucjLJXSnWkHIcU/1Ekdeaws/1lzSr5OOD57v2QCrVE1DnipUV9yGCXcQTidxg=,iv:sD835kHwSbadX0GdnnsktxNIyWV6q81gR2LeQz/bnew=,tag:XaLd0yldaPX8Ln41n6kNhQ==,type:str]
+    version: 3.13.3

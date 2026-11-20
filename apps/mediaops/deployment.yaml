@@ -21,7 +21,7 @@ spec:
       automountServiceAccountToken: false
       priorityClassName: negligible
       securityContext:
-        # Matches every file under /mnt/primary/videos (3000:100, mode 770). The
+        # Matches every file on the media exports (3000:100, mode 770). The
         # image has no root path at runtime, so a root-owned media file cannot
         # be produced even by accident.
         runAsUser: 3000
