@@ -1,7 +1,7 @@
 # Books lane. Calibre-Web-Automated: the maintained fork (upstream
 # linuxserver/calibre-web stopped at 0.6.11) with Calibre itself bundled, so
-# it creates the empty Calibre library (metadata.db) in books/ on first start
-# and can convert on import. The physical layout under books/ is Calibre's own
+# it creates the empty Calibre library (metadata.db) in /books on first start
+# and can convert on import. The physical layout under /books is Calibre's own
 # (author folders + metadata.db) - BISAC lives in the UI as tags/shelves.
 apiVersion: apps/v1
 kind: StatefulSet
@@ -24,13 +24,6 @@ spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
-      initContainers:
-      - name: ensure-dirs
-        image: busybox:1.36.1@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
-        command: ["sh", "-c", "mkdir -p /share/_config/calibre-web /share/_import /share/books"]
-        volumeMounts:
-        - name: literature
-          mountPath: /share
       containers:
       - name: calibre-web
         image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.2@sha256:fac65096c8c69b392dc26e9f0681e928d0580931473e330faa1ab125b8374dd7
@@ -47,15 +40,12 @@ spec:
         - name: PGID
           value: "1000"
         volumeMounts:
-        - name: literature
-          mountPath: /config
-          subPath: _config/calibre-web
-        - name: literature
+        - name: books
           mountPath: /books
-          subPath: books
-        - name: literature
+        - name: config
+          mountPath: /config
+        - name: import
           mountPath: /import
-          subPath: _import
         resources:
           requests:
             cpu: 100m
@@ -76,9 +66,15 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
       volumes:
-      - name: literature
+      - name: books
         persistentVolumeClaim:
-          claimName: library-literature
+          claimName: library-books
+      - name: config
+        persistentVolumeClaim:
+          claimName: library-config
+      - name: import
+        persistentVolumeClaim:
+          claimName: library-import
 ---
 apiVersion: v1
 kind: Service

@@ -1,12 +1,54 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: library-literature
+  name: library-books
   namespace: library
 spec:
   storageClassName: nfs-library-share
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Mi
+  accessModes: [ReadWriteMany]
+  resources: {requests: {storage: 1Mi}}
+  volumeName: library-books
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: library-manga
+  namespace: library
+spec:
+  storageClassName: nfs-library-share
+  accessModes: [ReadWriteMany]
+  resources: {requests: {storage: 1Mi}}
+  volumeName: library-manga
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: library-bucket3
+  namespace: library
+spec:
+  storageClassName: nfs-library-share
+  accessModes: [ReadWriteMany]
+  resources: {requests: {storage: 1Mi}}
+  volumeName: library-bucket3
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: library-config
+  namespace: library
+spec:
+  storageClassName: nfs-library-share
+  accessModes: [ReadWriteMany]
+  resources: {requests: {storage: 1Mi}}
+  volumeName: library-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: library-import
+  namespace: library
+spec:
+  storageClassName: nfs-library-share
+  accessModes: [ReadWriteMany]
+  resources: {requests: {storage: 1Mi}}
+  volumeName: library-import

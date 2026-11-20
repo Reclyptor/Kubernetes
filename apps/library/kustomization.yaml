@@ -4,6 +4,7 @@ namespace: library
 resources:
   - namespace.yaml
   - pv.yaml
+  - pv-bucket3.yaml
   - pvc.yaml
   - calibre-web.yaml
   - komga.yaml
