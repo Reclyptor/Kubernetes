@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: library-books
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-library-share
+    nfs:
+        server: ENC[AES256_GCM,data:MdIpez6Lk1jn2/Y=,iv:s0ldX7zL8OVTHgvqhr0Lc3EVvQbapbJiwNhPc9Bpb9Q=,tag:jC1HnpMCjWvPJ8ix0C5q3g==,type:str]
+        path: ENC[AES256_GCM,data:xDfZnY2B5selhfxZuET/z2WVgiEdSzai3+nkjko=,iv:01Rp4Q6MCRUrBYG/mj7HY920/bQR2YXc5GAETssr4yo=,tag:DdX732zyIO5zm+SnPIVsHg==,type:str]
+sops:
+    age:
+        - recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB1ZUdDSHpNZmhxQTBRSTl6
+            WmdxaFlIaklFb0M3QzFWT1U3dHV0OWluT2xnCjllemszRlM2QnV2S0VUUXBXZWhj
+            d3MxZmFaR1l4bmYvcTR0Z0FJVXNGODAKLS0tIGNsOHpzaXhVSjl3eXhUZ0lFYTNz
+            YTk1b0pWaEhORktGdklSa2E3TWNyTHMKddnrNmoO1TIrMtPFLGej0I8xGZOWfoa1
+            qC6Bw8xPyg4Ky5bz+TL4q2QFvRHYfeah9nJ2vSe4yYm0Fzv9/8p6lQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-20T09:57:39Z"
+    mac: ENC[AES256_GCM,data:O6pZaN+94gqI0rZaMZ0vnzcqqBvi0Uh1hlf2lf3FizcQTjgsiyf56f3MyaDPbbQiaJdqZxIBDWiwxWXI8wuiRwHmVv6XqBiDBxVSavOOvlAdD0hPSllvwe99C4rL/YhXbWhziv+jdHHmGAQEwkRH8bvDVqe4EZQKnBa00fdn4m4=,iv:T3yp2JQ6jM89Qv2knP7TMNiHp8YEpk2/o7sAS1hlEFk=,tag:6hGmT8Rmtxh7PbCkSSY68A==,type:str]
+    encrypted_regex: ^(path|server)$
+    version: 3.10.2

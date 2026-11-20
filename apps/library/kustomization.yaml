@@ -3,7 +3,11 @@ kind: Kustomization
 namespace: library
 resources:
   - namespace.yaml
-  - pv.yaml
+  - pv-books.yaml
+  - pv-manga.yaml
+  - pv-bucket3.yaml
+  - pv-config.yaml
+  - pv-import.yaml
   - pvc.yaml
   - calibre-web.yaml
   - komga.yaml
