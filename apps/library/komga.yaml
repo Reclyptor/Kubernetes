@@ -37,6 +37,8 @@ spec:
           value: "25600"
         - name: KOMGA_DATABASE_CHECK_LOCAL_FILESYSTEM
           value: "false"
+        - name: KOMGA_TASKS_DB_CHECK_LOCAL_FILESYSTEM
+          value: "false"
         volumeMounts:
         - name: config
           mountPath: /config
