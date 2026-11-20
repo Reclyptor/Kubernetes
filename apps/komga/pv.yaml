@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: komga-library-1-dxp4800
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-komga-library-1
+    nfs:
+        server: 192.168.1.3
+        path: ENC[AES256_GCM,data:M/pzDU85UjkmOxpr+erJWoOzAmqalYjnJ5PntdQ=,iv:FGckLx+cK8e3Od+67pZGYhZdckSmdkWK+6k7c22pyAo=,tag:uAnnST6dO6NXShTReEvwpA==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBNEJhdGda
+            WmNXQjZGTHVuM2IxOGN4OGRBOEVCU2FrQS92Q0xwMGgyUytFKwpNSDBHWGVjMEhy
+            SE5CYWZTMmFwWGd6ZXovNnl4M0RsdjZ6T2tZZFNhRHdjCi0tLSBHUkRyMDJQaHhZ
+            aUJlQVNkRzJhQ0RjcTZWY1NqVGdWV3F5MXJPd21uU25JCvkBrRr7oFBYF6Gc1j2Z
+            BFCYuNyxr3oNw5cAVeyP4xy1OJ5ckbh7J6wib2VOtGIyvUKCDXbbrLi4OHjclPFG
+            asw=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPay9mdGFrYjlBRjJhc3NG
+            N3RpUGtIT3J4U0trRVhpcVN1S1NnYzRwTzNJCit6VVIxYTVDK21kRWFsM1RTNi9w
+            WVBnSmVYaDJZVUQxTmw1QWxPMzI0ZFUKLS0tIDZlbEVQRUNZK2F4OG1oZW82YWZi
+            cjBNdHBsOUEwMTdKNHM5RzF0Y3AvWFEK4/9M6ht9ytupcu58IHV3OM5qZQbmDz5g
+            niydlh69dO0Hf/BruymE3C+DG3ytl8v/jvwzdd4pKFgKDEiUESFswA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:36:36Z"
+    mac: ENC[AES256_GCM,data:IJJ5xo7kYdrdSrgJU+d5D9WyCgy35uOFJwiyw4Zcus24QxFMe+vb7+Mip5oiJ/TqZOgLn1lA8cpr/XD/Pt+a5Hgu7y1ISwXLRLam3GDnaQa7g0wXnyhzZQ2CTkvYvzp2nL6fPt4/u9Uff57p+1Mc4t0oeG0uu1lrBS7wdalOJZI=,iv:eitT3q7BUAF76SafAwAZdDpwwfbwh/dFXWjXlxQK8xo=,tag:Wfump5zAI+idhTKctvlfxw==,type:str]
+    version: 3.13.3
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: komga-library-2-dxp4800
+spec:
+    capacity:
+        storage: 1Mi
+    accessModes:
+        - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: nfs-komga-library-2
+    nfs:
+        server: 192.168.1.3
+        path: ENC[AES256_GCM,data:IF2Rsd7zlVxcMAytstRFtSZ6mGApSZjbYE2UYDpK,iv:b7H84GFMyFGp0WiVINeYOZIIPc0RjvVUWH9iGyT7RSY=,tag:jjK623Ysmrldxtnu45wX/g==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IHpDZE9kUSBBNEJhdGda
+            WmNXQjZGTHVuM2IxOGN4OGRBOEVCU2FrQS92Q0xwMGgyUytFKwpNSDBHWGVjMEhy
+            SE5CYWZTMmFwWGd6ZXovNnl4M0RsdjZ6T2tZZFNhRHdjCi0tLSBHUkRyMDJQaHhZ
+            aUJlQVNkRzJhQ0RjcTZWY1NqVGdWV3F5MXJPd21uU25JCvkBrRr7oFBYF6Gc1j2Z
+            BFCYuNyxr3oNw5cAVeyP4xy1OJ5ckbh7J6wib2VOtGIyvUKCDXbbrLi4OHjclPFG
+            asw=
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1yubikey1q2u7ajmktdc5e5ejq98qmrwha8xglt06k96zupqmh6e6qzfvh434s0wa5yy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPay9mdGFrYjlBRjJhc3NG
+            N3RpUGtIT3J4U0trRVhpcVN1S1NnYzRwTzNJCit6VVIxYTVDK21kRWFsM1RTNi9w
+            WVBnSmVYaDJZVUQxTmw1QWxPMzI0ZFUKLS0tIDZlbEVQRUNZK2F4OG1oZW82YWZi
+            cjBNdHBsOUEwMTdKNHM5RzF0Y3AvWFEK4/9M6ht9ytupcu58IHV3OM5qZQbmDz5g
+            niydlh69dO0Hf/BruymE3C+DG3ytl8v/jvwzdd4pKFgKDEiUESFswA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age140jklplcfmptcv2q0jek2uee0aga2c2zd9c5p8jw5c8kyg9sef0sqwkh9k
+    encrypted_regex: ^path$
+    lastmodified: "2026-11-20T22:36:36Z"
+    mac: ENC[AES256_GCM,data:IJJ5xo7kYdrdSrgJU+d5D9WyCgy35uOFJwiyw4Zcus24QxFMe+vb7+Mip5oiJ/TqZOgLn1lA8cpr/XD/Pt+a5Hgu7y1ISwXLRLam3GDnaQa7g0wXnyhzZQ2CTkvYvzp2nL6fPt4/u9Uff57p+1Mc4t0oeG0uu1lrBS7wdalOJZI=,iv:eitT3q7BUAF76SafAwAZdDpwwfbwh/dFXWjXlxQK8xo=,tag:Wfump5zAI+idhTKctvlfxw==,type:str]
+    version: 3.13.3

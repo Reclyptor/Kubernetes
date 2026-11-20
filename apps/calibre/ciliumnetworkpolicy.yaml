@@ -1,0 +1,20 @@
+# LAN-only by decision: no cloudflare tunnel.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: calibre
+  namespace: calibre
+spec:
+  endpointSelector:
+    matchLabels:
+      app: calibre
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "8083", protocol: TCP }]
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "8083", protocol: TCP }]

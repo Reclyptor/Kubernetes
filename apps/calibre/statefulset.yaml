@@ -1,31 +1,32 @@
-# Books lane. Calibre-Web-Automated (the maintained fork) with Calibre
-# bundled; it creates the empty Calibre library in /calibre-library on first
-# start. The physical layout is Calibre's own - BISAC lives in the UI as
-# tags/shelves. NETWORK_SHARE_MODE=true: the library lives on NFS, so WAL and
-# chown are disabled and watching falls back to polling.
+# Calibre-Web-Automated, the maintained fork, with Calibre bundled. Its s6 init
+# must start as root and drops to its app user (1000) itself. fsGroup makes the
+# fresh config volume writable by that user. The library lives on NFS, so
+# NETWORK_SHARE_MODE turns off WAL and chown, and watching falls back to polling.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: calibre-web
-  namespace: library
+  name: calibre
+  namespace: calibre
 spec:
-  serviceName: calibre-web
+  serviceName: calibre
   replicas: 1
   selector:
     matchLabels:
-      app: calibre-web
+      app: calibre
   template:
     metadata:
       labels:
-        app: calibre-web
+        app: calibre
     spec:
       automountServiceAccountToken: false
       priorityClassName: marginal
       securityContext:
         runAsUser: 0
         runAsGroup: 0
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
       containers:
-      - name: calibre-web
+      - name: calibre
         image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.2@sha256:fac65096c8c69b392dc26e9f0681e928d0580931473e330faa1ab125b8374dd7
         imagePullPolicy: IfNotPresent
         ports:
@@ -38,11 +39,11 @@ spec:
         - name: NETWORK_SHARE_MODE
           value: "true"
         volumeMounts:
-        - name: books
-          mountPath: /calibre-library
         - name: config
           mountPath: /config
-        - name: import
+        - name: books
+          mountPath: /calibre-library
+        - name: ingest
           mountPath: /cwa-book-ingest
         resources:
           requests:
@@ -63,13 +64,23 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 10
           timeoutSeconds: 5
+          failureThreshold: 3
       volumes:
       - name: books
         persistentVolumeClaim:
-          claimName: library-books
-      - name: config
+          claimName: calibre-books
+      - name: ingest
         persistentVolumeClaim:
-          claimName: library-config
-      - name: import
-        persistentVolumeClaim:
-          claimName: library-import
+          claimName: calibre-ingest
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: iscsi-persistent-fs6712x
+        resources:
+          requests:
+            storage: 5Gi

@@ -1,0 +1,20 @@
+# LAN-only by decision: no cloudflare tunnel.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: komga
+  namespace: komga
+spec:
+  endpointSelector:
+    matchLabels:
+      app: komga
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "25600", protocol: TCP }]
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "25600", protocol: TCP }]

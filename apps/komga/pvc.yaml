@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: komga-library-1
+  namespace: komga
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-komga-library-1
+  volumeName: komga-library-1-dxp4800
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: komga-library-2
+  namespace: komga
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-komga-library-2
+  volumeName: komga-library-2-dxp4800
+  resources:
+    requests:
+      storage: 1Mi
