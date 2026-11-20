@@ -1,8 +1,8 @@
-# Books lane. Calibre-Web-Automated: the maintained fork (upstream
-# linuxserver/calibre-web stopped at 0.6.11) with Calibre itself bundled, so
-# it creates the empty Calibre library (metadata.db) in /books on first start
-# and can convert on import. The physical layout under /books is Calibre's own
-# (author folders + metadata.db) - BISAC lives in the UI as tags/shelves.
+# Books lane. Calibre-Web-Automated (the maintained fork) with Calibre
+# bundled; it creates the empty Calibre library in /calibre-library on first
+# start. The physical layout is Calibre's own - BISAC lives in the UI as
+# tags/shelves. NETWORK_SHARE_MODE=true: the library lives on NFS, so WAL and
+# chown are disabled and watching falls back to polling.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -35,13 +35,15 @@ spec:
         env:
         - name: TZ
           value: "America/Chicago"
+        - name: NETWORK_SHARE_MODE
+          value: "true"
         volumeMounts:
         - name: books
-          mountPath: /books
+          mountPath: /calibre-library
         - name: config
           mountPath: /config
         - name: import
-          mountPath: /import
+          mountPath: /cwa-book-ingest
         resources:
           requests:
             cpu: 100m
