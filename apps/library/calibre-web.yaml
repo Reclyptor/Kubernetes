@@ -1,0 +1,99 @@
+# Books lane. Calibre-Web-Automated: the maintained fork (upstream
+# linuxserver/calibre-web stopped at 0.6.11) with Calibre itself bundled, so
+# it creates the empty Calibre library (metadata.db) in books/ on first start
+# and can convert on import. The physical layout under books/ is Calibre's own
+# (author folders + metadata.db) - BISAC lives in the UI as tags/shelves.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: calibre-web
+  namespace: library
+spec:
+  serviceName: calibre-web
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calibre-web
+  template:
+    metadata:
+      labels:
+        app: calibre-web
+    spec:
+      automountServiceAccountToken: false
+      priorityClassName: marginal
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      initContainers:
+      - name: ensure-dirs
+        image: busybox:1.36.1@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+        command: ["sh", "-c", "mkdir -p /share/_config/calibre-web /share/_config/komga /share/_import /share/books /share/manga /share/bucket3 && chmod 770 /share/_config/calibre-web /share/_config/komga /share/_import /share/books /share/manga /share/bucket3"]
+        volumeMounts:
+        - name: literature
+          mountPath: /share
+      containers:
+      - name: calibre-web
+        image: ghcr.io/crocodilestick/calibre-web-automated:v4.0.2@sha256:fac65096c8c69b392dc26e9f0681e928d0580931473e330faa1ab125b8374dd7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8083
+          protocol: TCP
+        env:
+        - name: TZ
+          value: "America/Chicago"
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        volumeMounts:
+        - name: literature
+          mountPath: /config
+          subPath: _config/calibre-web
+        - name: literature
+          mountPath: /books
+          subPath: books
+        - name: literature
+          mountPath: /import
+          subPath: _import
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8083
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8083
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: literature
+        persistentVolumeClaim:
+          claimName: library-literature
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calibre-web
+  namespace: library
+  annotations:
+    lbipam.cilium.io/sharing-key: "lan-shared"
+    lbipam.cilium.io/sharing-cross-namespace: "*"
+spec:
+  type: LoadBalancer
+  selector:
+    app: calibre-web
+  ports:
+    - name: http
+      port: 8083
+      targetPort: 8083
+      protocol: TCP

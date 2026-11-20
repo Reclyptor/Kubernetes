@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: library-literature
+  namespace: library
+spec:
+  storageClassName: nfs-library-share
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi

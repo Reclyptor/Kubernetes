@@ -1,0 +1,42 @@
+# LAN web UIs, same shape as gotify: cluster-adjacent clients (world covers
+# the LAN LBIPAM IPs), node access, and blackbox monitoring. No cloudflare
+# tunnel - these stay LAN-only by decision.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: calibre-web
+  namespace: library
+spec:
+  endpointSelector:
+    matchLabels:
+      app: calibre-web
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "8083", protocol: TCP }]
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "8083", protocol: TCP }]
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: komga
+  namespace: library
+spec:
+  endpointSelector:
+    matchLabels:
+      app: komga
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus-blackbox-exporter
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports: [{ port: "25600", protocol: TCP }]
+    - fromEntities: [world, remote-node]
+      toPorts:
+        - ports: [{ port: "25600", protocol: TCP }]
