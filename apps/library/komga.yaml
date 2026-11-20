@@ -1,6 +1,7 @@
-# Comics lane: two libraries (configured in the Komga web UI on first run).
-# Library mounts are read-only - Komga never writes to the buckets; its state
-# lives in /config.
+# Comics lane. The whole share is mounted read-only and the library folders
+# are configured in the Komga web UI on first run - the bucket names live in
+# Komga's private database, never in this repo. Komga never writes to the
+# share; its state lives in /config.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -25,7 +26,7 @@ spec:
       initContainers:
       - name: ensure-dirs
         image: busybox:1.36.1@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
-        command: ["sh", "-c", "mkdir -p /share/_config/komga /share/manga /share/bucket3 && chmod 770 /share/_config/komga /share/manga /share/bucket3"]
+        command: ["sh", "-c", "mkdir -p /share/_config/komga && chmod 770 /share/_config/komga"]
         volumeMounts:
         - name: literature
           mountPath: /share
@@ -47,12 +48,7 @@ spec:
           mountPath: /config
           subPath: _config/komga
         - name: literature
-          mountPath: /manga
-          subPath: manga
-          readOnly: true
-        - name: literature
-          mountPath: /bucket3
-          subPath: bucket3
+          mountPath: /library
           readOnly: true
         resources:
           requests:

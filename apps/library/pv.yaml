@@ -1,8 +1,7 @@
-# The whole literature share on the dxp4800, one export, three buckets
-# (books, manga, bucket3) plus the _config/_import operational dirs. Both
-# apps mount this same PV: Calibre-Web manages books/ (rw), Komga reads
-# manga/ and bucket3/ (ro). See the mediaops PV for the NAS gotchas this
-# inherits: the
+# The whole literature share on the dxp4800, one export. Both apps mount
+# this same PV: Calibre-Web manages the books bucket (rw), Komga mounts the
+# share read-only and its library folders are configured in its web UI.
+# See the mediaops PV for the NAS gotchas this inherits: the
 # export squashes every client to 3000:3000, so nothing chowns here, files
 # land 3000:3000 whatever the pod's uid, and mode setting (770) is all we get.
 apiVersion: v1
