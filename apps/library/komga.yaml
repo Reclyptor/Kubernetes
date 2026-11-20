@@ -35,6 +35,8 @@ spec:
           value: "America/Chicago"
         - name: SERVER_PORT
           value: "25600"
+        - name: KOMGA_DATABASE_CHECK_LOCAL_FILESYSTEM
+          value: "false"
         volumeMounts:
         - name: config
           mountPath: /config
