@@ -47,7 +47,7 @@ spec:
                 - "true"
       containers:
       - name: mediaops-rip
-        image: ghcr.io/reclyptor/mediaops:20261116200618-6e1f652 # {"$imagepolicy": "flux-system:mediaops"}
+        image: ghcr.io/reclyptor/mediaops:20261120101825-5bbe114 # {"$imagepolicy": "flux-system:mediaops"}
         imagePullPolicy: Always
         # Privileged only so the optical drives' device nodes exist in the
         # container. Device access cannot be granted per node without a device
