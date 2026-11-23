@@ -16,10 +16,12 @@ spec:
     spec:
       automountServiceAccountToken: false
       priorityClassName: critical
-      # Transcodes run on NVENC/NVDEC. The GPU request below is what lands this
-      # on bytheon, the only node advertising nvidia.com/gpu; the toleration
-      # gets it past the taint reserving that box.
+      # Transcodes run on NVENC/NVDEC on bytheon. The toleration gets past the
+      # taint reserving that box; the card itself is chosen by
+      # NVIDIA_VISIBLE_DEVICES below (SPEC/plex-gpu1-pin.md).
       runtimeClassName: nvidia
+      nodeSelector:
+        kubernetes.io/hostname: bytheon
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
@@ -107,6 +109,18 @@ spec:
             # NVENC/NVDEC to the container.
             - name: NVIDIA_DRIVER_CAPABILITIES
               value: "compute,video,utility"
+            # GPU 1 by UUID. NVENC and NVDEC fail ("unsupported device") in a
+            # container that holds GPU 0 alone, though the card itself works,
+            # and the device plugin cannot be asked for a particular card, so
+            # this bypasses it: the scheduler does not count this GPU, and
+            # vllm must stay parked until that is resolved.
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "GPU-13b49fb7-8791-de6e-3061-036fadfb5418"
+            # Plex Transcoder is musl-linked and searches only FHS library
+            # paths, never glibc's ld.so.cache, so it cannot find the driver
+            # NixOS injects here and fails with "Cannot load libcuda.so.1".
+            - name: LD_LIBRARY_PATH
+              value: "/run/opengl-driver/lib"
             # What Plex tells plex.tv its reachable addresses are. Clients
             # pick from this list, so it must name the LAN VIP, never a
             # node address: those stopped serving Plex when it moved behind the VIP.
@@ -127,8 +141,6 @@ spec:
             requests:
               memory: "2Gi"
               cpu: "1000m"
-            limits:
-              nvidia.com/gpu: 1
           # Allows 5 minutes, enough for a database migration after an image update.
           startupProbe:
             httpGet:

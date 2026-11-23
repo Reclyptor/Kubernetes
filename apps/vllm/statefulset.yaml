@@ -5,8 +5,9 @@ metadata:
   namespace: vllm
 spec:
   serviceName: vllm-api
-  # Parked: Plex holds one of bytheon's two GPUs for transcoding, and TP=2
-  # needs both (SPEC/plex-gpu-transcode.md).
+  # Parked: Plex transcodes on bytheon's GPU 1, selected by UUID outside the
+  # device plugin, so the scheduler would hand vllm both cards and the two
+  # would collide on GPU 1 (SPEC/plex-gpu1-pin.md).
   replicas: 0
   selector:
     matchLabels:
