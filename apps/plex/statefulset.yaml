@@ -16,17 +16,30 @@ spec:
     spec:
       automountServiceAccountToken: false
       priorityClassName: critical
+      # Transcodes run on NVENC/NVDEC. The GPU request below is what lands this
+      # on bytheon, the only node advertising nvidia.com/gpu; the toleration
+      # gets it past the taint reserving that box.
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
       securityContext:
         runAsUser: 0
         runAsGroup: 0
-      # PublishServerOnPlexOnlineKey lives only in Preferences.xml on the config
-      # PVC, and pms-docker exposes no env var for it, so it cannot be declared
-      # like ADVERTISE_IP. It was found "0" on 2026-10-04: Plex stayed signed in
-      # but never re-announced, so plex.tv served a stale record and clients
-      # rejected the server as outdated. That also makes ADVERTISE_IP inert --
-      # nothing is advertised while publishing is off. Re-assert it every start.
+      # These prefs live only in Preferences.xml on the config PVC, and
+      # pms-docker exposes no env var for them, so they cannot be declared like
+      # ADVERTISE_IP. Re-assert them every start.
+      #
+      # PublishServerOnPlexOnlineKey was found "0" on 2026-10-04: Plex stayed
+      # signed in but never re-announced, so plex.tv served a stale record and
+      # clients rejected the server as outdated. That also makes ADVERTISE_IP
+      # inert -- nothing is advertised while publishing is off.
+      #
+      # HardwareAcceleratedCodecs/Encoders turn on GPU decode and encode. Off,
+      # Plex ignores the GPU and software-transcodes 4K HDR on the CPU.
       initContainers:
-        - name: ensure-publish
+        - name: ensure-prefs
           image: plexinc/pms-docker:1.43.5.11079-b3b13e506@sha256:6d778d41daae68f89115aa87a44ae14a96b23e71a2093da173b5a9aac4091336
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash", "-c"]
@@ -34,22 +47,23 @@ spec:
             - |
               set -euo pipefail
               pref="/config/Library/Application Support/Plex Media Server/Preferences.xml"
-              key="PublishServerOnPlexOnlineKey"
               if [ ! -f "$pref" ]; then
                 echo "no Preferences.xml yet (first run) - nothing to assert"
                 exit 0
               fi
-              cur="$(xmlstarlet sel -T -t -m /Preferences -v "@${key}" -n "$pref" || true)"
-              if [ "$cur" = "1" ]; then
-                echo "${key} already 1"
-                exit 0
-              fi
-              if [ "$(xmlstarlet sel -t -v "count(/Preferences/@${key})" "$pref")" -gt 0 ]; then
-                xmlstarlet ed --inplace --update "/Preferences/@${key}" -v 1 "$pref"
-              else
-                xmlstarlet ed --inplace --insert /Preferences --type attr -n "${key}" -v 1 "$pref"
-              fi
-              echo "DRIFT CORRECTED: ${key} was '${cur:-unset}', now 1"
+              for key in PublishServerOnPlexOnlineKey HardwareAcceleratedCodecs HardwareAcceleratedEncoders; do
+                cur="$(xmlstarlet sel -T -t -m /Preferences -v "@${key}" -n "$pref" || true)"
+                if [ "$cur" = "1" ]; then
+                  echo "${key} already 1"
+                  continue
+                fi
+                if [ "$(xmlstarlet sel -t -v "count(/Preferences/@${key})" "$pref")" -gt 0 ]; then
+                  xmlstarlet ed --inplace --update "/Preferences/@${key}" -v 1 "$pref"
+                else
+                  xmlstarlet ed --inplace --insert /Preferences --type attr -n "${key}" -v 1 "$pref"
+                fi
+                echo "DRIFT CORRECTED: ${key} was '${cur:-unset}', now 1"
+              done
           volumeMounts:
             - name: config
               mountPath: /config
@@ -89,6 +103,10 @@ spec:
               value: "0"
             - name: PLEX_GID
               value: "0"
+            # The runtime's default omits "video", which is what exposes
+            # NVENC/NVDEC to the container.
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: "compute,video,utility"
             # What Plex tells plex.tv its reachable addresses are. Clients
             # pick from this list, so it must name the LAN VIP, never a
             # node address: those stopped serving Plex when it moved behind the VIP.
@@ -109,6 +127,8 @@ spec:
             requests:
               memory: "2Gi"
               cpu: "1000m"
+            limits:
+              nvidia.com/gpu: 1
           # Allows 5 minutes, enough for a database migration after an image update.
           startupProbe:
             httpGet:
