@@ -37,6 +37,10 @@ spec:
         - matchPattern: "*.plex.tv"
         - matchPattern: "*.plex.direct"
         - matchPattern: "*.plex.bz"
+        # Cilium's * spans one label, so *.plex.bz misses the pubsub hosts
+        # (pubsub02.pop.fmt.plex.bz). Without them plex.tv marks the server
+        # offline and clients cannot find it.
+        - matchPattern: "*.pop.*.plex.bz"
         - matchName: "plexapp.com"
         - matchPattern: "*.plexapp.com"
       toPorts:
