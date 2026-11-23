@@ -40,6 +40,10 @@ spec:
       #
       # HardwareAcceleratedCodecs/Encoders turn on GPU decode and encode. Off,
       # Plex ignores the GPU and software-transcodes 4K HDR on the CPU.
+      #
+      # ManualPortMappingMode/Port publish the router's port forward as the
+      # public port. There is no UPnP/NAT-PMP, so without them Plex reports no
+      # public port and remote clients have no direct connection to use.
       initContainers:
         - name: ensure-prefs
           image: plexinc/pms-docker:1.43.5.11079-b3b13e506@sha256:6d778d41daae68f89115aa87a44ae14a96b23e71a2093da173b5a9aac4091336
@@ -53,18 +57,25 @@ spec:
                 echo "no Preferences.xml yet (first run) - nothing to assert"
                 exit 0
               fi
-              for key in PublishServerOnPlexOnlineKey HardwareAcceleratedCodecs HardwareAcceleratedEncoders; do
+              for kv in \
+                PublishServerOnPlexOnlineKey=1 \
+                HardwareAcceleratedCodecs=1 \
+                HardwareAcceleratedEncoders=1 \
+                ManualPortMappingMode=1 \
+                ManualPortMappingPort=32400; do
+                key="${kv%%=*}"
+                want="${kv#*=}"
                 cur="$(xmlstarlet sel -T -t -m /Preferences -v "@${key}" -n "$pref" || true)"
-                if [ "$cur" = "1" ]; then
-                  echo "${key} already 1"
+                if [ "$cur" = "$want" ]; then
+                  echo "${key} already ${want}"
                   continue
                 fi
                 if [ "$(xmlstarlet sel -t -v "count(/Preferences/@${key})" "$pref")" -gt 0 ]; then
-                  xmlstarlet ed --inplace --update "/Preferences/@${key}" -v 1 "$pref"
+                  xmlstarlet ed --inplace --update "/Preferences/@${key}" -v "$want" "$pref"
                 else
-                  xmlstarlet ed --inplace --insert /Preferences --type attr -n "${key}" -v 1 "$pref"
+                  xmlstarlet ed --inplace --insert /Preferences --type attr -n "${key}" -v "$want" "$pref"
                 fi
-                echo "DRIFT CORRECTED: ${key} was '${cur:-unset}', now 1"
+                echo "DRIFT CORRECTED: ${key} was '${cur:-unset}', now ${want}"
               done
           volumeMounts:
             - name: config
@@ -125,7 +136,7 @@ spec:
             # pick from this list, so it must name the LAN VIP, never a
             # node address: those stopped serving Plex when it moved behind the VIP.
             - name: ADVERTISE_IP
-              value: "https://plex.reclyptor.com:443,http://192.168.1.120:32400"
+              value: "http://192.168.1.120:32400"
           volumeMounts:
             - name: config
               mountPath: /config

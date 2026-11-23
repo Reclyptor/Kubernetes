@@ -14,6 +14,8 @@ spec:
   ports:
     - name: plex
       port: 32400
+      # Pinned: the home router's port forward for remote access targets it.
+      nodePort: 30429
       protocol: TCP
     - name: dlna-tcp
       port: 32469
